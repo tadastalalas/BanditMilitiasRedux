@@ -112,7 +112,8 @@ namespace BanditMilitias
         {
             if (gameStarterObject is CampaignGameStarter gameStarter)
                 gameStarter.AddBehavior(new MilitiaBehavior());
-            Settings.OnSettingsChanged += OnSettingsChanged;
+            if (Settings.Instance != null)
+                Settings.OnSettingsChanged += OnSettingsChanged;
         }
 
         private static void OnSettingsChanged()

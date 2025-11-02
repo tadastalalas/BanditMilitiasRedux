@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -183,30 +183,43 @@ namespace BanditMilitias
         {
             try
             {
+                if (original?.IsActive != true || heroes == null || heroes.Count == 0)
+                {
+                    Logger.LogWarning($"Invalid split attempt: original={original?.StringId}, heroes={heroes?.Count}");
+                    return;
+                }
+
                 for (int i = heroes.Count - 1; i >= 0; i--)
                 {
                     TroopRoster targetParty = i % 2 == 0 ? party1 : party2;
                     targetParty.AddToCounts(heroes[i].CharacterObject, 1, true);
                 }
                 
-                while (party1.TotalManCount < Globals.Settings.MinPartySize)
+                while (party1.TotalManCount < Globals.Settings.MinPartySize && party1.Count > 0)
                 {
                     // using 1, not 0 because 0 is the BM hero
                     var troop = party1.GetCharacterAtIndex(MBRandom.RandomInt(0, party1.Count));
+                    if (troop == null) break;
                     if (!IsRegistered(troop))
                         Meow();
                     party1.AddToCounts(troop, 1);
                 }
 
-                while (party2.TotalManCount < Globals.Settings.MinPartySize)
+                while (party2.TotalManCount < Globals.Settings.MinPartySize && party2.Count > 0)
                 {
-                    var troop = party2.GetCharacterAtIndex(MBRandom.RandomInt(0, party1.Count));
+                    var troop = party2.GetCharacterAtIndex(MBRandom.RandomInt(0, party2.Count));
+                    if (troop == null) break;
                     if (!IsRegistered(troop))
                         Meow();
                     party2.AddToCounts(troop, 1);
                 }
 
-                if (original.HomeSettlement is null) Meow();
+                if (original.HomeSettlement == null)
+                {
+                    Logger.LogError("Original militia has no HomeSettlement");
+                    Trash(original);
+                    return;
+                }
 
                 var bm1 = MobileParty.CreateParty("Bandit_Militia", new ModBanditMilitiaPartyComponent(original.HomeSettlement, heroes[0]), m => m.ActualClan = original.ActualClan);
                 var bm2 = MobileParty.CreateParty("Bandit_Militia", new ModBanditMilitiaPartyComponent(original.HomeSettlement, heroes.Count >= 2 ? heroes[1] : null), m => m.ActualClan = original.ActualClan);
@@ -234,7 +247,8 @@ namespace BanditMilitias
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, $"Error splitting {original}");
+                Logger.LogError(ex, $"Error splitting {original?.StringId}");
+                if (original?.IsActive == true) Trash(original);
             }
         }
 
@@ -276,7 +290,13 @@ namespace BanditMilitias
         {
             try
             {
-                if (mobileParty is null || mergeTarget is null || !CanMergeNow(mobileParty) || !CanMergeNow(mergeTarget))
+                if (mobileParty?.IsActive != true || mergeTarget?.IsActive != true)
+                {
+                    Logger.LogWarning("Merge cancelled: target parties invalid");
+                    return false;
+                }
+
+                if (!CanMergeNow(mobileParty) || !CanMergeNow(mergeTarget))
                 {
                     mobileParty?.Ai?.SetMoveModeHold();
                     mergeTarget?.Ai?.SetMoveModeHold();
@@ -285,7 +305,13 @@ namespace BanditMilitias
                 
                 //Log.Debug?.Log($"{new string('=', 100)} MERGING {mobileParty.StringId,20} {mergeTarget.StringId,20}");
                 // create a new party merged from the two
+
                 var rosters = MergeRosters(mobileParty, mergeTarget);
+                if (rosters == null || rosters.Length != 2)
+                {
+                    Logger.LogError("MergeRosters returned invalid rosters");
+                    return false;
+                }
                 Hero leaderHero = (mobileParty.LeaderHero?.Power ?? 0) >= (mergeTarget.LeaderHero?.Power ?? 0) ? mobileParty.LeaderHero : mergeTarget.LeaderHero;
                 Settlement mobilePartyHomeSettlement = mobileParty.HomeSettlement?.IsHideout ?? false ? mobileParty.HomeSettlement : null;
                 Settlement mergeTargetHomeSettlement = mergeTarget.HomeSettlement?.IsHideout ?? false ? mergeTarget.HomeSettlement : null;
@@ -348,9 +374,9 @@ namespace BanditMilitias
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, $"Error merging {mobileParty} and {mergeTarget}");
-                if (mobileParty?.IsActive == true) mobileParty?.Ai?.SetMoveModeHold();
-                if (mergeTarget?.IsActive == true) mergeTarget?.Ai?.SetMoveModeHold();
+                Logger.LogError(ex, $"Error merging {mobileParty?.StringId} and {mergeTarget?.StringId}");
+                try { if (mobileParty?.IsActive == true) Trash(mobileParty); } catch { }
+                try { if (mergeTarget?.IsActive == true) Trash(mergeTarget); } catch { }
                 return false;
             }
         }
@@ -478,28 +504,83 @@ namespace BanditMilitias
 
         private static void FlushMapEvents()
         {
-            var mapEvents = Traverse.Create(Campaign.Current.MapEventManager).Field<List<MapEvent>>("_mapEvents").Value;
-            for (var index = 0; index < mapEvents.Count; index++)
+            try
             {
-                var mapEvent = mapEvents[index];
-                if (mapEvent.InvolvedParties.AnyQ(p => p.IsMobile && p.MobileParty.IsBM()))
+                var mapEvents = Traverse.Create(Campaign.Current.MapEventManager)
+                    .Field<List<MapEvent>>("_mapEvents").Value;
+
+                // Iterate backwards safely
+                for (var index = mapEvents.Count - 1; index >= 0; index--)
                 {
-                    var sides = Traverse.Create(mapEvent).Field<MapEventSide[]>("_sides").Value;
-                    foreach (var side in sides)
+                    if (index >= mapEvents.Count) // ADD: Safety check for concurrent modifications
+                        continue;
+
+                    var mapEvent = mapEvents[index];
+                    if (mapEvent is null || mapEvent.IsFinalized)
+                        continue;
+
+                    // FIX: Check if ANY BM parties are involved
+                    var hasBMParties = mapEvent.InvolvedParties
+                        .AnyQ(p => p?.IsMobile == true && p.MobileParty?.IsBM() == true);
+
+                    if (!hasBMParties)
+                        continue;
+
+                    try
                     {
-                        foreach (var party in side.Parties.WhereQ(p => p.Party.IsMobile && p.Party.MobileParty.IsBM()))
+                        // FIX: Collect BM parties BEFORE finalizing (snapshot)
+                        var bmPartiesToClean = mapEvent.InvolvedParties
+                            .WhereQ(p => p?.IsMobile == true && p.MobileParty?.IsBM() == true)
+                            .SelectQ(p => p.MobileParty)
+                            .WhereQ(m => m != null)
+                            .ToListQ();  // Snapshot the collection
+
+                        // Set state and finalize - this modifies InvolvedParties internally
+                        Traverse.Create(mapEvent).Field<MapEventState>("_state").Value = MapEventState.Wait;
+                        mapEvent.FinalizeEvent();
+
+                        // NOW clean up the snapshot (NOT the live collection)
+                        foreach (var mobileParty in bmPartiesToClean)
                         {
-                            // gets around a crash in UpgradeReadyTroops()
-                            party.Party.MobileParty.IsActive = false;
+                            if (mobileParty?.IsActive == true)
+                            {
+                                // FIX: Only disable, don't trash - finalization already handled removal
+                                mobileParty.IsActive = false;
+                                Logger.LogTrace($"Disabled BM party {mobileParty.StringId} after MapEvent finalization");
+                            }
                         }
+                        Logger.LogTrace($"Flushed MapEvent with {bmPartiesToClean.Count} BM parties");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, $"Error flushing MapEvent: {ex.Message}");
                     }
 
-                    Logger.LogTrace(">>> FLUSH MapEvent.");
-                    Traverse.Create(mapEvent).Field<MapEventState>("_state").Value = MapEventState.Wait;
-                    mapEvent.FinalizeEvent();
-                    foreach (var BM in mapEvent.InvolvedParties.WhereQ(p => p.IsMobile && p.MobileParty.IsBM()))
-                        Trash(BM.MobileParty);
+                    /* OLD CODE
+                    if (mapEvent.InvolvedParties.AnyQ(p => p.IsMobile && p.MobileParty.IsBM()))
+                    {
+                        var sides = Traverse.Create(mapEvent).Field<MapEventSide[]>("_sides").Value;
+                        foreach (var side in sides)
+                        {
+                            foreach (var party in side.Parties.WhereQ(p => p.Party.IsMobile && p.Party.MobileParty.IsBM()))
+                            {
+                                // gets around a crash in UpgradeReadyTroops()
+                                party.Party.MobileParty.IsActive = false;
+                            }
+                        }
+
+                        Logger.LogTrace(">>> FLUSH MapEvent.");
+                        Traverse.Create(mapEvent).Field<MapEventState>("_state").Value = MapEventState.Wait;
+                        mapEvent.FinalizeEvent();
+                        foreach (var BM in mapEvent.InvolvedParties.WhereQ(p => p.IsMobile && p.MobileParty.IsBM()))
+                            Trash(BM.MobileParty);
+                    }
+                    */
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error flushing MapEvent: {ex.Message}");
             }
         }
 
@@ -811,12 +892,37 @@ namespace BanditMilitias
 
         internal static Hero CreateOrReuseHero(Settlement settlement)
         {
-            Hero hero = Hero.DeadOrDisabledHeroes.FirstOrDefault(h => h.IsBM() && !Heroes.Contains(h));
-            if (hero is null) return CustomizedCreateHeroAtOccupation(settlement);
+            if (settlement == null)
+            {
+                Logger.LogError("Cannot create hero: settlement is null");
+                return null;
+            }
+
+            Hero hero = Hero.DeadOrDisabledHeroes
+                .FirstOrDefault(h => h != null && h.IsBM() && !Heroes.Contains(h));
+
+            if (hero is null)
+            {
+                hero = CustomizedCreateHeroAtOccupation(settlement);
+            }
+
+            if (hero == null)  // ADD: validation
+            {
+                Logger.LogError("Failed to create or reuse hero");
+                return null;
+            }
+
             HasMet(hero) = false;
-            hero.BornSettlement = settlement;
-            hero.Clan = settlement.OwnerClan;
-            hero.SupporterOf = settlement.OwnerClan;
+            hero.BornSettlement = settlement ?? settlement;
+            hero.Clan = settlement?.OwnerClan;
+
+            if (hero.Clan == null)
+            {
+                Logger.LogError($"Hero clan is null for settlement {settlement.Name}");
+                return null;
+            }
+
+            hero.SupporterOf = settlement?.OwnerClan;
             hero.UpdatePlayerGender(RollFemale());
             string oldName = hero.Name?.ToString();
             NameGenerator.Current.GenerateHeroNameAndHeroFullName(hero, out TextObject firstName, out TextObject fullName, false);
@@ -1019,11 +1125,14 @@ namespace BanditMilitias
             if (forceRefresh || PartyCacheInterval < CampaignTime.Now.ToHours - 1)
             {
                 PartyCacheInterval = CampaignTime.Now.ToHours;
-                AllBMs = MobileParty.AllBanditParties.WhereQ(m => m.IsBM())
-                    .SelectQ(m => m.PartyComponent as ModBanditMilitiaPartyComponent).ToListQ();
+                AllBMs = MobileParty.AllBanditParties
+                    .WhereQ(m => m != null && m.IsActive && m.IsBM())
+                    .SelectQ(m => m.PartyComponent as ModBanditMilitiaPartyComponent)
+                    .WhereQ(c => c != null)
+                    .ToListQ();
             }
 
-            return AllBMs;
+            return AllBMs ?? new List<ModBanditMilitiaPartyComponent>();
         }
 
         internal static void InitMilitia(MobileParty militia, TroopRoster[] rosters, Vec2 position)
