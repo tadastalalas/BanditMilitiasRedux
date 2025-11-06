@@ -80,11 +80,16 @@ namespace BanditMilitias
             OnWarPartyRemoved.Invoke(Clan, [this]);
         }
 
-        public ModBanditMilitiaPartyComponent(Settlement settlement, Hero hero)
+        public ModBanditMilitiaPartyComponent(Settlement settlement, Hero hero, Clan clan = null)
         {
             Banner = Banners.GetRandomElement();
             BannerKey = Banner.Serialize();
+
+            var targetClan = clan ?? settlement.OwnerClan;
+
             hero ??= CreateHero(settlement);
+            hero.Clan = targetClan;  // Set immediately
+
             if (hero.HomeSettlement is null)
                 _bornSettlement(hero) = settlement;
             hero.UpdateHomeSettlement();

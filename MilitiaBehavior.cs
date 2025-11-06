@@ -188,7 +188,7 @@ namespace BanditMilitias
                     Logger.LogDebug($"Day {CampaignTime.Now.GetDayOfYear} Report: {regularBandits} regular bandits, {militias} bandit militias, {leaderless} leaderless militias.");
 
                     // should be fixed
-                    foreach (Hero hero in Heroes?.WhereQ(hero => hero.BattleEquipment[5].IsEmpty == true).ToArrayQ() ?? [])
+                    foreach (Hero hero in Heroes?.WhereQ(hero => hero.BattleEquipment[5].IsEmpty == true).ToArrayQ() ?? Array.Empty<Hero>())
                     {
                         try
                         {
@@ -202,7 +202,7 @@ namespace BanditMilitias
                     }
 
                     // Check for missing clans
-                    foreach (var c in AllBMs.WhereQ(m => m.MobileParty?.IsActive == true && (m.Clan is null || m.MobileParty.ActualClan is null)).ToArrayQ() ?? [])
+                    foreach (var c in AllBMs.WhereQ(m => m.MobileParty?.IsActive == true && (m.Clan is null || m.MobileParty.ActualClan is null)).ToArrayQ() ?? Array.Empty<ModBanditMilitiaPartyComponent>())
                     {
                         try
                         {
@@ -215,7 +215,7 @@ namespace BanditMilitias
                     }
 
                     // Check for missing factions
-                    foreach (var c in AllBMs?.WhereQ(m => m?.MobileParty?.IsActive == true && m.MobileParty.MapFaction is null).ToArrayQ() ?? [])
+                    foreach (var c in AllBMs?.WhereQ(m => m?.MobileParty?.IsActive == true && m.MobileParty.MapFaction is null).ToArrayQ() ?? Array.Empty<ModBanditMilitiaPartyComponent>())
                     {
                         try
                         {
@@ -387,7 +387,7 @@ namespace BanditMilitias
                     }
                 }
 
-                List<MobileParty> nearbyBandits = [];
+                List<MobileParty> nearbyBandits = new List<MobileParty>();
                 {
                     var locatableSearchData = MobileParty.StartFindingLocatablesAroundPosition(mobileParty.Position2D, FindRadius);
                     for (MobileParty party =
@@ -735,6 +735,7 @@ namespace BanditMilitias
 
                     var min = Convert.ToInt32(Globals.Settings.MinPartySize);
                     var max = Convert.ToInt32(CalculatedMaxPartySize);
+
                     // if the MinPartySize is cranked it will throw ArgumentOutOfRangeException
                     if (max < min)
                         max = min;
@@ -743,6 +744,7 @@ namespace BanditMilitias
                     var foot = MBRandom.RandomInt(40, 61);
                     var range = MBRandom.RandomInt(20, MBRandom.RandomInt(35, 100 - foot) + 1);
                     var horse = 100 - foot - range;
+
                     // DRM has no cavalry
                     if (Globals.BasicCavalry.Count == 0)
                     {
@@ -757,6 +759,7 @@ namespace BanditMilitias
                     {
                         foot, range, horse
                     };
+
                     for (var index = 0; index < formation.Count; index++)
                     {
                         // FIX: Get troop list once and check it exists
@@ -786,16 +789,65 @@ namespace BanditMilitias
                         continue;
                     }
 
-                    var bm = MobileParty.CreateParty("Bandit_Militia", new ModBanditMilitiaPartyComponent(settlement, null), m => m.ActualClan = settlement.OwnerClan);
+                    var banditClan = Clan.BanditFactions?.FirstOrDefault(c => c.Culture == settlement.Culture)
+                        ?? Clan.BanditFactions?.FirstOrDefault()
+                        ?? settlement.OwnerClan;
+
+                    /* ORIGINAL CODE
+                    var bm = MobileParty.CreateParty("Bandit_Militia",
+                        new ModBanditMilitiaPartyComponent(settlement, null), m => m.ActualClan = settlement.OwnerClan); 
+                    */
+
+                    var bm = MobileParty.CreateParty("Bandit_Militia",
+                        new ModBanditMilitiaPartyComponent(settlement, null, banditClan),
+                        m => m.ActualClan = banditClan);
+
                     if (bm is null)  // ADD: Guard CreateParty result
                     {
                         Logger.LogWarning("Failed to create militia party");
                         continue;
                     }
 
+                    // ADD: Force hostility regardless of Fourberie/diplomacy mods
                     try
                     {
-                        InitMilitia(bm, [roster, TroopRoster.CreateDummyTroopRoster()], settlement.GatePosition);
+                        if (bm.MapFaction != null && Hero.MainHero?.MapFaction != null)
+                        {
+                            // Check current war status
+                            bool isAtWar = FactionManager.IsAtWarAgainstFaction(bm.MapFaction, Hero.MainHero.MapFaction);
+
+                            if (!isAtWar)
+                            {
+                                // Declare war if not already at war
+                                FactionManager.DeclareWar(bm.MapFaction, Hero.MainHero.MapFaction, true);
+                                Logger.LogDebug($"Forced war declaration: {bm.Name} vs {Hero.MainHero.MapFaction.Name}");
+                            }
+
+                            // Also ensure clan relations are hostile (< -10 threshold)
+                            if (bm.ActualClan != null && Hero.MainHero.Clan != null)
+                            {
+                                int currentRelation = bm.ActualClan.GetRelationWithClan(Hero.MainHero.Clan);
+                                if (currentRelation > -10)
+                                {
+                                    ChangeRelationAction.ApplyRelationChangeBetweenHeroes(
+                                        bm.LeaderHero ?? bm.ActualClan.Leader,
+                                        Hero.MainHero,
+                                        -50 - currentRelation, // Force to -50 or lower
+                                        false
+                                    );
+                                    Logger.LogDebug($"Reset militia clan relations: {bm.ActualClan.Name} to -50");
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning($"Could not force hostility for {bm.StringId}: {ex.Message}");
+                    }
+
+                    try
+                    {
+                        InitMilitia(bm, new[] { roster, TroopRoster.CreateDummyTroopRoster() }, settlement.GatePosition);
                     }
                     catch (Exception ex)
                     {
