@@ -7,6 +7,7 @@ using HarmonyLib;
 using Helpers;
 using Microsoft.Extensions.Logging;
 using SandBox.View.Map;
+using SandBox.View.Map.Visuals;
 using SandBox.ViewModelCollection.Map;
 using SandBox.ViewModelCollection.Nameplate;
 using TaleWorlds.CampaignSystem;
@@ -19,15 +20,18 @@ using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.GameMenus;
+using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.ViewModelCollection.Map.Tracker;
 using TaleWorlds.Core;
+using TaleWorlds.Core.ViewModelCollection.ImageIdentifiers;
 using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
-using static BanditMilitias.Helper;
 using static BanditMilitias.Globals;
+using static BanditMilitias.Helper;
 
 // ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable UnusedMember.Global
@@ -42,9 +46,12 @@ namespace BanditMilitias.Patches
     {
         private static ILogger _logger;
         private static ILogger Logger => _logger ??= LogFactory.Get<MilitiaPatches>();
-        
-        private static readonly AccessTools.FieldRef<MobilePartyAi, int> numberOfRecentFleeingFromAParty =
-            AccessTools.FieldRefAccess<MobilePartyAi, int>("_numberOfRecentFleeingFromAParty");
+
+        //private static readonly AccessTools.FieldRef<MobilePartyAi, int> numberOfRecentFleeingFromAParty =
+        //    AccessTools.FieldRefAccess<MobilePartyAi, int>("_numberOfRecentFleeingFromAParty");
+
+        private static readonly AccessTools.FieldRef<MobilePartyAi, MobileParty> getMobileParty =
+            AccessTools.FieldRefAccess<MobilePartyAi, MobileParty>("_mobileParty");
 
         // Merge bandit parties when they are engaged with each other
         [HarmonyPatch(typeof(EncounterManager), nameof(EncounterManager.StartPartyEncounter))]
@@ -62,7 +69,7 @@ namespace BanditMilitias.Patches
         }
 
         // changes the flag
-        [HarmonyPatch(typeof(PartyVisual), "AddCharacterToPartyIcon")]
+        [HarmonyPatch(typeof(MobilePartyVisual), "AddCharacterToPartyIcon")]
         public static class PartyVisualAddCharacterToPartyIconPatch
         {
             private static void Prefix(CharacterObject characterObject, ref string bannerKey)
@@ -116,7 +123,7 @@ namespace BanditMilitias.Patches
                 if (mobileParty.IsBM())
                 {
                     Logger.LogTrace($"Preventing {mobileParty} from entering {settlement.Name}");
-                    mobileParty.Ai.SetMoveModeHold();
+                    mobileParty.SetMoveModeHold();
                     return false;
                 }
 
@@ -234,38 +241,38 @@ namespace BanditMilitias.Patches
                 }
             }
         }
-        
+
         // skip the dialogues with bandit militia heroes when freeing them from enemy parties
-        [HarmonyPatch(typeof(PlayerEncounter), "DoFreeHeroes")]
+        [HarmonyPatch(typeof(PlayerEncounter), "DoFreeOrCapturePrisonerHeroes")]
         public static class PlayerEncounterDoFreeHeroesPatch
         {
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
                 var codeMatcher = new CodeMatcher(instructions);
 
-                // if (this._capturedHeroes.Count > 0)
+                // if (this._capturedAlreadyPrisonerHeroes.AnyQ(...))
                 CodeMatcher target = codeMatcher
                     .MatchStartForward(
                         new CodeMatch(OpCodes.Ldarg_0),
-                        CodeMatch.LoadsField(AccessTools.Field(typeof(PlayerEncounter), "_freedHeroes")),
+                        CodeMatch.LoadsField(AccessTools.Field(typeof(PlayerEncounter), "_capturedAlreadyPrisonerHeroes")),
                         new CodeMatch(OpCodes.Ldsfld),
                         new CodeMatch(OpCodes.Dup),
                         CodeMatch.Branches()
-                    ).ThrowIfInvalid("Could not find the target at DoFreeHeroes");
+                    ).ThrowIfInvalid("Could not find the target at DoFreeOrCapturePrisonerHeroes");
 
-                // insert UnCaptureBMHeroes
+                // insert UnFreeBMHeroes
                 CodeInstruction[] insertion =
                 [
                     CodeInstruction.LoadArgument(0),
-                    CodeInstruction.LoadField(typeof(PlayerEncounter), "_freedHeroes"),
+                    CodeInstruction.LoadField(typeof(PlayerEncounter), "_capturedAlreadyPrisonerHeroes"),
                     CodeInstruction.LoadArgument(0),
                     CodeInstruction.LoadField(typeof(PlayerEncounter), "_mapEvent"),
                     CodeInstruction.Call(typeof(PlayerEncounterDoFreeHeroesPatch), nameof(UnFreeBMHeroes))
                 ];
-                
+
                 target.Instruction.MoveLabelsTo(insertion[0]);
                 target.Insert(insertion);
-                
+
                 return codeMatcher.Instructions();
             }
 
@@ -314,62 +321,62 @@ namespace BanditMilitias.Patches
         }
 
         // prevent militias from attacking parties they can destroy easily
-        [HarmonyPatch(typeof(MobilePartyAi), "CanAttack")]
+        [HarmonyPatch(typeof(MobilePartyAi), "SetAiBehavior")]
         public static class MobilePartyCanAttackPatch
         {
-            public static void Postfix(MobileParty targetParty, MobileParty ____mobileParty, ref bool __result)
+            public static bool Prefix(AiBehavior newAiBehavior, IInteractablePoint interactablePoint, MobilePartyAi __instance)
             {
-                if (__result && targetParty.Party.IsMobile && ____mobileParty.IsBM())
-                {
-                    if (Globals.Settings.IgnoreVillagersCaravans
-                        && (targetParty.IsCaravan || targetParty.IsVillager))
-                    {
-                        __result = false;
-                        return;
-                    }
+                if (newAiBehavior != AiBehavior.EngageParty)
+                    return true;
 
-                    if (targetParty.LeaderHero is not null
-                        && ____mobileParty.GetBM().Avoidance.TryGetValue(targetParty.LeaderHero, out var heroAvoidance)
-                        && MBRandom.RandomFloat * 100f < heroAvoidance)
-                    {
-                        __result = false;
-                        return;
-                    }
+                MobileParty attacker = getMobileParty(__instance);
+                if (!attacker.IsBM())
+                    return true;
 
-                    var party1Strength = ____mobileParty.GetTotalStrengthWithFollowers();
-                    var party2Strength = targetParty.GetTotalStrengthWithFollowers();
-                    float delta;
-                    if (party1Strength > party2Strength)
-                        delta = party1Strength - party2Strength;
-                    else
-                        delta = party2Strength - party1Strength;
-                    var deltaPercent = delta / party1Strength * 100;
-                    __result = deltaPercent <= Globals.Settings.MaxStrengthDeltaPercent;
-                }
+                PartyBase targetPartyBase = interactablePoint as PartyBase;
+                MobileParty targetParty = targetPartyBase?.MobileParty;
+                if (targetParty is null || !targetPartyBase.IsMobile)
+                    return true;
+
+                if (Globals.Settings.IgnoreVillagersCaravans
+                    && (targetParty.IsCaravan || targetParty.IsVillager))
+                    return false;
+
+                if (targetParty.LeaderHero is not null
+                    && attacker.GetBM().Avoidance.TryGetValue(targetParty.LeaderHero, out var heroAvoidance)
+                    && MBRandom.RandomFloat * 100f < heroAvoidance)
+                    return false;
+
+                var party1Strength = attacker.GetTotalLandStrengthWithFollowers();
+                var party2Strength = targetParty.GetTotalLandStrengthWithFollowers();
+                float delta = Math.Abs(party1Strength - party2Strength);
+                var deltaPercent = delta / party1Strength * 100;
+                return deltaPercent <= Globals.Settings.MaxStrengthDeltaPercent;
             }
         }
 
         // changes the optional Tracker icons to match banners
-        [HarmonyPatch(typeof(MobilePartyTrackItemVM), "UpdateProperties")]
+        [HarmonyPatch(typeof(MapTrackerItemVM), "UpdateProperties")]
         public static class MobilePartyTrackItemVMUpdatePropertiesPatch
         {
-            public static void Postfix(MobilePartyTrackItemVM __instance, ref ImageIdentifierVM ____factionVisualBind)
+            public static void Postfix(MapTrackerItemVM __instance, ref BannerImageIdentifierVM ____factionVisualBind)
             {
-                if (__instance.TrackedParty is null || !__instance.TrackedParty.IsBM())
+                if (__instance.TrackedObject is not MobileParty party || !party.IsBM())
                     return;
-                if (!PartyImageMap.TryGetValue(__instance.TrackedParty, out var image))
+
+                if (!PartyImageMap.TryGetValue(party, out var image))
                 {
-                    image = new ImageIdentifierVM(__instance.TrackedParty.GetBM().Banner);
-                    PartyImageMap.Add(__instance.TrackedParty, image);
+                    image = new BannerImageIdentifierVM(party.GetBM().Banner);
+                    PartyImageMap.Add(party, image);
                 }
-                
+
                 ____factionVisualBind = image;
             }
         }
 
         // skip the regular bandit AI stuff, looks at moving into hideouts
         // and other stuff I don't really want happening
-        [HarmonyPatch(typeof(AiBanditPatrollingBehavior), "AiHourlyTick")]
+        [HarmonyPatch(typeof(AiLandBanditPatrollingBehavior), "AiHourlyTick")]
         public static class AiBanditPatrollingBehaviorAiHourlyTickPatch
         {
             public static bool Prefix(MobileParty mobileParty) => !mobileParty.IsBM();
@@ -439,55 +446,31 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // prevent crash - set HomeSettlement as settlement
-        [HarmonyPatch(typeof(MobilePartyAi), "CalculateContinueChasingScore")]
+        // prevent crash - BMs have no BanditPartyComponent.Hideout so ensure their
+        // TargetSettlement is always set to HomeSettlement before AI behavior is resolved
+        [HarmonyPatch(typeof(MobilePartyAi), "TickInternal")]
         public class MobilePartyCalculateContinueChasingScore
         {
-            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            public static void Prefix(MobilePartyAi __instance)
             {
-                var codeMatcher = new CodeMatcher(instructions);
+                MobileParty mobileParty = getMobileParty(__instance);
+                if (!mobileParty.IsBM())
+                    return;
 
-                // settlement = ((hideout != null) ? hideout.Settlement : null);
-                var settlement = (LocalBuilder)codeMatcher
-                    .MatchEndForward(
-                        CodeMatch.Calls(AccessTools.PropertyGetter(typeof(SettlementComponent), "Settlement")),
-                        CodeMatch.StoresLocal(),
-                        CodeMatch.Branches()
-                    )
-                    .InstructionAt(-1)
-                    .operand;
+                // Sea parties must never be given a land settlement target —
+                // HomeSettlement is always a land hideout, pointing a sea party
+                // there every tick is exactly what causes the land-seeking loop.
+                if (mobileParty.IsCurrentlyAtSea)
+                    return;
 
-                // starts after if (this._mobileParty.IsBandit)
-                int start = codeMatcher
-                    .MatchEndBackwards(
-                        CodeMatch.Calls(AccessTools.PropertyGetter(typeof(MobileParty), "IsBandit")),
-                        CodeMatch.Branches()
-                    )
-                    .ThrowIfInvalid("Could not find IsBandit")
-                    .Advance(1)
-                    .Pos;
-                
-                // ends at settlement = ((hideout != null) ? hideout.Settlement : null);
-                int end = codeMatcher
-                    .SearchForward(c => c.opcode == OpCodes.Stloc_S && c.operand == settlement)
-                    .Pos;
-                
-                // replace with settlement = GetBanditSettlement(_mobileParty);
-                return codeMatcher
-                    .Start()
-                    .Advance(start)
-                    .RemoveInstructions(end - start)
-                    .Insert([
-                        CodeInstruction.LoadArgument(0),
-                        CodeInstruction.LoadField(typeof(MobilePartyAi), "_mobileParty"),
-                        CodeInstruction.Call(typeof(MobilePartyCalculateContinueChasingScore), nameof(GetBanditSettlement)),
-                    ])
-                    .Instructions();
+                if (mobileParty.TargetSettlement is null)
+                    mobileParty.SetMoveGoToSettlement(GetBanditSettlement(mobileParty), MobileParty.NavigationType.Default, false);
             }
 
             private static Settlement GetBanditSettlement(MobileParty mobileParty)
             {
-                return mobileParty.GetBM()?.HomeSettlement ?? mobileParty.BanditPartyComponent?.Hideout?.Settlement;
+                return mobileParty.GetBM()?.HomeSettlement
+                    ?? mobileParty.BanditPartyComponent?.Hideout?.Settlement;
             }
         }
 

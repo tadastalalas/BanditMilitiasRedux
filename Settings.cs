@@ -138,23 +138,23 @@ namespace BanditMilitias
 
         // ==================== UI & NOTIFICATIONS ====================
 
-        [SettingPropertyBool("{=BMMarkers}Militia Map Markers", Order = 0, RequireRestart = false, HintText = "{=BMMarkersDesc}Have omniscient view of BMs.")]
-        [SettingPropertyGroup("{=BMUI}UI & Notifications", GroupOrder = 5)]
-        public bool Trackers { get; private set; } = false;
+        //[SettingPropertyBool("{=BMMarkers}Militia Map Markers", Order = 0, RequireRestart = false, HintText = "{=BMMarkersDesc}Have omniscient view of BMs.")]
+        //[SettingPropertyGroup("{=BMUI}UI & Notifications", GroupOrder = 5)]
+        //public bool Trackers { get; private set; } = false;
 
-        [SettingPropertyInteger("{=BMTrackSize}Minimum BM Size To Track", 1, 500, Order = 1, RequireRestart = false, HintText = "{=BMTrackSizeDesc}Any smaller BMs won't be tracked.")]
-        [SettingPropertyGroup("{=BMUI}UI & Notifications")]
+        [SettingPropertyInteger("{=BMTrackSize}Minimum BM Size To Track", 1, 500, Order = 0, RequireRestart = false, HintText = "{=BMTrackSizeDesc}Any smaller BMs won't be tracked.")]
+        [SettingPropertyGroup("{=BMUI}UI & Notifications", GroupOrder = 5)]
         public int TrackedSizeMinimum { get; private set; } = 50;
 
-        [SettingPropertyBool("{=BMRaidNotices}Village Raid Notices", Order = 2, RequireRestart = false, HintText = "{=BMRaidNoticesDesc}When your fiefs are raided you'll see a banner message.")]
+        [SettingPropertyBool("{=BMRaidNotices}Village Raid Notices", Order = 1, RequireRestart = false, HintText = "{=BMRaidNoticesDesc}When your fiefs are raided you'll see a banner message.")]
         [SettingPropertyGroup("{=BMUI}UI & Notifications")]
         public bool ShowRaids { get; set; } = true;
 
-        [SettingPropertyBool("{=BMSkipConversations}Skip Conversations", Order = 3, RequireRestart = false, HintText = "{=BMSkipConversationsDesc}Skip conversations with Bandit Militias. You won't be able to bribe them if enabled.")]
+        [SettingPropertyBool("{=BMSkipConversations}Skip Conversations", Order = 2, RequireRestart = false, HintText = "{=BMSkipConversationsDesc}Skip conversations with Bandit Militias. You won't be able to bribe them if enabled.")]
         [SettingPropertyGroup("{=BMUI}UI & Notifications")]
         public bool SkipConversations { get; set; } = false;
 
-        [SettingPropertyBool("{=BMRemovePrisonerMessages}Remove Prisoner Messages", Order = 4, RequireRestart = false, HintText = "{=BMRemovePrisonerMessagesDesc}Remove the messages of Bandit Militia Heroes being taken or released as prisoners.")]
+        [SettingPropertyBool("{=BMRemovePrisonerMessages}Remove Prisoner Messages", Order = 3, RequireRestart = false, HintText = "{=BMRemovePrisonerMessagesDesc}Remove the messages of Bandit Militia Heroes being taken or released as prisoners.")]
         [SettingPropertyGroup("{=BMUI}UI & Notifications")]
         public bool RemovePrisonerMessages { get; set; } = true;
 

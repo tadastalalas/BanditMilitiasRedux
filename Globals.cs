@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using SandBox.ViewModelCollection.Map;
+using SandBox.ViewModelCollection.Map.Tracker;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
+using TaleWorlds.Core.ViewModelCollection.ImageIdentifiers;
 using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
@@ -27,6 +29,7 @@ namespace BanditMilitias
             LastCalculated = 0;
             PartyCacheInterval = 0;
             RaidCap = 0;
+            /*
             foreach (var BM in Helper.GetCachedBMs(true).SelectQ(bm => bm.Party))
             {
                 var index = MapMobilePartyTrackerVM.Trackers.FindIndexQ(t =>
@@ -34,6 +37,7 @@ namespace BanditMilitias
                 if (index >= 0)
                     MapMobilePartyTrackerVM.Trackers.RemoveAt(index);
             }
+            */
 
             HeroTemplates = new();
             Mounts = new();
@@ -55,7 +59,7 @@ namespace BanditMilitias
         internal static float MilitiaPartyAveragePower;
 
         // dictionary maps
-        internal static Dictionary<MobileParty, ImageIdentifierVM> PartyImageMap = new();
+        internal static Dictionary<MobileParty, BannerImageIdentifierVM> PartyImageMap = new();
         internal static Dictionary<ItemObject.ItemTypeEnum, List<ItemObject>> ItemTypes = new();
         internal static Dictionary<CultureObject, List<CharacterObject>> Recruits = new();
 
@@ -86,7 +90,9 @@ namespace BanditMilitias
         internal static HashSet<int> LordConversationTokens;
 
         // ReSharper disable once InconsistentNaming
-        internal static MapMobilePartyTrackerVM MapMobilePartyTrackerVM;
+        //internal static MapMobilePartyTrackerVM MapMobilePartyTrackerVM;
+        internal static MapTrackerProvider MapTrackerProvider;
+        internal static object TrackerContainer;
 
         internal static float Variance => MBRandom.RandomFloatRanged(0.925f, 1.075f);
         internal static List<CharacterObject> HeroTemplates = new();

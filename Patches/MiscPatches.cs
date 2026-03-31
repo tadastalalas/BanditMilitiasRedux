@@ -1,21 +1,17 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using HarmonyLib;
 using SandBox.View.Map;
 using SandBox.ViewModelCollection.Map;
+using SandBox.ViewModelCollection.Map.Tracker;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Issues;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.ViewModelCollection.Map.Tracker;
 using TaleWorlds.Engine;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using static BanditMilitias.Helper;
-
-// ReSharper disable UnusedMember.Global
-// ReSharper disable UnusedType.Global
-// ReSharper disable UnusedMember.Local
-// ReSharper disable RedundantAssignment
-// ReSharper disable InconsistentNaming
 
 namespace BanditMilitias.Patches
 {
@@ -36,13 +32,19 @@ namespace BanditMilitias.Patches
                 RemoveBadItems();
             }
         }
-
-        [HarmonyPatch(typeof(MapMobilePartyTrackerVM), MethodType.Constructor, typeof(Camera), typeof(Action<Vec2>))]
-        public static class MapMobilePartyTrackerVMCtorPatch
+        /*
+        // Cache the MapTrackerProvider and its internal TrackerContainer when it is constructed
+        [HarmonyPatch(typeof(MapTrackerProvider), MethodType.Constructor)]
+        public static class MapTrackerProviderCtorPatch
         {
-            public static void Postfix(MapMobilePartyTrackerVM __instance) => Globals.MapMobilePartyTrackerVM = __instance;
+            public static void Postfix(MapTrackerProvider __instance, object ____trackerContainer)
+            {
+                Globals.MapTrackerProvider = __instance;
+                Globals.TrackerContainer = ____trackerContainer;
+                //RefreshTrackers();
+            }
         }
-
+        */
         [HarmonyPatch(typeof(MerchantNeedsHelpWithOutlawsIssueQuestBehavior.MerchantNeedsHelpWithOutlawsIssueQuest), "HourlyTickParty")]
         public static class MerchantNeedsHelpWithOutlawsIssueQuestHourlyTickParty
         {
@@ -53,27 +55,6 @@ namespace BanditMilitias.Patches
         internal static void PatchSaSDeserters(ref MobileParty __result)
         {
             Traverse.Create(__result).Field<bool>("IsCurrentlyUsedByAQuest").Value = true;
-        }
-
-        [HarmonyPatch(typeof(MobileParty), "TaleWorlds.CampaignSystem.Map.IMapEntity.OnPartyInteraction")]
-        public static class MobilePartyOnPartyInteractionPatch
-        {
-            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                CodeMatcher matcher = new(instructions);
-
-                if (matcher.End()
-                    .MatchStartBackwards(CodeMatch.Calls(AccessTools.PropertyGetter(typeof(MobileParty), nameof(MobileParty.IsEngaging))))
-                    .IsValid)
-                {
-                    matcher.SetInstructionAndAdvance(CodeInstruction.Call(typeof(MobileParty), "get_ShortTermBehavior"));
-                    matcher.InsertAndAdvance(new CodeInstruction(OpCodes.Ldc_I4_6));
-                    var targetLabel = (Label)matcher.Operand;
-                    matcher.SetInstruction(new CodeInstruction(OpCodes.Bne_Un_S, targetLabel));
-                }
-
-                return matcher.InstructionEnumeration();
-            }
         }
     }
 }

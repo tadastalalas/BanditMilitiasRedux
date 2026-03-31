@@ -44,8 +44,10 @@ namespace BanditMilitias
             }
         }
 
-        public override void ChangePartyLeader(Hero newLeader)
+        public void ChangePartyLeader(Hero newLeader)
         {
+            base.ChangePartyLeader(newLeader);
+
             if (newLeader is null)
             {
                 if (!Heroes.Contains(leader))
@@ -72,6 +74,16 @@ namespace BanditMilitias
             ClearCachedName();
         }
 
+        private readonly Clan _targetClan;
+
+        protected override void OnMobilePartySetOnCreation()
+        {
+            // ActualClan must be set here — before OnInitialize fires —
+            // because base.OnInitialize() calls this.Clan.OnWarPartyAdded(this)
+            // which reads MobileParty.ActualClan. If null it crashes.
+            MobileParty.ActualClan = _targetClan;
+        }
+
         protected override void OnInitialize()
         {
             base.OnInitialize();
@@ -85,13 +97,14 @@ namespace BanditMilitias
             Banner = Banners.GetRandomElement();
             BannerKey = Banner.Serialize();
 
-            var targetClan = clan ?? settlement.OwnerClan;
+            _targetClan = clan ?? settlement.OwnerClan;
 
             hero ??= CreateHero(settlement);
-            hero.Clan = targetClan;  // Set immediately
+            hero.Clan = _targetClan;
 
             if (hero.HomeSettlement is null)
                 _bornSettlement(hero) = settlement;
+
             hero.UpdateHomeSettlement();
             HiddenInEncyclopedia(hero.CharacterObject) = true;
             homeSettlement = hero.HomeSettlement;

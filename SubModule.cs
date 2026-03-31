@@ -50,27 +50,7 @@ namespace BanditMilitias
             if (MEOWMEOW)
                 AccessTools.Field(typeof(Module), "_splashScreenPlayed").SetValue(Module.CurrentModule, true);
             RunManualPatches();
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-            AddModuleSupports(SaveCleanerSupport.Register);
-        }
-
-        private static void AddModuleSupports(params Action[] actions)
-        {
-            foreach (Action action in actions)
-            {
-                try
-                {
-                    action.Invoke();
-                }
-                catch (FileNotFoundException ex)
-                {
-                    Logger.LogDebug($"Skipped module support: {ex.FileName}");
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Failed to add module support.");
-                }
-            }
+            //harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
         // need to cache the banners before CEK adds background colours which
@@ -110,6 +90,7 @@ namespace BanditMilitias
 
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
             if (gameStarterObject is CampaignGameStarter gameStarter)
                 gameStarter.AddBehavior(new MilitiaBehavior());
             if (Settings.Instance != null)
@@ -123,11 +104,11 @@ namespace BanditMilitias
             {
                 bm.ClearCachedName();
                 if (bm.MobileParty is null) continue;
-                bm.MobileParty.SetCustomName(null);
+                // bm.MobileParty.SetCustomName(null);
                 ResetCached.Invoke(bm.MobileParty, null);
             }
 
-            Helper.RefreshTrackers();
+            //Helper.RefreshTrackers();
         }
 
         public override void OnGameEnd(Game game)

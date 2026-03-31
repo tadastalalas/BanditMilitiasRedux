@@ -43,7 +43,7 @@ namespace BanditMilitias.Patches
                         RemoveMilitiaLeader(mobileParty);
                     }
 
-                    RemoveUndersizedTracker(mobileParty);
+                    //RemoveUndersizedTracker(mobileParty);
                 }
 
                 DoPowerCalculations();
@@ -52,7 +52,7 @@ namespace BanditMilitias.Patches
 
         // upgrades all troops with any looted equipment in Postfix
         // drops Avoidance scores when BMs win
-        [HarmonyPatch(typeof(MapEvent), "LootDefeatedParties")]
+        [HarmonyPatch(typeof(MapEvent), "CalculateAndCommitMapEventResults")]
         public static class MapEventLootDefeatedPartiesPatch
         {
             public static void Prefix(MapEvent __instance)
@@ -63,7 +63,7 @@ namespace BanditMilitias.Patches
                     .WhereQ(p => p.Party?.MobileParty?.PartyComponent is ModBanditMilitiaPartyComponent);
                 foreach (var party in loserBMs)
                 {
-                    RemoveUndersizedTracker(party.Party.MobileParty);
+                    //RemoveUndersizedTracker(party.Party.MobileParty);
                 }
 
                 DoPowerCalculations();
@@ -73,24 +73,49 @@ namespace BanditMilitias.Patches
             {
                 if (!__instance.HasWinner)
                     return;
+
                 var loserBMs = __instance.PartiesOnSide(__instance.DefeatedSide)
-                    .WhereQ(p => p.Party?.MobileParty?.PartyComponent is ModBanditMilitiaPartyComponent);
+                    .WhereQ(p => p.Party?.MobileParty?.PartyComponent is ModBanditMilitiaPartyComponent
+                    && p.Party.MobileParty.IsActive)
+                    .ToListQ();
+
                 foreach (var party in loserBMs)
                 {
+                    if (party?.Party?.MobileParty?.IsActive != true)
+                    {
+                        Logger.LogWarning($"Skipping invalid/destroyed party in LootDefeatedParties.Postfix");
+                        continue;
+                    }
+
                     Logger.LogDebug($"{party.Party.MobileParty.Name}({party.Party.MobileParty.StringId}) is defeated in battle.");
+
                     if (party.Party.MobileParty.MemberRoster.TotalHealthyCount < Globals.Settings.DisperseSize)
                         Trash(party.Party.MobileParty);
                 }
 
                 var winnerBMs = __instance.PartiesOnSide(__instance.WinningSide)
-                    .WhereQ(p => p.Party?.MobileParty?.PartyComponent is ModBanditMilitiaPartyComponent).ToListQ();
+                    .WhereQ(p => p?.Party?.MobileParty?.PartyComponent is ModBanditMilitiaPartyComponent
+                        && p.Party.MobileParty.IsActive)
+                    .ToListQ();
+
                 if (!winnerBMs.Any())
                     return;
+
                 var loserHeroes = __instance.PartiesOnSide(__instance.DefeatedSide)
-                    .SelectQ(mep => mep.Party.Owner).WhereQ(h => h is not null).ToListQ();
+                    .SelectQ(mep => mep?.Party?.Owner)
+                    .WhereQ(h => h != null && h.IsAlive)
+                    .ToListQ();
+
                 foreach (var bm in winnerBMs)
                 {
+                    if (bm?.Party?.MobileParty?.IsActive != true)
+                    {
+                        Logger.LogWarning($"Skipping invalid winner BM in LootDefeatedParties.Postfix");
+                        continue;
+                    }
+
                     PartyBase party = bm.Party;
+
                     if (party.LeaderHero?.IsDead == true)
                     {
                         Logger.LogDebug($"{party.MobileParty.Name}({party.MobileParty.StringId}) has won a battle but lost its leader {party.LeaderHero.Name}.");
@@ -105,17 +130,17 @@ namespace BanditMilitias.Patches
         }
 
         // convert heroes to prisoners after they surrendered and agreed to join.
-        [HarmonyPatch(typeof(BanditsCampaignBehavior), "OpenRosterScreenAfterBanditEncounter")]
+        [HarmonyPatch(typeof(BanditInteractionsCampaignBehavior), "OpenRosterScreenAfterBanditEncounter")]
         public static class BanditsCampaignBehaviorOpenRosterScreenAfterBanditEncounterPatch
         {
             public static void Prefix(MobileParty conversationParty, bool doBanditsJoinPlayerSide)
             {
-                List<MobileParty> partiesToJoinPlayerSide = [];
-                List<MobileParty> partiesToJoinEnemySide = [];
+                List<MobileParty> partiesToJoinPlayerSide = new List<MobileParty>();
+                List<MobileParty> partiesToJoinEnemySide = new List<MobileParty>();
                 
                 if (PlayerEncounter.Current != null)
                 {
-                    PlayerEncounter.Current.FindAllNpcPartiesWhoWillJoinEvent(ref partiesToJoinPlayerSide, ref partiesToJoinEnemySide);
+                    PlayerEncounter.Current.FindAllNpcPartiesWhoWillJoinEvent(partiesToJoinPlayerSide, partiesToJoinEnemySide);
                     partiesToJoinEnemySide = partiesToJoinEnemySide.WhereQ(p => p.IsBM()).ToListQ();
                 }
                 else

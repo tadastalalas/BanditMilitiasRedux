@@ -76,7 +76,7 @@ namespace BanditMilitias
                     if (party?.MobileParty?.Ai is not null)
                     {
                         party.MobileParty.Ai.SetDoNotMakeNewDecisions(false);
-                        party.MobileParty.Ai.SetMoveModeHold();
+                        party.MobileParty.SetMoveModeHold();
                     }
 
                     if (Globals.Settings?.ShowRaids == true)
@@ -87,19 +87,22 @@ namespace BanditMilitias
                             var raidedSettlement = m.MapEventSettlement;
                             Settlement nearestTown = null;
 
-                            if (raidedSettlement?.Position2D != null)
+                            if (raidedSettlement?.Position != null)
                             {
                                 // Find town nearest to the raided village
                                 nearestTown = Settlement.All
-                                    .WhereQ(s => s?.IsTown == true && s.Position2D != null)
-                                    .OrderByQ(s => s.Position2D.Distance(raidedSettlement.Position2D))
+                                    .WhereQ(s => s?.IsTown == true && s.Position != null)
+                                    .OrderByQ(s => s.Position.Distance(raidedSettlement.Position))
                                     .FirstOrDefault();
                             }
 
                             // Fallback to player's nearest town if above fails
                             if (nearestTown is null)
                             {
-                                nearestTown = SettlementHelper.FindNearestTown();
+                                nearestTown = Settlement.All
+                                    .WhereQ(s => s.IsTown)
+                                    .OrderByQ(s => s.GatePosition.ToVec2().Distance(MobileParty.MainParty.Position.ToVec2()))
+                                    .FirstOrDefault();
                             }
 
                             var townName = nearestTown?.Name?.ToString() ?? "(Unknown Town)";
@@ -137,7 +140,10 @@ namespace BanditMilitias
 
             // Cache the filtered collection to prevent modification-during-iteration errors
             var strayHeroes = Heroes
-                .WhereQ(h => h != null && h.PartyBelongedTo is null && h.PartyBelongedToAsPrisoner is null && !h.IsPrisoner)
+                .WhereQ(h => h != null
+                    && h.PartyBelongedTo is null
+                    && h.PartyBelongedToAsPrisoner is null
+                    && !h.IsPrisoner)
                 .ToArrayQ();
 
             foreach (Hero hero in strayHeroes)
@@ -156,7 +162,10 @@ namespace BanditMilitias
 
             // Cache imprisoned heroes to avoid collection modification issues
             var imprisonedHeroes = Heroes
-                .WhereQ(h => h != null && h.IsPrisoner && h.CurrentSettlement is not null && h.CurrentSettlement.OwnerClan != Clan.PlayerClan)
+                .WhereQ(h => h != null
+                && h.IsPrisoner
+                && h.CurrentSettlement is not null
+                && h.CurrentSettlement.OwnerClan != Clan.PlayerClan)
                 .ToArrayQ();
 
             foreach (Hero hero in imprisonedHeroes)
@@ -262,7 +271,7 @@ namespace BanditMilitias
                 }
 
                 foreach (var BM in GetCachedBMs().WhereQ(bm =>
-                             bm?.MobileParty != null && bm.MobileParty.Position2D.Distance(mobileParty.Position2D) < EffectRadius))
+                             bm?.MobileParty != null && bm.MobileParty.Position.ToVec2().Distance(mobileParty.Position.ToVec2()) < EffectRadius))
                 {
                     if (BM?.Avoidance is null)
                         continue;
@@ -298,10 +307,13 @@ namespace BanditMilitias
             // they will evacuate hideouts and not chase caravans
             if (mobileParty.PartyComponent is BanditPartyComponent)
             {
-                if ((mobileParty.CurrentSettlement is not null
-                     && mobileParty.Ai.AiBehaviorMapEntity is Settlement { IsHideout: true })
-                    || mobileParty.Ai.AiBehaviorMapEntity is MobileParty { IsCaravan: true })
-                    return;
+                if (mobileParty.PartyComponent is BanditPartyComponent)
+                {
+                    if ((mobileParty.CurrentSettlement is not null
+                         && mobileParty.Ai.AiBehaviorInteractable is PartyBase pb1 && pb1.Settlement is { IsHideout: true })
+                        || mobileParty.Ai.AiBehaviorInteractable is PartyBase pb2 && pb2.MobileParty is { IsCaravan: true })
+                        return;
+                }
             }
 
             if (mobileParty.MapEvent is not null)
@@ -327,10 +339,10 @@ namespace BanditMilitias
                             .OrderByQ(t => -(t.Character.HeroObject?.Power ?? 0))
                             .First().Character.HeroObject;
 
-                            if (leader != null)  // ADD: Guard leader
+                            if (leader != null)
                             {
                                 mobileParty.ChangePartyLeader(leader);
-                                mobileParty.Ai.SetMoveModeHold(); 
+                                mobileParty.SetMoveModeHold();
                             }
                         }
                         return;
@@ -345,7 +357,7 @@ namespace BanditMilitias
                     if (mobileParty.TargetParty.DefaultBehavior != AiBehavior.EngageParty ||
                         mobileParty.TargetParty.TargetParty != mobileParty)
                     {
-                        mobileParty.Ai.SetMoveModeHold();
+                        mobileParty.SetMoveModeHold();
                     }
                 }
 
@@ -353,7 +365,7 @@ namespace BanditMilitias
                 if (mobileParty.IsBM() && mobileParty.Ai.DoNotMakeNewDecisions && mobileParty.DefaultBehavior != AiBehavior.RaidSettlement)
                 {
                     mobileParty.Ai.SetDoNotMakeNewDecisions(false);
-                    mobileParty.Ai.SetMoveModeHold();
+                    mobileParty.SetMoveModeHold();
                     BMThink(mobileParty);
                     return;
                 }
@@ -361,7 +373,7 @@ namespace BanditMilitias
                 // near any Hideouts?
                 if (mobileParty.IsBM())
                 {
-                    var locatableSearchData = Settlement.StartFindingLocatablesAroundPosition(mobileParty.Position2D, MinDistanceFromHideout);
+                    var locatableSearchData = Settlement.StartFindingLocatablesAroundPosition(mobileParty.Position.ToVec2(), MinDistanceFromHideout);
                     for (Settlement settlement =
                              Settlement.FindNextLocatable(ref locatableSearchData);
                          settlement != null;
@@ -389,7 +401,7 @@ namespace BanditMilitias
 
                 List<MobileParty> nearbyBandits = new List<MobileParty>();
                 {
-                    var locatableSearchData = MobileParty.StartFindingLocatablesAroundPosition(mobileParty.Position2D, FindRadius);
+                    var locatableSearchData = MobileParty.StartFindingLocatablesAroundPosition(mobileParty.Position.ToVec2(), FindRadius);
                     for (MobileParty party =
                              MobileParty.FindNextLocatable(ref locatableSearchData);
                          party != null;
@@ -413,7 +425,7 @@ namespace BanditMilitias
                     return;
                 }
 
-                foreach (var target in nearbyBandits.OrderByQ(m => m.Position2D.Distance(mobileParty.Position2D)))
+                foreach (var target in nearbyBandits.OrderByQ(m => m.Position.ToVec2().Distance(mobileParty.Position.ToVec2())))
                 {
                     var militiaTotalCount = mobileParty.MemberRoster.TotalManCount + target.MemberRoster.TotalManCount;
                     if (militiaTotalCount < Globals.Settings.MinPartySize || militiaTotalCount > CalculatedMaxPartySize)
@@ -444,14 +456,16 @@ namespace BanditMilitias
                     return;
                 }
 
-                // FIX: Guard Campaign.Current null check
                 if (Campaign.Current?.Models?.MapDistanceModel is not null)
                 {
-                    var distance = Campaign.Current.Models.MapDistanceModel.GetDistance(mergeTarget, mobileParty);
+                    var distance = mobileParty.Position.ToVec2().Distance(mergeTarget.Position.ToVec2());
                     if (distance > MergeDistance && mobileParty.TargetParty != mergeTarget)
                     {
-                        mobileParty.Ai?.SetMoveEngageParty(mergeTarget);
-                        mergeTarget.Ai?.SetMoveEngageParty(mobileParty);
+                        var navType = mobileParty.IsCurrentlyAtSea
+                            ? MobileParty.NavigationType.Naval
+                            : MobileParty.NavigationType.Default;
+                        mobileParty.SetMoveEngageParty(mergeTarget, navType);
+                        mergeTarget.SetMoveEngageParty(mobileParty, navType);
                     }
                 }
                 else
@@ -480,21 +494,25 @@ namespace BanditMilitias
                     return;
 
                 Settlement target;
-                switch (mobileParty.Ai.DefaultBehavior)
+                switch (mobileParty.DefaultBehavior)
                 {
                     case AiBehavior.None:
                     case AiBehavior.Hold:
                         if (mobileParty.TargetSettlement is null)
                         {
-                            // FIX: Cache list to avoid O(n) on every call + null guard
+                            var navType = mobileParty.IsCurrentlyAtSea
+                                ? MobileParty.NavigationType.Naval
+                                : MobileParty.NavigationType.Default;
+
                             var validSettlements = Settlement.All
-                                .WhereQ(s => s != null && s.Position2D.Distance(mobileParty.Position2D) < settlementFindRange)
+                                .WhereQ(s => s != null && s.Position.ToVec2().Distance(mobileParty.Position.ToVec2()) < settlementFindRange)
                                 .ToListQ();
 
                             if (validSettlements.Count > 0)
                             {
                                 target = validSettlements.GetRandomElement();
-                                mobileParty.Ai?.SetMovePatrolAroundSettlement(target);
+                                bool isTargetingPort = mobileParty.IsCurrentlyAtSea;
+                                mobileParty.SetMovePatrolAroundSettlement(target, navType, isTargetingPort);
                             }
                         }
                         break;
@@ -504,9 +522,9 @@ namespace BanditMilitias
                         if (mobileParty.TargetSettlement?.IsHideout == true)
                         {
                             // strange memory access violation error when some mods are installed
-                            if (!mobileParty.IsEngaging && mobileParty.Position2D.Distance(mobileParty.TargetSettlement.Position2D) == 0f)
+                            if (!mobileParty.IsEngaging && mobileParty.Position.ToVec2().Distance(mobileParty.TargetSettlement.Position.ToVec2()) == 0f)
                             {
-                                mobileParty.Ai.SetMoveModeHold();
+                                mobileParty.SetMoveModeHold();
                             }
                         }
                         break;
@@ -515,34 +533,38 @@ namespace BanditMilitias
                         if (BM is null || mobileParty.MapFaction is null)
                             return;
 
+                        // Sea parties do not raid — they cannot reach inland villages
+                        if (mobileParty.IsCurrentlyAtSea)
+                            break;
+
                         // PILLAGE!
                         if (Globals.Settings?.AllowPillaging == true
                             && mobileParty.LeaderHero is not null
-                            && mobileParty.Party.TotalStrength > MilitiaPartyAveragePower
+                            && mobileParty.Party.EstimatedStrength > MilitiaPartyAveragePower
                             && MBRandom.RandomFloat < (Globals.Settings?.PillagingChance ?? 0) * 0.01f
                             && GetCachedBMs().CountQ(m => m.MobileParty.ShortTermBehavior is AiBehavior.RaidSettlement) < RaidCap)
                         {
-                            // FIX: Cache the result ONCE to avoid multiple iterations
-                            // But keep the RaidCap check as part of the guard clause
                             var raidingCount = GetCachedBMs().CountQ(m => m?.MobileParty?.ShortTermBehavior is AiBehavior.RaidSettlement);
 
                             if (raidingCount >= RaidCap)
                             {
                                 Logger.LogTrace($"{mobileParty.Name} cannot raid - raid cap ({RaidCap}) already reached ({raidingCount} active raids)");
-                                break;  // EXIT the pillage logic
+                                break;
                             }
 
                             try
                             {
-                                target = SettlementHelper.FindNearestVillage(
-                                    s => s.Village is not { VillageState: Village.VillageStates.BeingRaided or Village.VillageStates.Looted }
-                                         && s.Owner is not null
-                                         && s.MapFaction?.IsAtWarWith(mobileParty.MapFaction) != false
-                                         && !(s.GetValue() <= 0), mobileParty);
+                                target = Settlement.All
+                                    .WhereQ(s => s.IsVillage
+                                        && s.Village is not { VillageState: Village.VillageStates.BeingRaided or Village.VillageStates.Looted }
+                                        && s.Owner is not null
+                                        && s.MapFaction?.IsAtWarWith(mobileParty.MapFaction) != false
+                                        && s.GetValue() > 0)
+                                    .OrderByQ(s => s.GatePosition.ToVec2().Distance(mobileParty.Position.ToVec2()))
+                                    .FirstOrDefault();
                             }
                             catch (Exception ex)
                             {
-                                // strange memory access violation error when some mods are installed
                                 Logger.LogError(ex, $"BMThink: Error finding nearest village. Removing the problematic party. Party: {mobileParty}");
                                 Trash(mobileParty);
                                 return;
@@ -562,11 +584,10 @@ namespace BanditMilitias
                                 InformationManager.DisplayMessage(new InformationMessage($"{mobileParty.Name} is raiding your village {target.Name} near {target.Town?.Name}!"));
 
                             Logger.LogTrace($"{mobileParty.Name}({mobileParty.StringId} has decided to raid {target.Name}.");
-                            mobileParty.Ai.SetMoveRaidSettlement(target);
+                            mobileParty.SetMoveRaidSettlement(target, MobileParty.NavigationType.Default);
                             mobileParty.Ai.SetDoNotMakeNewDecisions(true);
                         }
-
-                    break;
+                        break;
                 }
             }
             catch (Exception ex)
@@ -607,14 +628,14 @@ namespace BanditMilitias
         {
             try
             {
-                if (mobileParty?.Position2D is null)
+                if (mobileParty?.Position is null)
                     return;
 
                 var cachedBMs = GetCachedBMs(true);
 
                 foreach (var BM in cachedBMs.WhereQ(bm => bm?.Leader is not null
-                                               && bm.MobileParty?.Position2D is not null
-                                               && bm.MobileParty.Position2D.Distance(mobileParty.Position2D) < AdjustRadius))
+                                               && bm.MobileParty?.Position is not null
+                                               && bm.MobileParty.Position.ToVec2().Distance(mobileParty.Position.ToVec2()) < AdjustRadius))
                 {
                     if (BM?.Avoidance is null)
                         continue;
@@ -703,9 +724,9 @@ namespace BanditMilitias
 
             try
             {
-                // FIX: Cache valid hideouts list and use faster selection
                 var validHideouts = Settlement.All
-                    .WhereQ(s => s?.IsHideout == true && s.GetTrackDistanceToMainAgent() > 100)
+                    .WhereQ(s => s.IsHideout
+                        && s.GatePosition.ToVec2().Distance(MobileParty.MainParty.Position.ToVec2()) > 100)
                     .ToListQ();
 
                 if (validHideouts.Count == 0)
@@ -718,7 +739,7 @@ namespace BanditMilitias
 
                 if (settlement is null)
                 {
-                    Logger.LogWarning("Selected hideout is null");
+                    Logger.LogWarning("Selected hideout is null.");
                     return;
                 }
 
@@ -739,6 +760,7 @@ namespace BanditMilitias
                     // if the MinPartySize is cranked it will throw ArgumentOutOfRangeException
                     if (max < min)
                         max = min;
+
                     var roster = TroopRoster.CreateDummyTroopRoster();
                     var size = Convert.ToInt32(MBRandom.RandomInt(min, max + 1) / 2f);
                     var foot = MBRandom.RandomInt(40, 61);
@@ -798,16 +820,17 @@ namespace BanditMilitias
                         new ModBanditMilitiaPartyComponent(settlement, null), m => m.ActualClan = settlement.OwnerClan); 
                     */
 
-                    var bm = MobileParty.CreateParty("Bandit_Militia",
-                        new ModBanditMilitiaPartyComponent(settlement, null, banditClan),
-                        m => m.ActualClan = banditClan);
+                    var banditMilitia = MobileParty.CreateParty("Bandit_Militia",
+                        new ModBanditMilitiaPartyComponent(settlement, null, banditClan));
+                    
 
-                    if (bm is null)  // ADD: Guard CreateParty result
+                    if (banditMilitia is null)  // ADD: Guard CreateParty result
                     {
                         Logger.LogWarning("Failed to create militia party");
                         continue;
                     }
 
+                    /*
                     // ADD: Force hostility regardless of Fourberie/diplomacy mods
                     try
                     {
@@ -844,49 +867,25 @@ namespace BanditMilitias
                     {
                         Logger.LogWarning($"Could not force hostility for {bm.StringId}: {ex.Message}");
                     }
+                    */
 
                     try
                     {
-                        InitMilitia(bm, new[] { roster, TroopRoster.CreateDummyTroopRoster() }, settlement.GatePosition);
+                        InitMilitia(banditMilitia, new[] { roster, TroopRoster.CreateDummyTroopRoster() }, settlement.GatePosition);
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError(ex, $"Error initializing militia {bm.StringId}");
-                        Trash(bm);
+                        Logger.LogError(ex, $"Error initializing militia {banditMilitia.StringId}");
+                        Trash(banditMilitia);
                         continue;
                     }
 
                     DoPowerCalculations();
                     
-                    Logger.LogDebug($"Spawned {bm.Name}({bm.StringId}) at {bm.Position2D}.");
+                    Logger.LogDebug($"Spawned {banditMilitia.Name}({banditMilitia.StringId}) at {banditMilitia.Position.ToVec2()}.");
 
-                    // teleport new militias near the player
                     if (Globals.Settings?.TestingMode == true)
-                    {
-                        try
-                        {
-                            MobileParty targetParty = null;
-
-                            // Try to get main hero's party (normal case)
-                            if (Hero.MainHero?.PartyBelongedTo is not null)
-                                targetParty = Hero.MainHero.PartyBelongedTo;
-
-                            // If hero is prisoner, get that party instead
-                            if (targetParty is null && Hero.MainHero?.PartyBelongedToAsPrisoner?.MobileParty is not null)
-                                targetParty = Hero.MainHero.PartyBelongedToAsPrisoner.MobileParty;
-
-                            // Only teleport if we found a valid target
-                            if (targetParty?.Position2D != null)
-                            {
-                                bm.Position2D = targetParty.Position2D;
-                                Logger.LogTrace($"Teleported {bm.Name} to player at {bm.Position2D}");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError(ex, "Error in testing mode teleport");
-                        }
-                    }
+                        TeleportMilitiasNearPlayer(banditMilitia);
                 }
             }
             catch (Exception ex)
@@ -897,13 +896,40 @@ namespace BanditMilitias
             }
         }
 
+        private static void TeleportMilitiasNearPlayer(MobileParty banditMilitia)
+        {
+            try
+            {
+                MobileParty targetParty = null;
+
+                // Try to get main hero's party (normal case)
+                if (Hero.MainHero?.PartyBelongedTo is not null)
+                    targetParty = Hero.MainHero.PartyBelongedTo;
+
+                // If hero is prisoner, get that party instead
+                if (targetParty is null && Hero.MainHero?.PartyBelongedToAsPrisoner?.MobileParty is not null)
+                    targetParty = Hero.MainHero.PartyBelongedToAsPrisoner.MobileParty;
+
+                // Only teleport if we found a valid target
+                if (targetParty?.Position != null)
+                {
+                    banditMilitia.Position = targetParty.Position;
+                    Logger.LogTrace($"Teleported {banditMilitia.Name} to player at {banditMilitia.Position.ToVec2()}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error in testing mode teleport");
+            }
+        }
+
         public override void SyncData(IDataStore dataStore)
         {
             dataStore.SyncData("Heroes", ref Heroes);
             if (dataStore.IsLoading)
             {
                 // clean up heroes from an old bug
-                Globals.Heroes.RemoveAll(h => !Hero.AllAliveHeroes.Contains(h));
+                Globals.Heroes.RemoveAll(hero => !Hero.AllAliveHeroes.Contains(hero));
             }
         }
     }

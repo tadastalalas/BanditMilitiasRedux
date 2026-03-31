@@ -74,7 +74,7 @@ internal class Commands
     {
         foreach (MobileParty militia in MobileParty.All.WhereQ(m => m.IsBM()).OrderBy(x => x.MemberRoster.TotalManCount))
         {
-            Logger.LogDebug($">> {militia.LeaderHero.Name,-30}: {militia.MemberRoster.TotalManCount:F1}/{militia.Party.TotalStrength:0}");
+            Logger.LogDebug($">> {militia.LeaderHero.Name,-30}: {militia.MemberRoster.TotalManCount:F1}/{militia.Party.EstimatedStrength:0}");
             Logger.LogDebug($"  Heroes: {militia.MemberRoster.TotalHeroes}");
 
             for (int tier = 1; tier <= 6; tier++)
@@ -126,7 +126,7 @@ internal class Commands
         Settlement hideout = Hideouts.WhereQ(h => h.StringId.StartsWith("hideout_seaside") && h.Hideout.IsInfested).GetRandomElementInefficiently();
         if (hideout is null) return;
         InformationManager.DisplayMessage(new InformationMessage($"Hideout: {hideout.StringId}"));
-        MobileParty.MainParty.Position2D = hideout.GatePosition;
+        MobileParty.MainParty.Position = hideout.GatePosition;
         MapScreen.Instance.TeleportCameraToMainParty();
     }
 
@@ -134,7 +134,7 @@ internal class Commands
     {
         foreach (MobileParty mobileParty in MobileParty.AllBanditParties.Where(mobileParty => !mobileParty.StringId.StartsWith("Bandit_Militia")))
         {
-            mobileParty.Position2D = MobileParty.MainParty.Position2D;
+            mobileParty.Position = MobileParty.MainParty.Position;
         }
     }
 
@@ -142,13 +142,13 @@ internal class Commands
     {
         MobileParty party = MobileParty.All.WhereQ(m => m.Army != null).GetRandomElementInefficiently();
         if (party is not null)
-            MobileParty.MainParty.Position2D = party.Position2D;
+            MobileParty.MainParty.Position = party.Position;
         MapScreen.Instance.TeleportCameraToMainParty();
     }
 
     private static void ShowAllPartiesOnMap()
     {
-        foreach (MobileParty m in MobileParty.All)
-            Globals.MapMobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(m, MapScreen.Instance._mapCameraView.Camera, null));
+        //foreach (MobileParty m in MobileParty.All)
+        //    Globals.MapMobilePartyTrackerVM.Trackers.Add(new MobilePartyTrackItemVM(m, MapScreen.Instance._mapCameraView.Camera, null));
     }
 }
