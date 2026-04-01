@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>4.3.0</Version>
+		<Version>4.3.1</Version>
 		<TargetFramework>net48</TargetFramework>
 		<Nullable>disable</Nullable>
 		<BANNERLORD_GAME_DIR>$(BANNERLORD_GAME_DIR)</BANNERLORD_GAME_DIR>

@@ -260,7 +260,7 @@ namespace BanditMilitias
             }
         }
 
-        private static readonly List<string> verbotenParties = new()
+        private static readonly HashSet<string> verbotenParties = new()
         {
             "ebdi_deserters_party",
             "caravan_ambush_quest",
@@ -598,7 +598,7 @@ namespace BanditMilitias
 
         internal static void PopulateItems()
         {
-            var verbotenItemsStringIds = new List<string>
+            var verbotenItemsStringIds = new HashSet<string>
             {
                 "bound_adarga",
                 "old_kite_sparring_shield_shoulder",
@@ -629,7 +629,7 @@ namespace BanditMilitias
                 "oval_shield",
             };
 
-            var verbotenSaddles = new List<string>
+            var verbotenSaddles = new HashSet<string>
             {
                 "celtic_frost",
                 "saddle_of_aeneas",
@@ -674,6 +674,9 @@ namespace BanditMilitias
             var bows = all.WhereQ(i => i.ItemType is ItemObject.ItemTypeEnum.Bow or ItemObject.ItemTypeEnum.Crossbow);
             var any = new List<ItemObject>(oneHanded.Concat(twoHanded).Concat(polearm).Concat(thrown).Concat(shields).Concat(bows).WhereQ(i => i.Value <= Globals.Settings.MaxItemValue).ToList());
             any.Do(i => EquipmentItems.Add(new EquipmentElement(i)));
+            EquipmentItemsNoBow = EquipmentItems.WhereQ(x =>
+                x.Item.ItemType != ItemObject.ItemTypeEnum.Bow &&
+                x.Item.ItemType != ItemObject.ItemTypeEnum.Crossbow).ToList();
 
             // used for armour
             foreach (ItemObject.ItemTypeEnum itemType in Enum.GetValues(typeof(ItemObject.ItemTypeEnum)))
@@ -707,9 +710,7 @@ namespace BanditMilitias
                             randomElement = EquipmentItems.GetRandomElement();
                             break;
                         case 2 when !gear[3].IsEmpty:
-                            randomElement = EquipmentItems.WhereQ(x =>
-                                x.Item.ItemType != ItemObject.ItemTypeEnum.Bow &&
-                                x.Item.ItemType != ItemObject.ItemTypeEnum.Crossbow).ToList().GetRandomElement();
+                            randomElement = EquipmentItemsNoBow.GetRandomElement();
                             break;
                         case 2:
                         case 3:
@@ -747,9 +748,7 @@ namespace BanditMilitias
                             continue;
                         }
 
-                        randomElement = EquipmentItems.WhereQ(x =>
-                            x.Item.ItemType != ItemObject.ItemTypeEnum.Bow &&
-                            x.Item.ItemType != ItemObject.ItemTypeEnum.Crossbow).ToList().GetRandomElement();
+                        randomElement = EquipmentItemsNoBow.GetRandomElement();
                     }
 
                     if (randomElement.Item.ItemType == ItemObject.ItemTypeEnum.Shield)
@@ -796,7 +795,7 @@ namespace BanditMilitias
                 }
                 var medianSize = (float)parties
                     .OrderBy(p => p.MemberRoster.TotalManCount)
-                    .ElementAt(parties.CountQ() / 2).MemberRoster.TotalManCount;
+                    .ElementAt(parties.Count / 2).MemberRoster.TotalManCount;
 
                 CalculatedMaxPartySize = Math.Max(medianSize, Math.Max(1, MobileParty.MainParty.MemberRoster.TotalManCount) * Variance);
                 LastCalculated = CampaignTime.Now.ToHours;

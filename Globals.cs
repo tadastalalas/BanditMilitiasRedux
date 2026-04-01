@@ -70,6 +70,7 @@ namespace BanditMilitias
         internal static readonly Stopwatch T = new();
         internal static Settings Settings;
         internal static List<EquipmentElement> EquipmentItems = new();
+        internal static List<EquipmentElement> EquipmentItemsNoBow = new();
         internal static List<ItemObject> Arrows = new();
         internal static List<ItemObject> Bolts = new();
         internal static List<Equipment> BanditEquipment = new();

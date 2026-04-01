@@ -307,22 +307,21 @@ namespace BanditMilitias
             // they will evacuate hideouts and not chase caravans
             if (mobileParty.PartyComponent is BanditPartyComponent)
             {
-                if (mobileParty.PartyComponent is BanditPartyComponent)
-                {
-                    if ((mobileParty.CurrentSettlement is not null
-                         && mobileParty.Ai.AiBehaviorInteractable is PartyBase pb1 && pb1.Settlement is { IsHideout: true })
-                        || mobileParty.Ai.AiBehaviorInteractable is PartyBase pb2 && pb2.MobileParty is { IsCaravan: true })
-                        return;
-                }
+                if ((mobileParty.CurrentSettlement is not null
+                        && mobileParty.Ai.AiBehaviorInteractable is PartyBase pb1 && pb1.Settlement is { IsHideout: true })
+                    || mobileParty.Ai.AiBehaviorInteractable is PartyBase pb2 && pb2.MobileParty is { IsCaravan: true })
+                    return;
             }
 
             if (mobileParty.MapEvent is not null)
                 return;
 
             MobileParty mergeTarget = null;
+            bool isBM = mobileParty.IsBM();
+
             try
             {
-                if (mobileParty.IsBM())
+                if (isBM)
                 {
                     // (OG) Let another hero in the party take over the leaderless militia
                     // (OG) The game auto-replaces the leader if there's another hero in the party, just putting this here in case of some oversight
@@ -362,7 +361,7 @@ namespace BanditMilitias
                 }
 
                 // unstuck AI if raid was interrupted
-                if (mobileParty.IsBM() && mobileParty.Ai.DoNotMakeNewDecisions && mobileParty.DefaultBehavior != AiBehavior.RaidSettlement)
+                if (isBM && mobileParty.Ai.DoNotMakeNewDecisions && mobileParty.DefaultBehavior != AiBehavior.RaidSettlement)
                 {
                     mobileParty.Ai.SetDoNotMakeNewDecisions(false);
                     mobileParty.SetMoveModeHold();
@@ -371,7 +370,7 @@ namespace BanditMilitias
                 }
 
                 // near any Hideouts?
-                if (mobileParty.IsBM())
+                if (isBM)
                 {
                     var locatableSearchData = Settlement.StartFindingLocatablesAroundPosition(mobileParty.Position.ToVec2(), MinDistanceFromHideout);
                     for (Settlement settlement =
@@ -387,7 +386,7 @@ namespace BanditMilitias
                 }
 
                 // BM changed too recently?
-                if (mobileParty.IsBM())
+                if (isBM)
                 {
                     // FIX: Guard GetBM() null check and LastMergedOrSplitDate access
                     var bm = mobileParty.GetBM();
@@ -673,10 +672,10 @@ namespace BanditMilitias
                 var eligibleToGrow = mobileParty.MemberRoster.GetTroopRoster().WhereQ(rosterElement =>
                         rosterElement.Character.Tier < Globals.Settings.MaxTrainingTier
                         && !rosterElement.Character.IsHero
-                        && mobileParty.ShortTermBehavior != AiBehavior.FleeToPoint
                         && !mobileParty.IsVisible
                         && !rosterElement.Character.Name.ToString().StartsWith("Glorious"))
                     .ToListQ();
+
                 if (eligibleToGrow.Any())
                 {
                     var growthAmount = mobileParty.MemberRoster.TotalManCount * Globals.Settings.GrowthPercent / 100f;

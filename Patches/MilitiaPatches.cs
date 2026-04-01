@@ -278,10 +278,11 @@ namespace BanditMilitias.Patches
 
             private static void UnFreeBMHeroes(List<TroopRosterElement> freedHeroes, MapEvent mapEvent)
             {
-                if (!freedHeroes.Any(e => e.Character.IsBM())) return;
+                var bmHeroes = freedHeroes.WhereQ(t => t.Character.IsBM()).ToArrayQ();
+                if (bmHeroes.Length == 0) return;
                 MethodInfo GetPrisonerRosterReceivingLootShare = AccessTools.Method(typeof(MapEvent), "GetPrisonerRosterReceivingLootShare");
                 var receivingLootShare = (TroopRoster)GetPrisonerRosterReceivingLootShare.Invoke(mapEvent, [PartyBase.MainParty]);
-                foreach (TroopRosterElement element in freedHeroes.WhereQ(t => t.Character.IsBM()).ToArrayQ())
+                foreach (TroopRosterElement element in bmHeroes)
                 {
                     if (element.Character.HeroObject.MapFaction?.IsAtWarWith(Hero.MainHero.MapFaction) == true)
                     {
