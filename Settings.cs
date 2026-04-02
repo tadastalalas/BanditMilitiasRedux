@@ -24,23 +24,21 @@ namespace BanditMilitias
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int SpawnChance { get; private set; } = 1;
 
-        [SettingPropertyInteger("{=BMMinSize}Minimum Size", 1, 100, Order = 2, RequireRestart = false, HintText = "{=BMMinSizeDesc}No Bandit Militias smaller than this will form.")]
-        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
-        public int MinPartySize { get; private set; } = 20;
+        public int MinPartySize => MergeableSize * 2;
 
-        [SettingPropertyInteger("{=BMMergeSize}Mergeable Party Size", 1, 100, Order = 3, RequireRestart = false, HintText = "{=BMMergeSizeDesc}Small looter and bandit parties won't merge.")]
+        [SettingPropertyInteger("{=BMMergeSize}Mergeable Party Size", 1, 100, Order = 2, RequireRestart = false, HintText = "{=BMMergeSizeDesc}Small looter and bandit parties won't merge.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
-        public int MergeableSize { get; private set; } = 10;
+        public int MergeableSize { get; private set; } = 20;
 
-        [SettingPropertyInteger("{=BMSplit}Random Daily Split Chance", 0, 100, Order = 4, RequireRestart = false, HintText = "{=BMSplitDesc}How likely every day Bandit Militias is to split when large enough.")]
+        [SettingPropertyInteger("{=BMSplit}Random Daily Split Chance", 0, 100, Order = 3, RequireRestart = false, HintText = "{=BMSplitDesc}How likely every day Bandit Militias is to split when large enough.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int RandomSplitChance { get; private set; } = 5;
 
-        [SettingPropertyInteger("{=BMCooldown}Change Cooldown", 0, 168, Order = 5, RequireRestart = false, HintText = "{=BMCooldownDesc}Bandit Militias won't merge or split a second time until this many hours go by.")]
+        [SettingPropertyInteger("{=BMCooldown}Change Cooldown", 0, 168, Order = 4, RequireRestart = false, HintText = "{=BMCooldownDesc}Bandit Militias won't merge or split a second time until this many hours go by.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int CooldownHours { get; private set; } = 24;
 
-        [SettingPropertyInteger("{=BMDisperse}Disperse Militia Size", 10, 100, Order = 6, RequireRestart = false, HintText = "{=BMDisperseDesc}Militias defeated with fewer than this many remaining troops will be dispersed.")]
+        [SettingPropertyInteger("{=BMDisperse}Disperse Militia Size", 10, 100, Order = 5, RequireRestart = false, HintText = "{=BMDisperseDesc}Militias defeated with fewer than this many remaining troops will be dispersed.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int DisperseSize { get; private set; } = 20;
 

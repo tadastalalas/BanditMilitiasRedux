@@ -7,6 +7,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.ImageIdentifiers;
+using TaleWorlds.Library;
 using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
@@ -44,6 +45,7 @@ namespace BanditMilitias
             Saddles = new();
             Hideouts = new();
             AllBMs = new ModBanditMilitiaPartyComponent[] { };
+            StuckTracker.Clear();
         }
 
         // merge/split criteria
@@ -89,6 +91,9 @@ namespace BanditMilitias
         internal static List<CharacterObject> BasicInfantry = new();
         internal static List<CharacterObject> BasicCavalry = new();
         internal static HashSet<int> LordConversationTokens;
+
+        // Transient stuck-detection: not saved, resets on load (intentional)
+        internal static readonly Dictionary<MobileParty, (Vec2 LastPos, int HourCount)> StuckTracker = new();
 
         // ReSharper disable once InconsistentNaming
         //internal static MapMobilePartyTrackerVM MapMobilePartyTrackerVM;

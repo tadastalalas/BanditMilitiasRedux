@@ -248,6 +248,8 @@ namespace BanditMilitias
         {
             try
             {
+                StuckTracker.Remove(mobileParty);
+
                 if (mobileParty?.IsBM() != true || destroyer?.LeaderHero is null)
                     return;
 
@@ -315,6 +317,62 @@ namespace BanditMilitias
 
             if (mobileParty.MapEvent is not null)
                 return;
+
+            // --- Stuck detection: runs unconditionally for every BM every tick ---
+            // Must be here, NOT inside BMThink, because BMThink is skipped when
+            // nearby bandits exist — which is always true when parties are clumping.
+            if (mobileParty.IsBM()
+                && !mobileParty.IsCurrentlyAtSea
+                && mobileParty.Ai?.IsDisabled == false
+                && mobileParty.Ai?.DoNotMakeNewDecisions == false)
+            {
+                const float StuckDistanceThreshold = 15f;
+                const int StuckHourLimit = 12;
+                const float EscapeMinDistance = 30f;
+
+                var currentPos2D = mobileParty.Position.ToVec2();
+
+                if (StuckTracker.TryGetValue(mobileParty, out var stuckState))
+                {
+                    if (currentPos2D.Distance(stuckState.LastPos) < StuckDistanceThreshold)
+                    {
+                        var newCount = stuckState.HourCount + 1;
+                        StuckTracker[mobileParty] = (stuckState.LastPos, newCount);
+
+                        if (newCount >= StuckHourLimit)
+                        {
+                            StuckTracker.Remove(mobileParty);
+
+                            var escapePool = Hideouts
+                                .WhereQ(s => s != null && s.Position.ToVec2().Distance(currentPos2D) > EscapeMinDistance)
+                                .ToListQ();
+
+                            if (escapePool.Count == 0)
+                                escapePool = Settlement.All
+                                    .WhereQ(s => s != null && !s.IsTown && !s.IsCastle
+                                        && s.Position.ToVec2().Distance(currentPos2D) > EscapeMinDistance)
+                                    .ToListQ();
+
+                            if (escapePool.Count > 0)
+                            {
+                                var escapeTarget = escapePool.GetRandomElement();
+                                Logger.LogDebug($"{mobileParty.Name}({mobileParty.StringId}) stuck {newCount}h — escaping to {escapeTarget.Name}");
+                                mobileParty.SetMovePatrolAroundSettlement(escapeTarget, MobileParty.NavigationType.Default, false);
+                                return; // don't continue into merge logic this tick
+                            }
+                        }
+                    }
+                    else
+                    {
+                        StuckTracker[mobileParty] = (currentPos2D, 0);
+                    }
+                }
+                else
+                {
+                    StuckTracker[mobileParty] = (currentPos2D, 0);
+                }
+            }
+            // --- End stuck detection ---
 
             MobileParty mergeTarget = null;
             bool isBM = mobileParty.IsBM();
