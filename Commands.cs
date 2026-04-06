@@ -88,7 +88,7 @@ internal class Commands
             }
 
             Logger.LogDebug($"Cavalry: {NumMountedTroops(militia.MemberRoster)} ({(float)NumMountedTroops(militia.MemberRoster) / militia.MemberRoster.TotalManCount * 100}%)");
-            if (!((float)NumMountedTroops(militia.MemberRoster) / (militia.MemberRoster.TotalManCount * 100) > militia.MemberRoster.TotalManCount / 2f)) continue;
+            if (!((float)NumMountedTroops(militia.MemberRoster) / militia.MemberRoster.TotalManCount > 0.5f)) continue;
             Logger.LogDebug(new string('*', 80));
             Logger.LogDebug(new string('*', 80));
         }

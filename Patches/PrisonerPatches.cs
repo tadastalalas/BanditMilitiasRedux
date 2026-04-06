@@ -90,7 +90,21 @@ namespace BanditMilitias.Patches
                     Logger.LogDebug($"{party.Party.MobileParty.Name}({party.Party.MobileParty.StringId}) is defeated in battle.");
 
                     if (party.Party.MobileParty.MemberRoster.TotalHealthyCount < Globals.Settings.DisperseSize)
+                    {
+                        // Do not trash the party while the player is still registered as
+                        // its prisoner. The game's own LootDefeatedPartyPrisoners has not
+                        // yet run at this point — destroying the captor party now leaves
+                        // PlayerCaptivity._captorParty pointing to a dead party, which
+                        // causes a NullReferenceException inside EndCaptivityInternal.
+                        // The party will be cleaned up on the next hourly tick instead.
+                        if (Hero.MainHero.PartyBelongedToAsPrisoner == party.Party)
+                        {
+                            Logger.LogDebug($"Skipping trash of {party.Party.MobileParty.StringId} — player is still a prisoner of this party.");
+                            continue;
+                        }
+
                         Trash(party.Party.MobileParty);
+                    }
                 }
 
                 var winnerBMs = __instance.PartiesOnSide(__instance.WinningSide)
@@ -164,26 +178,20 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // allow BM heroes barter for ransom with their own gold
+        // BM heroes have a bandit faction clan with no meaningful leader for ransom purposes.
+        // Skip vanilla ransom processing entirely — BM heroes should not be ransomed.
         [HarmonyPatch(typeof(RansomOfferCampaignBehavior), "ConsiderRansomPrisoner")]
         public static class RansomOfferCampaignBehaviorConsiderRansomPrisonerPatch
         {
             public static bool Prefix(Hero hero)
             {
-                if (hero.IsBM() && hero.Clan?.Leader is null)
-                {
-                    Clan captorClanOfPrisoner = !hero.PartyBelongedToAsPrisoner.IsMobile ? hero.PartyBelongedToAsPrisoner.Settlement.OwnerClan : !hero.PartyBelongedToAsPrisoner.MobileParty.IsMilitia && !hero.PartyBelongedToAsPrisoner.MobileParty.IsGarrison && !hero.PartyBelongedToAsPrisoner.MobileParty.IsCaravan && !hero.PartyBelongedToAsPrisoner.MobileParty.IsVillager || hero.PartyBelongedToAsPrisoner.Owner == null ? hero.PartyBelongedToAsPrisoner.MobileParty.ActualClan : !hero.PartyBelongedToAsPrisoner.Owner.IsNotable ? hero.PartyBelongedToAsPrisoner.Owner.Clan : hero.PartyBelongedToAsPrisoner.Owner.CurrentSettlement.OwnerClan;
-                    if (captorClanOfPrisoner == null)
-                        return false;
-                    var prisonerFreeBarterable = new SetPrisonerFreeBarterable(hero, captorClanOfPrisoner.Leader, hero.PartyBelongedToAsPrisoner, hero);
-                    Campaign.Current.BarterManager.ExecuteAiBarter(captorClanOfPrisoner, hero.Clan, captorClanOfPrisoner.Leader, hero, prisonerFreeBarterable);
+                if (hero.IsBM())
                     return false;
-                }
 
                 return true;
             }
         }
-        
+
         // prevent stray BM heroes from entering settlements
         [HarmonyPatch(typeof(TeleportHeroAction), nameof(TeleportHeroAction.ApplyImmediateTeleportToSettlement))]
         public static class TeleportHeroActionApplyImmediateTeleportToSettlementPatch

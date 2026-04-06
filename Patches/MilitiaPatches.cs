@@ -61,7 +61,8 @@ namespace BanditMilitias.Patches
             {
                 if (PartyBase.MainParty == attackerParty || PartyBase.MainParty == defenderParty ||
                     attackerParty?.MobileParty?.IsBandit != true || defenderParty?.MobileParty?.IsBandit != true ||
-                    FactionManager.IsAtWarAgainstFaction(attackerParty.MapFaction, defenderParty.MapFaction))
+                    FactionManager.IsAtWarAgainstFaction(attackerParty.MapFaction, defenderParty.MapFaction) ||
+                    attackerParty.MobileParty.IsUsedByAQuest() || defenderParty.MobileParty.IsUsedByAQuest())
                     return true;
                 TryMergeParties(attackerParty.MobileParty, defenderParty.MobileParty);
                 return false;
@@ -89,10 +90,12 @@ namespace BanditMilitias.Patches
         {
             private static void Postfix(PartyBase __instance, ref Banner __result)
             {
-                if (Globals.Settings.RandomBanners &&
-                    __instance.IsMobile &&
-                    __instance.MobileParty.IsBM())
+                if (__instance.IsMobile && __instance.MobileParty.IsBM())
                 {
+                    // Always provide the BM banner — regardless of the RandomBanners
+                    // setting. Without this, ship.Owner.Banner returns null for BM
+                    // parties that captured naval vessels, crashing the Naval DLC
+                    // port screen in ShipVisualHelper.SetBanner.
                     __result = __instance.MobileParty.GetBM().Banner;
                 }
             }
@@ -184,7 +187,7 @@ namespace BanditMilitias.Patches
         {
             public static bool Prefix(int sentenceIndex, bool onlyPlayer, List<ConversationSentence> ____sentences, ref bool __result)
             {
-                if (Hero.OneToOneConversationHero?.Clan?.IsBanditFaction == true)
+                if (Hero.OneToOneConversationHero?.IsBM() == true)
                 {
                     var sentence = ____sentences[sentenceIndex];
                     if (Globals.LordConversationTokens.Contains(sentence.InputToken) ||
@@ -387,7 +390,6 @@ namespace BanditMilitias.Patches
             public static bool Prefix(MobileParty mobileParty) => !mobileParty.IsBM();
         }
 
-        // copied out of assembly and modified to not check against occupation
         [HarmonyPatch(typeof(NameGenerator), "GenerateHeroFullName")]
         public static class NameGeneratorGenerateHeroName
         {
@@ -451,8 +453,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // prevent crash - BMs have no BanditPartyComponent.Hideout so ensure their
-        // TargetSettlement is always set to HomeSettlement before AI behavior is resolved
         [HarmonyPatch(typeof(MobilePartyAi), "TickInternal")]
         public class MobilePartyCalculateContinueChasingScore
         {
@@ -462,20 +462,26 @@ namespace BanditMilitias.Patches
                 if (!mobileParty.IsBM())
                     return;
 
-                // Sea parties must never be given a land settlement target —
-                // HomeSettlement is always a land hideout, pointing a sea party
-                // there every tick is exactly what causes the land-seeking loop.
-                if (mobileParty.IsCurrentlyAtSea)
+                // Use HasNavalNavigationCapability, not IsCurrentlyAtSea — a newly
+                // created naval BM sitting on the hideout gate is not yet "at sea"
+                // but must never be given land AI orders.
+                if (mobileParty.HasNavalNavigationCapability)
+                {
+                    if (mobileParty.TargetPosition == CampaignVec2.Zero || mobileParty.DefaultBehavior == AiBehavior.Hold)
+                    {
+                        var homePos = mobileParty.GetBM()?.HomeSettlement?.GatePosition ?? mobileParty.Position;
+                        mobileParty.SetMovePatrolAroundPoint(homePos, MobileParty.NavigationType.Naval);
+                    }
                     return;
+                }
 
-                if (mobileParty.TargetSettlement is null)
-                    mobileParty.SetMoveGoToSettlement(GetBanditSettlement(mobileParty), MobileParty.NavigationType.Default, false);
-            }
-
-            private static Settlement GetBanditSettlement(MobileParty mobileParty)
-            {
-                return mobileParty.GetBM()?.HomeSettlement
-                    ?? mobileParty.BanditPartyComponent?.Hideout?.Settlement;
+                // BUG 1 FIX — land BMs: when TargetSettlement is null (cleared by
+                // EnterSettlementAction's Hold) delegate to BMThink so it picks a
+                // fresh non-hideout patrol target.  Never call SetMoveGoToSettlement
+                // with HomeSettlement here — HomeSettlement IS the hideout and that
+                // is exactly what causes the back-and-forth loop.
+                if (mobileParty.DefaultBehavior == AiBehavior.Hold && mobileParty.TargetSettlement is null)
+                    MilitiaBehavior.BMThink(mobileParty);
             }
         }
 

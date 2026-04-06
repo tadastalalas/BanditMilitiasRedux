@@ -16,152 +16,156 @@ namespace BanditMilitias
 
         // ==================== SPAWNING & FORMATION ====================
 
-        [SettingPropertyBool("{=BMSpawn}Bandit Militias Spawn (From Thin Air)", Order = 0, RequireRestart = false, HintText = "{=BMSpawnDesc}New Bandit Militias will form spontaneously as well as by merging together normally.")]
+        [SettingPropertyBool("{=BMSpawn}Enable Spontaneous Spawning", Order = 0, RequireRestart = false, HintText = "{=BMSpawnDesc}New Bandit Militias will form spontaneously as well as by merging together normally.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation", GroupOrder = 0)]
         public bool MilitiaSpawn { get; private set; } = false;
 
-        [SettingPropertyInteger("{=BMSpawnChance}Spawn Chance Percent", 1, 100, Order = 1, RequireRestart = false, HintText = "{=BMSpawnChanceDesc}Bandit Militias will spawn hourly at this likelihood.")]
+        [SettingPropertyInteger("{=BMSpawnChance}Hourly Spawn Chance %", 1, 100, Order = 1, RequireRestart = false, HintText = "{=BMSpawnChanceDesc}Bandit Militias will spawn hourly at this likelihood.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int SpawnChance { get; private set; } = 1;
 
-        [SettingPropertyInteger("{=BMMergeSize}Mergeable Party Size", 1, 100, Order = 2, RequireRestart = false, HintText = "{=BMMergeSizeDesc}Small looter and bandit parties won't merge.")]
+        [SettingPropertyBool("{=BMSpawnLand}Allow Land Militias", Order = 2, RequireRestart = false, HintText = "{=BMSpawnLandDesc}Allow land Bandit Militias to exist. When disabled, land militias will not spawn, merge, or split.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
-        public int MergeableSize { get; private set; } = 20;
+        public bool SpawnLandMilitias { get; private set; } = true;
+
+        [SettingPropertyBool("{=BMSpawnNaval}Allow Naval Militias", Order = 3, RequireRestart = false, HintText = "{=BMSpawnNavalDesc}Allow naval Bandit Militias to exist. When disabled, naval militias will not spawn, merge, or split.")]
+        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
+        public bool SpawnNavalMilitias { get; private set; } = false;
+
+        [SettingPropertyInteger("{=BMMaxPerClan}Max Land Militias Per Clan", 0, 50, Order = 4, RequireRestart = false, HintText = "{=BMMaxPerClanDesc}Maximum Bandit Militia parties per land bandit clan. Set to 0 for no limit.")]
+        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
+        public int MaxLandPartiesPerClan { get; private set; } = 10;
+
+        [SettingPropertyInteger("{=BMMaxNavalPerClan}Max Naval Militias Per Clan", 0, 50, Order = 5, RequireRestart = false, HintText = "{=BMMaxNavalPerClanDesc}Maximum Bandit Militia parties per naval bandit clan. Set to 0 for no limit. Naval clans have far fewer native parties so a lower cap is recommended.")]
+        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
+        public int MaxNavalPartiesPerClan { get; private set; } = 5;
+
+        [SettingPropertyInteger("{=BMMergeSize}Minimum Size to Merge", 1, 100, Order = 6, RequireRestart = false, HintText = "{=BMMergeSizeDesc}Bandit parties smaller than this will not merge into a Bandit Militia.")]
+        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
+        public int MergeableSize { get; private set; } = 15;
         public int MinPartySize => MergeableSize * 2;
 
-        [SettingPropertyInteger("{=BMSplit}Random Daily Split Chance", 0, 100, Order = 3, RequireRestart = false, HintText = "{=BMSplitDesc}How likely every day Bandit Militias is to split when large enough.")]
+        [SettingPropertyInteger("{=BMSplit}Daily Split Chance %", 0, 100, Order = 7, RequireRestart = false, HintText = "{=BMSplitDesc}How likely every day Bandit Militias is to split when large enough.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int RandomSplitChance { get; private set; } = 5;
 
-        [SettingPropertyInteger("{=BMCooldown}Change Cooldown", 0, 168, Order = 4, RequireRestart = false, HintText = "{=BMCooldownDesc}Bandit Militias won't merge or split a second time until this many hours go by.")]
-        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
-        public int CooldownHours { get; private set; } = 24;
-
-        [SettingPropertyInteger("{=BMDisperse}Disperse Militia Size", 10, 100, Order = 5, RequireRestart = false, HintText = "{=BMDisperseDesc}Militias defeated with fewer than this many remaining troops will be dispersed.")]
+        [SettingPropertyInteger("{=BMDisperse}Disband Below Troop Count", 10, 100, Order = 8, RequireRestart = false, HintText = "{=BMDisperseDesc}Militias defeated with fewer than this many remaining troops will be disbanded.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int DisperseSize { get; private set; } = 20;
 
         // ==================== TRAINING & GROWTH ====================
 
-        [SettingPropertyBool("{=BMTrain}Train Militias", Order = 0, RequireRestart = false, HintText = "{=BMTrainDesc}Bandit heroes will train their militias.")]
+        [SettingPropertyBool("{=BMTrain}Enable Militia Training", Order = 0, RequireRestart = false, HintText = "{=BMTrainDesc}Bandit heroes will train their militias.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth", GroupOrder = 1)]
         public bool CanTrain { get; private set; } = true;
 
-        [SettingPropertyInteger("{=BMDailyTrain}Daily Training Chance", 0, 100, Order = 1, RequireRestart = false, HintText = "{=BMDailyTrainDesc}Each day they might train further.")]
+        [SettingPropertyInteger("{=BMDailyTrain}Daily Training Chance %", 0, 100, Order = 1, RequireRestart = false, HintText = "{=BMDailyTrainDesc}Each day there is this % chance the militia will be trained.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public float TrainingChance { get; private set; } = 10;
 
-        [SettingPropertyDropdown("{=BMXpBoost}Militia XP Boost", Order = 2, RequireRestart = false, HintText = "{=BMXpBoostDesc}Hardest grants enough XP to significantly upgrade troops. Off grants no bonus XP.")]
+        [SettingPropertyDropdown("{=BMXpBoost}Bonus XP on Training", Order = 2, RequireRestart = false, HintText = "{=BMXpBoostDesc}Extra XP granted when training occurs. Hardest grants enough to significantly upgrade troops. Off grants no bonus XP.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public Dropdown<string> XpGift { get; internal set; } = new(new[] { "{=BMXpOff}Off", "{=BMXpNormal}Normal", "{=BMXpHard}Hard", "{=BMXpHardest}Hardest" }, 1);
 
-        [SettingPropertyInteger("{=BMLooter}Looter Conversions", 0, 100, Order = 3, RequireRestart = false, HintText = "How many looters get made into better units when training.")]
-        [SettingPropertyGroup("{=BMTraining}Training & Growth")]
-        public int LooterUpgradePercent { get; private set; } = 15;
-
-        [SettingPropertyInteger("{=BMUpgrade}Upgrade Units", 0, 100, Order = 4, RequireRestart = false, HintText = "{=BMUpgradeDesc}Upgrade (at most) this percentage of troops when training occurs.")]
+        [SettingPropertyInteger("{=BMUpgrade}Upgrade % of Troops per Training", 0, 100, Order = 3, RequireRestart = false, HintText = "{=BMUpgradeDesc}At most this percentage of troops will be upgraded each time training occurs. Looters are included.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public int UpgradeUnitsPercent { get; private set; } = 25;
 
-        [SettingPropertyInteger("{=BMTier}Max Training Tier", 1, 6, Order = 5, RequireRestart = false, HintText = "{=BMTierDesc}BM won't train any units past this tier.")]
+        [SettingPropertyInteger("{=BMTier}Max Troop Tier from Training", 1, 6, Order = 4, RequireRestart = false, HintText = "{=BMTierDesc}Training will never upgrade troops beyond this tier.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public int MaxTrainingTier { get; private set; } = 4;
 
-        [SettingPropertyInteger("{=BMGrowChance}Growth Chance Percent", 0, 100, Order = 6, RequireRestart = false, HintText = "{=BMGrowChanceDesc}Chance per day that the militia will gain more troops (0 for off).")]
+        [SettingPropertyInteger("{=BMGrowChance}Daily Growth Chance %", 0, 100, Order = 5, RequireRestart = false, HintText = "{=BMGrowChanceDesc}Each day there is this % chance the militia will gain troops. Set to 0 to disable growth.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public int GrowthChance { get; private set; } = 50;
 
-        [SettingPropertyInteger("{=BMGrowPercent}Growth Percent", 0, 100, Order = 7, RequireRestart = false, HintText = "{=BMGrowPercentDesc}Grow each troop type by this percent.")]
+        [SettingPropertyInteger("{=BMGrowPercent}Troop Growth Amount %", 0, 100, Order = 6, RequireRestart = false, HintText = "{=BMGrowPercentDesc}When growth occurs, each troop type grows by this percentage of its current count.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public int GrowthPercent { get; private set; } = 1;
 
         // ==================== POWER & BALANCE ====================
 
-        [SettingPropertyInteger("{=BMPower}Global Power Percent", 1, 100, Order = 0, RequireRestart = false, HintText = "{=BMPowerDesc}Caps the total combat strength of all Bandit Militias combined as a percentage of all other parties in the world. Higher values allow more and stronger BMs but can noticeably impact world balance.")]
+        [SettingPropertyInteger("{=BMPower}Global Power Cap %", 1, 100, Order = 0, RequireRestart = false, HintText = "{=BMPowerDesc}Caps the total combat strength of all Bandit Militias combined as a percentage of all other parties in the world. Higher values allow more and stronger BMs but can noticeably impact world balance.")]
         [SettingPropertyGroup("{=BMPower}Power & Balance", GroupOrder = 2)]
         public int GlobalPowerPercent { get; private set; } = 30;
 
-        [SettingPropertyInteger("{=BMMaxValue}Max Item Value", 1000, 100000, Order = 1, RequireRestart = false, HintText = "{=BMMaxValueDesc}Limit the per-piece value of equipment given to the Heroes. Mostly for when other mods give you Hero loot.")]
-        [SettingPropertyGroup("{=BMPower}Power & Balance")]
-        public int MaxItemValue { get; private set; } = 3750;
-
-        [SettingPropertyDropdown("{=BMGoldReward}Bandit Hero Gold Reward", Order = 2, RequireRestart = false)]
+        [SettingPropertyDropdown("{=BMGoldReward}Gold Reward on Hero Kill", Order = 1, RequireRestart = false, HintText = "{=BMGoldRewardDesc}How much gold the player receives for defeating a Bandit Militia hero.")]
         [SettingPropertyGroup("{=BMPower}Power & Balance")]
         public Dropdown<string> GoldReward { get; internal set; } = new(new[] { "{=BMGoldLow}Low", "{=BMGoldNormal}Normal", "{=BMGoldRich}Rich", "{=BMGoldRichest}Richest" }, 1);
 
         // ==================== BEHAVIOR & AI ====================
 
-        [SettingPropertyInteger("{=BMWeaker}Ignore Weaker Parties", 0, 100, Order = 0, RequireRestart = false, HintText = "{=BMWeakerDesc}10 means any party 10% weaker will be ignored. 100 attacks without restriction.")]
+        [SettingPropertyInteger("{=BMWeaker}Attack Strength Tolerance %", 0, 100, Order = 0, RequireRestart = false, HintText = "{=BMWeakerDesc}BMs will not engage parties stronger than themselves by more than this %. 100 means attack regardless of strength difference.")]
         [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI", GroupOrder = 3)]
         public int MaxStrengthDeltaPercent { get; private set; } = 50;
 
-        [SettingPropertyBool("{=BMIgnore}Ignore Villagers/Caravans", Order = 1, RequireRestart = false, HintText = "{=BMIgnoreDesc}They won't be attacked by BMs.")]
+        [SettingPropertyBool("{=BMIgnore}Ignore Villagers & Caravans", Order = 1, RequireRestart = false, HintText = "{=BMIgnoreDesc}Bandit Militias will not attack villagers or caravans.")]
         [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
         public bool IgnoreVillagersCaravans { get; private set; } = false;
 
-        [SettingPropertyBool("{=BMPillage}Allow Pillaging", Order = 2, RequireRestart = false, HintText = "{=BMPillageDesc}Allow PILLAGING!.")]
+        [SettingPropertyBool("{=BMPillage}Enable Village Raiding", Order = 2, RequireRestart = false, HintText = "{=BMPillageDesc}Allow Bandit Militias to raid villages.")]
         [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
         public bool AllowPillaging { get; private set; } = true;
 
-        [SettingPropertyFloatingInteger("{=BMPillageChance}Pillaging Chance", 0, 100, Order = 3, RequireRestart = false, HintText = "{=BMPillageChanceDesc}The chance of Bandit Militias AI to consider raiding a village. It triggers once per in-game hour for every bandit militia party, so a smaller value is advised.")]
+        [SettingPropertyFloatingInteger("{=BMPillageChance}Hourly Raid Chance %", 0, 100, Order = 3, RequireRestart = false, HintText = "{=BMPillageChanceDesc}Each hour every Bandit Militia has this % chance to consider raiding a nearby village. Keep this low.")]
         [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
         public float PillagingChance { get; private set; } = 1;
 
-        [SettingPropertyBool("{=BMIgnoreSizePenalty}Ignore Size Penalty", Order = 4, RequireRestart = false, HintText = "{=BMIgnoreSizePenaltyDesc}Bandit Militias will move at normal speed regardless of its party size.")]
-        [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
-        public bool IgnoreSizePenalty { get; private set; } = true;
-
         // ==================== APPEARANCE & CUSTOMIZATION ====================
 
-        [SettingPropertyText("{=BMStringSetting}Bandit Militia", Order = 0, RequireRestart = false, HintText = "{=BMStringSettingDesc}What to name a Bandit Militia.")]
+        [SettingPropertyText("{=BMStringSetting}Militia Party Name", Order = 0, RequireRestart = false, HintText = "{=BMStringSettingDesc}What to name a Bandit Militia party.")]
         [SettingPropertyGroup("{=BMAppearance}Appearance & Customization", GroupOrder = 4)]
         public string BanditMilitiaString { get; set; } = "Bandit Militia";
 
-        [SettingPropertyText("{=BMLeaderlessStringSetting}Leaderless Bandit Militia", Order = 1, RequireRestart = false, HintText = "{=BMLeaderlessStringSettingDesc}What to name a Bandit Militia with no leader.")]
+        [SettingPropertyText("{=BMLeaderlessStringSetting}Leaderless Party Name", Order = 1, RequireRestart = false, HintText = "{=BMLeaderlessStringSettingDesc}What to name a Bandit Militia that has lost its leader.")]
         [SettingPropertyGroup("{=BMAppearance}Appearance & Customization")]
         public string LeaderlessBanditMilitiaString { get; set; } = "Leaderless Bandit Militia";
 
-        [SettingPropertyBool("{=BMBanners}Random Banners", Order = 2, RequireRestart = false, HintText = "{=BMBannersDesc}BMs will have unique banners, or basic bandit clan ones.")]
+        [SettingPropertyBool("{=BMBanners}Unique Random Banners", Order = 2, RequireRestart = false, HintText = "{=BMBannersDesc}Each Bandit Militia gets a unique random banner. Disable to use the default bandit clan banner.")]
         [SettingPropertyGroup("{=BMAppearance}Appearance & Customization")]
         public bool RandomBanners { get; set; } = true;
 
-        [SettingPropertyInteger("{=BMGenderSlider}Leader Gender Ratio", 0, 100, Order = 3, RequireRestart = false, HintText = "{=BMGenderSliderDesc}Chance for Bandit Militia leaders to be female. Set to 0 for all male, or 100 for all female.")]
+        [SettingPropertyInteger("{=BMGenderSlider}Female Leader Chance %", 0, 100, Order = 3, RequireRestart = false, HintText = "{=BMGenderSliderDesc}Chance for a Bandit Militia leader to be female. 0 = all male, 100 = all female.")]
         [SettingPropertyGroup("{=BMAppearance}Appearance & Customization")]
         public int FemaleSpawnChance { get; set; } = 25;
 
-        [SettingPropertyBool("{=BMCheckVoiceGender}Check Voice Gender", Order = 4, RequireRestart = false, HintText = "{=BMCheckVoiceGenderDesc}Double-check if the bandit voice lines match the gender. There are some official voice lines with male voices but don't specify gender, so female bandit leaders will speak with male voices if this option is disabled.")]
+        [SettingPropertyBool("{=BMCheckVoiceGender}Match Voice Lines to Gender", Order = 4, RequireRestart = false, HintText = "{=BMCheckVoiceGenderDesc}Ensures female leaders use female voice lines. Disable if female leaders are incorrectly silenced.")]
         [SettingPropertyGroup("{=BMAppearance}Appearance & Customization")]
         public bool CheckVoiceGender { get; set; } = true;
 
         // ==================== UI & NOTIFICATIONS ====================
 
-        //[SettingPropertyBool("{=BMMarkers}Militia Map Markers", Order = 0, RequireRestart = false, HintText = "{=BMMarkersDesc}Have omniscient view of BMs.")]
-        //[SettingPropertyGroup("{=BMUI}UI & Notifications", GroupOrder = 5)]
-        //public bool Trackers { get; private set; } = false;
-
-        //[SettingPropertyInteger("{=BMTrackSize}Minimum BM Size To Track", 1, 500, Order = 0, RequireRestart = false, HintText = "{=BMTrackSizeDesc}Any smaller BMs won't be tracked.")]
-        //[SettingPropertyGroup("{=BMUI}UI & Notifications", GroupOrder = 5)]
-        //public int TrackedSizeMinimum { get; private set; } = 50;
-
-        [SettingPropertyBool("{=BMRaidNotices}Village Raid Notices", Order = 0, RequireRestart = false, HintText = "{=BMRaidNoticesDesc}When your fiefs are raided you'll see a banner message.")]
+        [SettingPropertyBool("{=BMRaidNotices}Notify on Village Raid", Order = 0, RequireRestart = false, HintText = "{=BMRaidNoticesDesc}Show a message when a Bandit Militia raids one of your villages.")]
         [SettingPropertyGroup("{=BMUI}UI & Notifications", GroupOrder = 5)]
         public bool ShowRaids { get; set; } = true;
 
-        [SettingPropertyBool("{=BMSkipConversations}Skip Conversations", Order = 1, RequireRestart = false, HintText = "{=BMSkipConversationsDesc}Skip conversations with Bandit Militias. You won't be able to bribe them if enabled.")]
+        [SettingPropertyBool("{=BMSkipConversations}Skip Encounter Conversations", Order = 1, RequireRestart = false, HintText = "{=BMSkipConversationsDesc}Skip conversations when encountering Bandit Militias. Bribery will be unavailable if enabled.")]
         [SettingPropertyGroup("{=BMUI}UI & Notifications")]
         public bool SkipConversations { get; set; } = false;
 
-        [SettingPropertyBool("{=BMRemovePrisonerMessages}Remove Prisoner Messages", Order = 2, RequireRestart = false, HintText = "{=BMRemovePrisonerMessagesDesc}Remove the messages of Bandit Militia Heroes being taken or released as prisoners.")]
+        [SettingPropertyBool("{=BMRemovePrisonerMessages}Hide Prisoner Capture Messages", Order = 2, RequireRestart = false, HintText = "{=BMRemovePrisonerMessagesDesc}Suppress notifications when Bandit Militia heroes are taken or released as prisoners.")]
         [SettingPropertyGroup("{=BMUI}UI & Notifications")]
         public bool RemovePrisonerMessages { get; set; } = true;
 
         // ==================== ADVANCED ====================
 
-        [SettingPropertyDropdown("{=BMLoggingLevel}Log Level", Order = 0, RequireRestart = true, HintText = "{=BMDebugDesc}Change the log level, requires restart.")]
+        [SettingPropertyInteger("{=BMCooldown}Merge/Split Cooldown (Hours)", 0, 168, Order = 0, RequireRestart = false, HintText = "{=BMCooldownDesc}A Bandit Militia cannot merge or split again until this many in-game hours have passed.")]
         [SettingPropertyGroup("{=BMAdvanced}Advanced", GroupOrder = 6)]
+        public int CooldownHours { get; private set; } = 24;
+
+        [SettingPropertyInteger("{=BMMaxValue}Max Hero Equipment Value (Gold)", 1000, 100000, Order = 1, RequireRestart = false, HintText = "{=BMMaxValueDesc}Limits the gold value per equipment piece given to Bandit Militia heroes. Useful when other mods add very high-value loot.")]
+        [SettingPropertyGroup("{=BMAdvanced}Advanced")]
+        public int MaxItemValue { get; private set; } = 3750;
+
+        [SettingPropertyBool("{=BMIgnoreSizePenalty}Ignore Party Size Speed Penalty", Order = 2, RequireRestart = false, HintText = "{=BMIgnoreSizePenaltyDesc}Bandit Militias move at full speed regardless of party size.")]
+        [SettingPropertyGroup("{=BMAdvanced}Advanced")]
+        public bool IgnoreSizePenalty { get; private set; } = true;
+
+        [SettingPropertyDropdown("{=BMLoggingLevel}Log Level", Order = 3, RequireRestart = true, HintText = "{=BMDebugDesc}Change the log level. Requires restart.")]
+        [SettingPropertyGroup("{=BMAdvanced}Advanced")]
         public Dropdown<LogLevel> MinLogLevel { get; private set; } = new([LogLevel.Trace, LogLevel.Debug, LogLevel.Information, LogLevel.Warning, LogLevel.Error, LogLevel.Critical, LogLevel.None], 2);
 
-        [SettingPropertyBool("{=BMTesting}Testing Mode", Order = 1, RequireRestart = false, HintText = "{=BMTestingDesc}Teleports BMs to you.")]
+        [SettingPropertyBool("{=BMTesting}Testing Mode", Order = 4, RequireRestart = false, HintText = "{=BMTestingDesc}Teleports all Bandit Militias near the player.")]
         [SettingPropertyGroup("{=BMAdvanced}Advanced")]
         public bool TestingMode { get; internal set; }
 

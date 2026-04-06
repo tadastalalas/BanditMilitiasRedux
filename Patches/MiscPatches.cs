@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Reflection.Emit;
 using HarmonyLib;
 using SandBox.View.Map;
@@ -32,19 +31,7 @@ namespace BanditMilitias.Patches
                 RemoveBadItems();
             }
         }
-        /*
-        // Cache the MapTrackerProvider and its internal TrackerContainer when it is constructed
-        [HarmonyPatch(typeof(MapTrackerProvider), MethodType.Constructor)]
-        public static class MapTrackerProviderCtorPatch
-        {
-            public static void Postfix(MapTrackerProvider __instance, object ____trackerContainer)
-            {
-                Globals.MapTrackerProvider = __instance;
-                Globals.TrackerContainer = ____trackerContainer;
-                //RefreshTrackers();
-            }
-        }
-        */
+
         [HarmonyPatch(typeof(MerchantNeedsHelpWithOutlawsIssueQuestBehavior.MerchantNeedsHelpWithOutlawsIssueQuest), "HourlyTickParty")]
         public static class MerchantNeedsHelpWithOutlawsIssueQuestHourlyTickParty
         {

@@ -12,22 +12,20 @@ using TaleWorlds.SaveSystem;
 using static BanditMilitias.Globals;
 using static BanditMilitias.Helper;
 
-// ReSharper disable ConvertToAutoProperty  
-// ReSharper disable InconsistentNaming
-
 namespace BanditMilitias
 {
     public class ModBanditMilitiaPartyComponent : WarPartyComponent
     {
         private static ILogger _logger;
         private static ILogger Logger => _logger ??= LogFactory.Get<ModBanditMilitiaPartyComponent>();
-        
+
         [SaveableField(1)] public readonly Banner Banner;
         [SaveableField(2)] public readonly string BannerKey;
         [SaveableField(3)] public CampaignTime LastMergedOrSplitDate = CampaignTime.Now;
         [SaveableField(4)] public Dictionary<Hero, float> Avoidance = new();
         [SaveableField(5)] private Hero leader;
         [SaveableField(6)] private Settlement homeSettlement;
+        [SaveableField(7)] public CampaignVec2 NavalPatrolPosition;
         [CachedData] private TextObject cachedName;
 
         public override Settlement HomeSettlement => homeSettlement;
@@ -61,8 +59,8 @@ namespace BanditMilitias
                 {
                     Logger.LogDebug($"{newLeader.Name} is taking over {MobileParty.Name}({MobileParty.StringId}) from {leader.Name}[{leader.HeroState}].");
                 }
-                newLeader.Clan = MobileParty.ActualClan;
                 leader = newLeader;
+                newLeader.Clan = MobileParty.ActualClan;
                 ClearCachedName();
             }
         }
@@ -100,12 +98,15 @@ namespace BanditMilitias
             _targetClan = clan ?? settlement.OwnerClan;
 
             hero ??= CreateHero(settlement);
+
+            _bornSettlement(hero) = settlement;
+
+            // Assign the bandit clan to the hero. Verified safe from KillCharacterAction source:
+            // - IsBanditFaction guard prevents DestroyClanAction from firing
+            // - GiveGoldAction targets the bandit faction dummy leader — harmless void
+            // - No kingdom succession logic applies to bandit faction heroes
             hero.Clan = _targetClan;
-
-            if (hero.HomeSettlement is null)
-                _bornSettlement(hero) = settlement;
-
-            hero.UpdateHomeSettlement();
+            //hero.UpdateHomeSettlement();
             HiddenInEncyclopedia(hero.CharacterObject) = true;
             homeSettlement = settlement;
             leader = hero;
@@ -138,7 +139,7 @@ namespace BanditMilitias
         {
             if (MobileParty is not null) PartyImageMap.Remove(MobileParty);
             leader = null;
-            
+
             base.OnFinalize();
         }
     }
