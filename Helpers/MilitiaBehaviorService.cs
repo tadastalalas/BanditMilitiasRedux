@@ -273,9 +273,9 @@ namespace BanditMilitias
                         continue;
                     }
 
-                    // Only use non-seaside hideouts for land clans
+                    // Only use land hideouts
                     var settlement = validHideouts
-                        .WhereQ(s => !s.StringId.StartsWith("hideout_seaside"))
+                        .WhereQ(s => Helper.IsLandHideout(s))
                         .ToListQ()
                         .GetRandomElement()
                         ?? baseSettlement;

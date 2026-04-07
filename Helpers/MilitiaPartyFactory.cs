@@ -150,12 +150,12 @@ namespace BanditMilitias
                 Settlement leaderHomeSettlement = leaderHero?.HomeSettlement?.IsHideout ?? false ? leaderHero.HomeSettlement : null;
 
                 Settlement bestSettlement = new[] { leaderHomeSettlement, mobilePartyHomeSettlement, mergeTargetHomeSettlement }
-                    .FirstOrDefault(s => s != null && !s.StringId.StartsWith("hideout_seaside"));
+                    .FirstOrDefault(s => s != null && IsLandHideout(s));
 
                 if (bestSettlement is null)
                 {
                     bestSettlement = Hideouts
-                        .WhereQ(s => !s.StringId.StartsWith("hideout_seaside"))
+                        .WhereQ(s => IsLandHideout(s))
                         .OrderByQ(s => s.GatePosition.ToVec2().Distance(mobileParty.Position.ToVec2()))
                         .FirstOrDefault()
                         ?? Hideouts.OrderByQ(s => s.GatePosition.ToVec2().Distance(mobileParty.Position.ToVec2())).FirstOrDefault();
@@ -420,10 +420,10 @@ namespace BanditMilitias
                 var splitHome = original.HomeSettlement;
 
                 // If the original's HomeSettlement is a seaside hideout, find a land one instead.
-                if (splitHome == null || splitHome.StringId.StartsWith("hideout_seaside"))
+                if (splitHome == null || !IsLandHideout(splitHome))
                 {
                     splitHome = Hideouts
-                        .WhereQ(s => !s.StringId.StartsWith("hideout_seaside"))
+                        .WhereQ(s => IsLandHideout(s))
                         .OrderByQ(s => s.GatePosition.ToVec2().Distance(original.Position.ToVec2()))
                         .FirstOrDefault()
                         ?? original.HomeSettlement;

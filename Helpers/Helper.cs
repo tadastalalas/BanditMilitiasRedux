@@ -46,6 +46,11 @@ namespace BanditMilitias
         internal static readonly AccessTools.FieldRef<MBObjectBase, bool> IsRegistered =
             AccessTools.FieldRefAccess<MBObjectBase, bool>("<IsRegistered>k__BackingField");
 
+        /// <summary>
+        /// Returns true if the settlement is a land hideout (not a seaside/naval hideout).
+        /// </summary>
+        internal static bool IsLandHideout(Settlement s) => !s.StringId.StartsWith("hideout_seaside");
+
         internal static void ReHome()
         {
             foreach (var BM in GetCachedBMs(true).WhereQ(p => p.Leader is not null))
