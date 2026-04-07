@@ -28,28 +28,20 @@ namespace BanditMilitias
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public bool SpawnLandMilitias { get; private set; } = true;
 
-        [SettingPropertyBool("{=BMSpawnNaval}Allow Naval Militias", Order = 3, RequireRestart = false, HintText = "{=BMSpawnNavalDesc}Allow naval Bandit Militias to exist. When disabled, naval militias will not spawn, merge, or split.")]
-        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
-        public bool SpawnNavalMilitias { get; private set; } = false;
-
-        [SettingPropertyInteger("{=BMMaxPerClan}Max Land Militias Per Clan", 0, 50, Order = 4, RequireRestart = false, HintText = "{=BMMaxPerClanDesc}Maximum Bandit Militia parties per land bandit clan. Set to 0 for no limit.")]
+        [SettingPropertyInteger("{=BMMaxPerClan}Max Militias Per Clan", 0, 50, Order = 3, RequireRestart = false, HintText = "{=BMMaxPerClanDesc}Maximum Bandit Militia parties per bandit clan. Set to 0 for no limit.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int MaxLandPartiesPerClan { get; private set; } = 10;
 
-        [SettingPropertyInteger("{=BMMaxNavalPerClan}Max Naval Militias Per Clan", 0, 50, Order = 5, RequireRestart = false, HintText = "{=BMMaxNavalPerClanDesc}Maximum Bandit Militia parties per naval bandit clan. Set to 0 for no limit. Naval clans have far fewer native parties so a lower cap is recommended.")]
-        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
-        public int MaxNavalPartiesPerClan { get; private set; } = 5;
-
-        [SettingPropertyInteger("{=BMMergeSize}Minimum Size to Merge", 1, 100, Order = 6, RequireRestart = false, HintText = "{=BMMergeSizeDesc}Bandit parties smaller than this will not merge into a Bandit Militia.")]
+        [SettingPropertyInteger("{=BMMergeSize}Minimum Size to Merge", 1, 100, Order = 4, RequireRestart = false, HintText = "{=BMMergeSizeDesc}Bandit parties smaller than this will not merge into a Bandit Militia.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int MergeableSize { get; private set; } = 15;
         public int MinPartySize => MergeableSize * 2;
 
-        [SettingPropertyInteger("{=BMSplit}Daily Split Chance %", 0, 100, Order = 7, RequireRestart = false, HintText = "{=BMSplitDesc}How likely every day Bandit Militias is to split when large enough.")]
+        [SettingPropertyInteger("{=BMSplit}Daily Split Chance %", 0, 100, Order = 5, RequireRestart = false, HintText = "{=BMSplitDesc}How likely every day Bandit Militias is to split when large enough.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int RandomSplitChance { get; private set; } = 5;
 
-        [SettingPropertyInteger("{=BMDisperse}Disband Below Troop Count", 10, 100, Order = 8, RequireRestart = false, HintText = "{=BMDisperseDesc}Militias defeated with fewer than this many remaining troops will be disbanded.")]
+        [SettingPropertyInteger("{=BMDisperse}Disband Below Troop Count", 10, 100, Order = 6, RequireRestart = false, HintText = "{=BMDisperseDesc}Militias defeated with fewer than this many remaining troops will be disbanded.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int DisperseSize { get; private set; } = 20;
 

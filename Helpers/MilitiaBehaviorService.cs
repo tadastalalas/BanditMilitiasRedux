@@ -42,10 +42,7 @@ namespace BanditMilitias
                 if (mobileParty?.Ai is null || mobileParty.Ai.IsDisabled || mobileParty.Ai.DoNotMakeNewDecisions || !mobileParty.IsBM())
                     return;
 
-                // Naval BMs are driven entirely by AiHourlyTickEvent score injection +
-                // SetLandNavigationAccess(false), exactly like vanilla PiratesCampaignBehavior.
-                // They need no custom per-tick decisions here — any order issued from BMThink
-                // risks overriding the engine's naval routing.
+                // This mod focuses on land-only bandit militias — skip naval parties entirely.
                 if (mobileParty.HasNavalNavigationCapability)
                     return;
 
@@ -56,20 +53,6 @@ namespace BanditMilitias
                     case AiBehavior.Hold:
                         if (mobileParty.TargetSettlement is null)
                         {
-                            var homeSettlement = mobileParty.GetBM()?.HomeSettlement;
-                            if (homeSettlement?.StringId.StartsWith("hideout_seaside") == true
-                                && mobileParty.HasNavalNavigationCapability)
-                            {
-                                mobileParty.DesiredAiNavigationType = MobileParty.NavigationType.Naval;
-                                mobileParty.SetMovePatrolAroundPoint(homeSettlement.GatePosition, MobileParty.NavigationType.Naval);
-                                break;
-                            }
-
-                            // Naval parties that don't have a seaside home yet should still
-                            // stay at sea — never issue a land-patrol order for them.
-                            if (mobileParty.HasNavalNavigationCapability)
-                                break;
-
                             var validSettlements = Settlement.All
                                 .WhereQ(s => s != null
                                     && !s.IsHideout
@@ -90,29 +73,12 @@ namespace BanditMilitias
                             if (!mobileParty.IsEngaging && mobileParty.Position.ToVec2().Distance(mobileParty.TargetSettlement.Position.ToVec2()) == 0f)
                                 mobileParty.SetMoveModeHold();
                         }
-                        else if (mobileParty.IsCurrentlyAtSea
-                            && mobileParty.TargetSettlement == mobileParty.GetBM()?.HomeSettlement
-                            && mobileParty.Position.ToVec2().Distance(mobileParty.TargetSettlement.GatePosition.ToVec2()) < 10f)
-                        {
-                            mobileParty.SetMovePatrolAroundPoint(mobileParty.GetBM().HomeSettlement.GatePosition, MobileParty.NavigationType.Naval);
-                        }
                         break;
 
                     case AiBehavior.PatrolAroundPoint:
                         var BM = mobileParty.GetBM();
                         if (BM is null || mobileParty.MapFaction is null)
                             return;
-
-                        if (mobileParty.IsCurrentlyAtSea)
-                        {
-                            if (MBRandom.RandomFloat < 0.05f)
-                            {
-                                var homeSettlement = BM.HomeSettlement;
-                                if (homeSettlement is not null)
-                                    mobileParty.SetMovePatrolAroundPoint(homeSettlement.GatePosition, MobileParty.NavigationType.Naval);
-                            }
-                            break;
-                        }
 
                         // PILLAGE!
                         if (Globals.Settings?.AllowPillaging == true
@@ -282,9 +248,7 @@ namespace BanditMilitias
                     if (MBRandom.RandomInt(0, 101) > Globals.Settings.SpawnChance)
                         continue;
 
-                    // Pick a random hideout first, derive the clan from its culture,
-                    // then re-pick a hideout that actually matches that clan's type
-                    // (seaside for naval clans, land for land clans).
+                    // Pick a random hideout first, derive the clan from its culture.
                     var baseSettlement = validHideouts.GetRandomElement();
                     if (baseSettlement is null)
                     {
@@ -296,24 +260,22 @@ namespace BanditMilitias
                         ?? Clan.BanditFactions?.FirstOrDefault()
                         ?? baseSettlement.OwnerClan;
 
-                    bool isNavalClan = banditClan?.HasNavalNavigationCapability == true;
-
-                    // Respect the SpawnLandMilitias / SpawnNavalMilitias settings
-                    if (isNavalClan && !Globals.Settings.SpawnNavalMilitias)
+                    // This mod focuses on land-only bandit militias — skip naval clans entirely.
+                    if (banditClan?.HasNavalNavigationCapability == true)
                     {
-                        Logger.LogDebug($"SpawnBM: skipping naval spawn for {banditClan?.Name} — naval militias disabled by settings.");
+                        Logger.LogDebug($"SpawnBM: skipping naval clan {banditClan?.Name} — naval militias not supported.");
                         continue;
                     }
 
-                    if (!isNavalClan && !Globals.Settings.SpawnLandMilitias)
+                    if (!Globals.Settings.SpawnLandMilitias)
                     {
                         Logger.LogDebug($"SpawnBM: skipping land spawn for {banditClan?.Name} — land militias disabled by settings.");
                         continue;
                     }
 
-                    // Ensure the home settlement matches the clan's navigation type
+                    // Only use non-seaside hideouts for land clans
                     var settlement = validHideouts
-                        .WhereQ(s => s.StringId.StartsWith("hideout_seaside") == isNavalClan)
+                        .WhereQ(s => !s.StringId.StartsWith("hideout_seaside"))
                         .ToListQ()
                         .GetRandomElement()
                         ?? baseSettlement;
@@ -368,12 +330,8 @@ namespace BanditMilitias
                         continue;
                     }
 
-                    // Per-clan cap — naval and land clans have separate limits since
-                    // naval clans have far fewer native parties and flood the map faster.
-                    bool isNavalClan2 = banditClan?.HasNavalNavigationCapability == true;
-                    int clanCap = isNavalClan2
-                        ? Globals.Settings.MaxNavalPartiesPerClan
-                        : Globals.Settings.MaxLandPartiesPerClan;
+                    // Per-clan cap
+                    int clanCap = Globals.Settings.MaxLandPartiesPerClan;
 
                     if (clanCap > 0)
                     {
@@ -381,7 +339,7 @@ namespace BanditMilitias
                             .CountQ(bm => bm.MobileParty?.ActualClan == banditClan);
                         if (partiesForClan >= clanCap)
                         {
-                            Logger.LogDebug($"SpawnBM: skipping spawn for {banditClan?.Name} ({(isNavalClan2 ? "naval" : "land")}) — at cap ({partiesForClan}/{clanCap}).");
+                            Logger.LogDebug($"SpawnBM: skipping spawn for {banditClan?.Name} — at cap ({partiesForClan}/{clanCap}).");
                             continue;
                         }
                     }
@@ -406,8 +364,7 @@ namespace BanditMilitias
                         continue;
                     }
 
-                    if (!banditMilitia.HasNavalNavigationCapability)
-                        banditMilitia.DesiredAiNavigationType = MobileParty.NavigationType.Default;
+                    banditMilitia.DesiredAiNavigationType = MobileParty.NavigationType.Default;
 
                     DoPowerCalculations();
                     Logger.LogDebug($"Spawned {banditMilitia.Name}({banditMilitia.StringId}) at {banditMilitia.Position.ToVec2()}.");
@@ -442,18 +399,6 @@ namespace BanditMilitias
 
                 if (targetParty?.Position == null)
                     return;
-
-                bool playerIsAtSea = targetParty.IsCurrentlyAtSea;
-                string homeSettlementId = banditMilitia.GetBM()?.HomeSettlement?.StringId ?? "NULL";
-                bool militiaIsSeaType = homeSettlementId.StartsWith("hideout_seaside");
-
-                Logger.LogDebug($"TeleportCheck: {banditMilitia.Name} | homeSettlement={homeSettlementId} | playerIsAtSea={playerIsAtSea} | militiaIsSeaType={militiaIsSeaType}");
-
-                if (playerIsAtSea != militiaIsSeaType)
-                {
-                    Logger.LogDebug($"Skipping teleport of {banditMilitia.Name} — terrain mismatch");
-                    return;
-                }
 
                 banditMilitia.Position = targetParty.Position;
                 Logger.LogDebug($"Teleported {banditMilitia.Name} to player at {banditMilitia.Position.ToVec2()}");

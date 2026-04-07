@@ -25,7 +25,6 @@ namespace BanditMilitias
         [SaveableField(4)] public Dictionary<Hero, float> Avoidance = new();
         [SaveableField(5)] private Hero leader;
         [SaveableField(6)] private Settlement homeSettlement;
-        [SaveableField(7)] public CampaignVec2 NavalPatrolPosition;
         [CachedData] private TextObject cachedName;
 
         public override Settlement HomeSettlement => homeSettlement;
@@ -76,7 +75,7 @@ namespace BanditMilitias
 
         protected override void OnMobilePartySetOnCreation()
         {
-            // ActualClan must be set here — before OnInitialize fires —
+            // ActualClan must be set here ï¿½ before OnInitialize fires ï¿½
             // because base.OnInitialize() calls this.Clan.OnWarPartyAdded(this)
             // which reads MobileParty.ActualClan. If null it crashes.
             MobileParty.ActualClan = _targetClan;
@@ -103,7 +102,7 @@ namespace BanditMilitias
 
             // Assign the bandit clan to the hero. Verified safe from KillCharacterAction source:
             // - IsBanditFaction guard prevents DestroyClanAction from firing
-            // - GiveGoldAction targets the bandit faction dummy leader — harmless void
+            // - GiveGoldAction targets the bandit faction dummy leader ï¿½ harmless void
             // - No kingdom succession logic applies to bandit faction heroes
             hero.Clan = _targetClan;
             //hero.UpdateHomeSettlement();

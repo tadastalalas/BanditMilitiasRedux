@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Helpers;
 using Microsoft.Extensions.Logging;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -127,51 +126,6 @@ namespace BanditMilitias
             CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, SpawnBM);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, MobilePartyDestroyed);
             CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, DailyTick);
-            CampaignEvents.AiHourlyTickEvent.AddNonSerializedListener(this, AiHourlyTick);
-        }
-
-        /// <summary>
-        /// Direct equivalent of <c>PiratesCampaignBehavior.AiHourlyTick</c>.
-        /// Injects a naval patrol score so the engine's AI arbitration always
-        /// keeps naval BMs at sea, even after merges or save/load cycles.
-        /// </summary>
-        private static void AiHourlyTick(MobileParty mobileParty, PartyThinkParams p)
-        {
-            if (mobileParty?.IsActive != true
-                || !mobileParty.IsBM()
-                || !mobileParty.HasNavalNavigationCapability)
-                return;
-
-            var bm = mobileParty.GetBM();
-            if (bm == null)
-                return;
-
-            // BUG 2 FIX — after a merge the new party spawns at the merge point
-            // which may not be classified as "at sea" yet, so IsCurrentlyAtSea is
-            // false and NavalPatrolPosition may be stale / a land face.
-            // Recompute NavalPatrolPosition from the current position whenever the
-            // stored value is zero or the party is not yet moving.
-            if (bm.NavalPatrolPosition == CampaignVec2.Zero
-                || mobileParty.DefaultBehavior == AiBehavior.Hold
-                || mobileParty.DefaultBehavior == AiBehavior.None)
-            {
-                var freshPos = NavigationHelper.FindPointAroundPosition(
-                    mobileParty.Position, MobileParty.NavigationType.Naval, 20f, 0f, true, false);
-                bm.NavalPatrolPosition = freshPos;
-                mobileParty.SetMovePatrolAroundPoint(freshPos, MobileParty.NavigationType.Naval);
-            }
-
-            var patrolPos = bm.NavalPatrolPosition;
-
-            // Identical to vanilla: PatrolAroundPoint + Naval + score 5f
-            var behaviorData = new AIBehaviorData(
-                patrolPos,
-                AiBehavior.PatrolAroundPoint,
-                MobileParty.NavigationType.Naval,
-                false, false, false);
-
-            var score = new ValueTuple<AIBehaviorData, float>(behaviorData, 5f);
-            p.AddBehaviorScore(in score);
         }
 
         private void DailyTick()
@@ -365,10 +319,7 @@ namespace BanditMilitias
             // --- Stuck detection: runs unconditionally for every BM every tick ---
             // Must be here, NOT inside BMThink, because BMThink is skipped when
             // nearby bandits exist — which is always true when parties are clumping.
-            // --- Stuck detection: land-only BMs ---
-            // Naval BMs cannot get stuck on land — SetLandNavigationAccess(false) prevents it.
             if (mobileParty.IsBM()
-                && !mobileParty.HasNavalNavigationCapability
                 && !mobileParty.IsCurrentlyAtSea
                 && mobileParty.Ai?.IsDisabled == false
                 && mobileParty.Ai?.DoNotMakeNewDecisions == false)
@@ -411,10 +362,7 @@ namespace BanditMilitias
                             {
                                 var escapeTarget = escapePool.GetRandomElement();
                                 Logger.LogDebug($"{mobileParty.Name}({mobileParty.StringId}) stuck {newCount}h — escaping to {escapeTarget.Name}");
-                                var navType = mobileParty.HasNavalNavigationCapability
-                                    ? MobileParty.NavigationType.Naval
-                                    : MobileParty.NavigationType.Default;
-                                mobileParty.SetMoveGoToPoint(escapeTarget.GatePosition, navType);
+                                mobileParty.SetMoveGoToPoint(escapeTarget.GatePosition, MobileParty.NavigationType.Default);
                                 return; // don't continue into merge logic this tick
                             }
                         }
@@ -434,21 +382,15 @@ namespace BanditMilitias
             MobileParty mergeTarget = null;
             bool isBM = mobileParty.IsBM();
 
-            // Respect the SpawnLandMilitias / SpawnNavalMilitias settings.
-            // If the party's type is disabled, skip all merge/AI logic entirely.
-            if (isBM || mobileParty.HasNavalNavigationCapability)
+            // This mod focuses on land-only bandit militias. Skip naval parties entirely.
+            if (mobileParty.HasNavalNavigationCapability)
+                return;
+
+            // Respect the SpawnLandMilitias setting.
+            if (isBM && !Globals.Settings.SpawnLandMilitias)
             {
-                bool isNavalParty = mobileParty.HasNavalNavigationCapability;
-                if (isNavalParty && !Globals.Settings.SpawnNavalMilitias)
-                {
-                    BMThink(mobileParty);
-                    return;
-                }
-                if (!isNavalParty && !Globals.Settings.SpawnLandMilitias)
-                {
-                    BMThink(mobileParty);
-                    return;
-                }
+                BMThink(mobileParty);
+                return;
             }
 
             try
@@ -542,9 +484,8 @@ namespace BanditMilitias
                         if (party == mobileParty)
                             continue;
 
-                        if (mobileParty.HasNavalNavigationCapability
-                            && mobileParty.ActualClan != null
-                            && party.ActualClan != mobileParty.ActualClan)
+                        // Skip naval parties — this mod focuses on land-only bandit militias.
+                        if (party.HasNavalNavigationCapability)
                             continue;
 
                         if (party.IsBandit && party.MapEvent is null &&
@@ -606,11 +547,8 @@ namespace BanditMilitias
                     }
                     else if (mobileParty.TargetParty != mergeTarget)
                     {
-                        var navType = mobileParty.IsCurrentlyAtSea
-                            ? MobileParty.NavigationType.Naval
-                            : MobileParty.NavigationType.Default;
-                        mobileParty.SetMoveEngageParty(mergeTarget, navType);
-                        mergeTarget.SetMoveEngageParty(mobileParty, navType);
+                        mobileParty.SetMoveEngageParty(mergeTarget, MobileParty.NavigationType.Default);
+                        mergeTarget.SetMoveEngageParty(mobileParty, MobileParty.NavigationType.Default);
                     }
                 }
                 else
