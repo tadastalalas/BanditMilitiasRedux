@@ -7,22 +7,14 @@
     <LangVersion>default</LangVersion>
     <Nullable>disable</Nullable>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
     <ModuleId>$(MSBuildProjectName)</ModuleId>
     <ModuleName>$(MSBuildProjectName)</ModuleName>
     <ModuleUrl>https://www.nexusmods.com/mountandblade2bannerlord/mods/9064</ModuleUrl>
     <GameFolder>$(BANNERLORD_GAME_DIR)</GameFolder>
     <GameBinariesFolder Condition="Exists('$(GameFolder)\bin\Win64_Shipping_Client\Bannerlord.exe')">Win64_Shipping_Client</GameBinariesFolder>
     <GameBinariesFolder Condition="Exists('$(GameFolder)\bin\Gaming.Desktop.x64_Shipping_Client\Bannerlord.exe')">Gaming.Desktop.x64_Shipping_Client</GameBinariesFolder>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugType>full</DebugType>
-    <OutputPath>$(GameFolder)\Modules\$(MSBuildProjectName)\bin\$(GameBinariesFolder)\</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>$(GameFolder)\Modules\$(MSBuildProjectName)\bin\$(GameBinariesFolder)\</OutputPath>
   </PropertyGroup>
 
   <!-- Game DLL references (dynamic binary folder) -->
@@ -77,8 +69,13 @@
     <Error Condition="'$(GameBinariesFolder)' == ''" Text="BANNERLORD_GAME_DIR is not set or the Bannerlord executable was not found." />
   </Target>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="CopyModuleFiles" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /e /y /i &quot;$(ProjectDir)_Module\&quot; &quot;$(GameFolder)\Modules\$(MSBuildProjectName)&quot;" />
+  </Target>
+
+  <Target Name="CleanupExtraFolders" AfterTargets="Build;CopyModuleFiles">
+    <RemoveDir Directories="$(GameFolder)\Modules\$(MSBuildProjectName)\bin\$(GameBinariesFolder)\net6" />
+    <RemoveDir Directories="$(GameFolder)\Modules\$(MSBuildProjectName)\bin\$(GameBinariesFolder)\net472" />
   </Target>
 
 </Project>

@@ -19,11 +19,6 @@ using TaleWorlds.MountAndBlade;
 using static BanditMilitias.Globals;
 using Module = TaleWorlds.MountAndBlade.Module;
 
-// ReSharper disable ConditionIsAlwaysTrueOrFalse
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable UnusedMember.Local
-// ReSharper disable InconsistentNaming
-
 namespace BanditMilitias
 {
     public class SubModule : MBSubModuleBase
@@ -50,7 +45,6 @@ namespace BanditMilitias
             if (MEOWMEOW)
                 AccessTools.Field(typeof(Module), "_splashScreenPlayed").SetValue(Module.CurrentModule, true);
             RunManualPatches();
-            //harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
         // need to cache the banners before CEK adds background colours which
