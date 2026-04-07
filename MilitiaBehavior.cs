@@ -342,10 +342,6 @@ namespace BanditMilitias
                             StuckTracker.Remove(mobileParty);
 
                             // GatePosition is the navmesh entry point — safe for SetMoveGoToPoint.
-                            // SetMovePatrolAroundSettlement must NOT be used here: it calls into
-                            // GetNavalPatrolBehavior → GetPathDistanceBetweenAIFaces in native code,
-                            // which crashes with AccessViolationException when the target settlement
-                            // has no valid land AI navmesh face (coastal/island hideouts etc.).
                             var escapePool = Hideouts
                                 .WhereQ(s => s != null
                                     && s.GatePosition.ToVec2().Distance(currentPos2D) > EscapeMinDistance)

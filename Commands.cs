@@ -6,7 +6,6 @@ using SandBox.View.Map;
 using SandBox.ViewModelCollection.Map;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
@@ -47,8 +46,6 @@ internal class Commands
                 if (Input.IsKeyPressed(InputKey.F1)) TeleportToRandomArmy();
 
                 if (Input.IsKeyPressed(InputKey.F2)) TeleportAllRegularBanditsToMe();
-
-                if (Input.IsKeyPressed(InputKey.F3)) TeleportToRandomSeasideHideout();
             }
             
             if (superKey && Input.IsKeyPressed(InputKey.F8)) ShowAllPartiesOnMap();
@@ -119,15 +116,6 @@ internal class Commands
         {
             Logger.LogError(ex, "Error clearing mod data.");
         }
-    }
-
-    private static void TeleportToRandomSeasideHideout()
-    {
-        Settlement hideout = Hideouts.WhereQ(h => h.StringId.StartsWith("hideout_seaside") && h.Hideout.IsInfested).GetRandomElementInefficiently();
-        if (hideout is null) return;
-        InformationManager.DisplayMessage(new InformationMessage($"Hideout: {hideout.StringId}"));
-        MobileParty.MainParty.Position = hideout.GatePosition;
-        MapScreen.Instance.TeleportCameraToMainParty();
     }
 
     private static void TeleportAllRegularBanditsToMe()

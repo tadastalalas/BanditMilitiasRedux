@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using BanditMilitias.Helpers;
 using HarmonyLib;
-using Helpers;
 using Microsoft.Extensions.Logging;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.MapEvents;
-using TaleWorlds.CampaignSystem.Naval;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -129,19 +127,17 @@ namespace BanditMilitias
                     : mergeTarget.LeaderHero;
                 Logger.LogDebug($"TryMergeParties: leaderHero={leaderHero?.Name.ToString() ?? "NULL"}");
 
-                bool mergedClanIsNaval = mobileParty.ActualClan?.HasNavalNavigationCapability == true
-                    || mergeTarget.ActualClan?.HasNavalNavigationCapability == true;
-
-                // Respect the SpawnLandMilitias / SpawnNavalMilitias settings
-                if (mergedClanIsNaval && !Globals.Settings.SpawnNavalMilitias)
+                // This mod focuses on land-only bandit militias — block merges involving naval parties.
+                if (mobileParty.ActualClan?.HasNavalNavigationCapability == true
+                    || mergeTarget.ActualClan?.HasNavalNavigationCapability == true)
                 {
-                    Logger.LogDebug($"TryMergeParties: skipping naval merge for {mobileParty.StringId} + {mergeTarget.StringId} — naval militias disabled by settings.");
+                    Logger.LogDebug($"TryMergeParties: skipping merge for {mobileParty.StringId} + {mergeTarget.StringId} — naval parties not supported.");
                     mobileParty.SetMoveModeHold();
                     mergeTarget.SetMoveModeHold();
                     return false;
                 }
 
-                if (!mergedClanIsNaval && !Globals.Settings.SpawnLandMilitias)
+                if (!Globals.Settings.SpawnLandMilitias)
                 {
                     Logger.LogDebug($"TryMergeParties: skipping land merge for {mobileParty.StringId} + {mergeTarget.StringId} — land militias disabled by settings.");
                     mobileParty.SetMoveModeHold();
@@ -154,12 +150,12 @@ namespace BanditMilitias
                 Settlement leaderHomeSettlement = leaderHero?.HomeSettlement?.IsHideout ?? false ? leaderHero.HomeSettlement : null;
 
                 Settlement bestSettlement = new[] { leaderHomeSettlement, mobilePartyHomeSettlement, mergeTargetHomeSettlement }
-                    .FirstOrDefault(s => s != null && s.StringId.StartsWith("hideout_seaside") == mergedClanIsNaval);
+                    .FirstOrDefault(s => s != null && !s.StringId.StartsWith("hideout_seaside"));
 
                 if (bestSettlement is null)
                 {
                     bestSettlement = Hideouts
-                        .WhereQ(s => s.StringId.StartsWith("hideout_seaside") == mergedClanIsNaval)
+                        .WhereQ(s => !s.StringId.StartsWith("hideout_seaside"))
                         .OrderByQ(s => s.GatePosition.ToVec2().Distance(mobileParty.Position.ToVec2()))
                         .FirstOrDefault()
                         ?? Hideouts.OrderByQ(s => s.GatePosition.ToVec2().Distance(mobileParty.Position.ToVec2())).FirstOrDefault();
@@ -170,10 +166,7 @@ namespace BanditMilitias
                     }
                 }
 
-                var sourceClanWithShips = (mobileParty.ActualClan?.HasNavalNavigationCapability == true ? mobileParty.ActualClan : null)
-                    ?? (mergeTarget.ActualClan?.HasNavalNavigationCapability == true ? mergeTarget.ActualClan : null);
-                var mergedClan = sourceClanWithShips
-                    ?? mobileParty.ActualClan
+                var mergedClan = mobileParty.ActualClan
                     ?? mergeTarget.ActualClan
                     ?? Clan.BanditFactions.FirstOrDefault(c => c.Culture == bestSettlement.Culture)
                     ?? bestSettlement.OwnerClan;
@@ -190,8 +183,7 @@ namespace BanditMilitias
                     InitMilitia(bm, rosters, mobileParty.Position);
                     Logger.LogDebug($"TryMergeParties: InitMilitia done, bm.LeaderHero={bm.LeaderHero?.Name.ToString() ?? "NULL"}, bm.IsActive={bm.IsActive}");
 
-                    if (!bm.HasNavalNavigationCapability)
-                        bm.DesiredAiNavigationType = MobileParty.NavigationType.Default;
+                    bm.DesiredAiNavigationType = MobileParty.NavigationType.Default;
 
                     var calculatedAvoidance = new Dictionary<Hero, float>();
                     void CalcAverageAvoidance(ModBanditMilitiaPartyComponent BM)
@@ -280,12 +272,10 @@ namespace BanditMilitias
                 return false;
             }
 
-            // Respect the SpawnLandMilitias / SpawnNavalMilitias settings — no split
-            // means the party simply continues as-is rather than being destroyed.
-            bool isNavalParty = mobileParty.ActualClan?.HasNavalNavigationCapability == true;
-            if (isNavalParty && !Globals.Settings.SpawnNavalMilitias)
+            // This mod focuses on land-only bandit militias — block splitting for naval parties.
+            if (mobileParty.ActualClan?.HasNavalNavigationCapability == true)
                 return false;
-            if (!isNavalParty && !Globals.Settings.SpawnLandMilitias)
+            if (!Globals.Settings.SpawnLandMilitias)
                 return false;
 
             int roll = MBRandom.RandomInt(0, 101);
@@ -427,15 +417,13 @@ namespace BanditMilitias
                     party2.AddToCounts(troop, 1);
                 }
 
-                var originalIsNaval = original.ActualClan?.HasNavalNavigationCapability == true;
                 var splitHome = original.HomeSettlement;
 
-                // If the original's HomeSettlement doesn't match the clan's navigation
-                // type (can happen with old saves or bad merges), find the correct one.
-                if (splitHome == null || splitHome.StringId.StartsWith("hideout_seaside") != originalIsNaval)
+                // If the original's HomeSettlement is a seaside hideout, find a land one instead.
+                if (splitHome == null || splitHome.StringId.StartsWith("hideout_seaside"))
                 {
                     splitHome = Hideouts
-                        .WhereQ(s => s.StringId.StartsWith("hideout_seaside") == originalIsNaval)
+                        .WhereQ(s => !s.StringId.StartsWith("hideout_seaside"))
                         .OrderByQ(s => s.GatePosition.ToVec2().Distance(original.Position.ToVec2()))
                         .FirstOrDefault()
                         ?? original.HomeSettlement;
@@ -471,44 +459,9 @@ namespace BanditMilitias
         {
             try
             {
-                if (militia.ActualClan?.HasNavalNavigationCapability == true
-                    && militia.Party.Ships.Count == 0)
-                {
-                    var hulls = militia.ActualClan.DefaultPartyTemplate.ShipHulls;
-                    if (hulls != null && hulls.Count > 0)
-                    {
-                        int troopCount = rosters[0].TotalManCount;
-                        int capacity = 0;
-                        int safetyLimit = 50;
-                        while (capacity < troopCount && safetyLimit-- > 0)
-                        {
-                            var stack = hulls.GetRandomElement();
-                            new Ship(stack.ShipHull) { Owner = militia.Party };
-                            capacity += stack.ShipHull.TotalCrewCapacity;
-                        }
-                        Logger.LogTrace($"{militia.Name}({militia.StringId}) assigned {militia.Party.Ships.Count} ships for {troopCount} troops (capacity={capacity}).");
-                    }
-                }
-
                 militia.InitializeMobilePartyAtPosition(rosters[0], rosters[1], position);
                 ConfigureMilitia(militia);
                 TrainMilitia(militia);
-
-                if (militia.HasNavalNavigationCapability)
-                {
-                    militia.SetLandNavigationAccess(false);
-                    militia.DesiredAiNavigationType = MobileParty.NavigationType.Naval;
-
-                    // Vanilla PiratesCampaignBehavior.GetSpawnPosition always resolves
-                    // the patrol anchor via NavigationHelper with NavigationType.Naval,
-                    // guaranteeing a valid sea navmesh face. We do the same here so that
-                    // SpawnBM's GatePosition (which may be coastal) is never used raw.
-                    var navalPatrolPos = NavigationHelper.FindPointAroundPosition(
-                        position, MobileParty.NavigationType.Naval, 20f, 0f, true, false);
-
-                    militia.GetBM().NavalPatrolPosition = navalPatrolPos;
-                    militia.SetMovePatrolAroundPoint(navalPatrolPos, MobileParty.NavigationType.Naval);
-                }
 
                 Logger.LogTrace($"{militia.Name}({militia.StringId})[{militia.ActualClan}] initialized with {militia.MemberRoster.TotalRegulars} troops and {militia.MemberRoster.TotalHeroes} heroes. [{militia.MemberRoster.GetTroopRoster()
                     .WhereQ(t => t.Character.IsHero)
