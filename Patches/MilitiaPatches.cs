@@ -78,8 +78,11 @@ namespace BanditMilitias.Patches
                 if (Globals.Settings.RandomBanners &&
                     characterObject.HeroObject?.PartyBelongedTo?.IsBM() == true)
                 {
-                    var component = (ModBanditMilitiaPartyComponent)characterObject.HeroObject.PartyBelongedTo.PartyComponent;
-                    bannerKey = component.BannerKey;
+                    var component = characterObject.HeroObject.PartyBelongedTo.PartyComponent as ModBanditMilitiaPartyComponent;
+                    if (component?.BannerKey is not null)
+                    {
+                        bannerKey = component.BannerKey;
+                    }
                 }
             }
         }
@@ -92,7 +95,12 @@ namespace BanditMilitias.Patches
             {
                 if (__instance.IsMobile && __instance.MobileParty.IsBM())
                 {
-                    __result = __instance.MobileParty.GetBM().Banner;
+                    var bmBanner = __instance.MobileParty.GetBM()?.Banner;
+                    if (bmBanner is not null)
+                    {
+                        __result = bmBanner;
+                    }
+                    // If bmBanner is null, leave __result as-is (original game banner)
                 }
             }
         }
@@ -108,7 +116,11 @@ namespace BanditMilitias.Patches
                     party.IsMobile &&
                     party.MobileParty.IsBM())
                 {
-                    __result = party.MobileParty?.GetBM().Banner;
+                    var bmBanner = party.MobileParty?.GetBM()?.Banner;
+                    if (bmBanner is not null)
+                    {
+                        __result = bmBanner;
+                    }
                 }
             }
         }

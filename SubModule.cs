@@ -53,8 +53,10 @@ namespace BanditMilitias
         {
             for (var i = 0; i < 5000; i++)
             {
-                Banners.Add((Banner)AccessTools.Method(typeof(Banner), "CreateRandomBannerInternal")
-                    .Invoke(typeof(Banner), new object[] { MBRandom.RandomInt(0, int.MaxValue), -1 }));
+                var banner = (Banner)AccessTools.Method(typeof(Banner), "CreateRandomBannerInternal")
+                    .Invoke(typeof(Banner), new object[] { MBRandom.RandomInt(0, int.MaxValue), -1 });
+                if (banner is not null)
+                    Banners.Add(banner);
             }
         }
 
