@@ -46,7 +46,7 @@ namespace BanditMilitias
                     if (party?.MobileParty is null)
                         return;
 
-                    Logger.LogDebug($"{party.Name}({party.MobileParty.StringId} is raiding {village.Name}.");
+                    Logger.LogDebug($"{party.Name}({party.MobileParty.StringId}) is raiding {village.Name}.");
 
                     if (Globals.Settings?.ShowRaids == true && village.Owner?.LeaderHero == Hero.MainHero)
                     {
@@ -70,7 +70,7 @@ namespace BanditMilitias
                     if (party is null)
                         return;
 
-                    Logger.LogDebug($"{party.Name}({party.MobileParty.StringId} has done raiding {m.MapEventSettlement?.Name}.");
+                    Logger.LogDebug($"{party.Name}({party.MobileParty.StringId}) has done raiding {m.MapEventSettlement?.Name}.");
 
                     if (party?.MobileParty?.Ai is not null)
                     {
@@ -133,7 +133,7 @@ namespace BanditMilitias
             // Guard: Ensure Heroes collection exists before processing
             if (Heroes is null)
             {
-                Logger.LogWarning("Heroes collection is null in DailyTick");
+                Logger.LogWarning("Heroes collection is null in DailyTick.");
                 return;
             }
 

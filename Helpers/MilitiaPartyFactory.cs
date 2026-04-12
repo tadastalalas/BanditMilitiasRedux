@@ -284,7 +284,7 @@ namespace BanditMilitias
             int roll = MBRandom.RandomInt(0, 101);
 
             if (roll > Globals.Settings.RandomSplitChance
-                || mobileParty.Party.MemberRoster.TotalManCount > Math.Max(1, CalculatedMaxPartySize * ReductionFactor))
+                || mobileParty.Party.MemberRoster.TotalManCount < Math.Max(1, CalculatedMaxPartySize * ReductionFactor))
             {
                 return false;
             }

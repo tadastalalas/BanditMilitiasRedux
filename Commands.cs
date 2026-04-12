@@ -103,12 +103,7 @@ internal class Commands
     {
         try
         {
-            Logger.LogInformation("Clearing mod data.");
-            for (int index = 0; index < 1; index++)
-            {
-                Nuke();
-            }
-
+            Nuke();
             DoPowerCalculations(true);
         }
         catch (Exception ex)
