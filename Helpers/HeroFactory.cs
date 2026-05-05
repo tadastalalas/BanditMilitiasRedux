@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using BanditMilitias.Helpers;
 using HarmonyLib;
 using Helpers;
@@ -13,16 +16,10 @@ using static BanditMilitias.Globals;
 
 namespace BanditMilitias
 {
-    /// <summary>
-    /// Responsible for creating and initialising bandit militia hero objects.
-    /// All Harmony field refs that are exclusive to hero creation live here.
-    /// </summary>
     internal static class HeroFactory
     {
         private static ILogger _logger;
         private static ILogger Logger => _logger ??= LogFactory.Get<SubModule>();
-
-        // ── Harmony field refs (hero-creation exclusive) ─────────────────────────
 
         internal static readonly AccessTools.FieldRef<Hero, bool> HasMet =
             AccessTools.FieldRefAccess<Hero, bool>("_hasMet");
@@ -33,8 +30,6 @@ namespace BanditMilitias
         internal static readonly ConstructorInfo HeroDeveloperConstructor =
             AccessTools.Constructor(typeof(HeroDeveloper), [typeof(Hero)]);
 
-        // Declared but not yet called — kept here so they're co-located with the
-        // other hero field refs when they're eventually needed.
         private static readonly AccessTools.FieldRef<Hero, PropertyOwner<CharacterAttribute>> CharacterAttributesField =
             AccessTools.FieldRefAccess<Hero, PropertyOwner<CharacterAttribute>>("_characterAttributes");
 
@@ -47,12 +42,8 @@ namespace BanditMilitias
         private static readonly AccessTools.FieldRef<Hero, PropertyOwner<PerkObject>> HeroPerksField =
             AccessTools.FieldRefAccess<Hero, PropertyOwner<PerkObject>>("_heroPerks");
 
-        // ── Public API ────────────────────────────────────────────────────────────
+        private static readonly HashSet<CultureObject> _blacklistedCultures = [];
 
-        /// <summary>
-        /// Creates a fully initialised hero, registers it in <see cref="Heroes"/>, 
-        /// equips it from the pool, and optionally grants leadership perks.
-        /// </summary>
         internal static Hero CreateHero(Settlement settlement)
         {
             var hero = CreateOrReuseHero(settlement);
@@ -75,12 +66,6 @@ namespace BanditMilitias
             return hero;
         }
 
-        /// <summary>
-        /// Creates a hero via <see cref="CustomizedCreateHeroAtOccupation"/> and
-        /// wires up all required fields so the game treats it as a temporary
-        /// special hero — no clan, no supporter, no death mark.
-        /// Mirrors the pattern used by the game's own quest henchman heroes.
-        /// </summary>
         internal static Hero CreateOrReuseHero(Settlement settlement)
         {
             if (settlement is null)
@@ -100,9 +85,21 @@ namespace BanditMilitias
             HasMet(hero) = false;
             hero.BornSettlement = settlement;
 
-            NameGenerator.Current.GenerateHeroNameAndHeroFullName(
-                hero, out TextObject firstName, out TextObject fullName, false);
-            hero.SetName(fullName, firstName);
+            try
+            {
+                NameGenerator.Current.GenerateHeroNameAndHeroFullName(
+                    hero, out TextObject firstName, out TextObject fullName, false);
+                hero.SetName(fullName, firstName);
+            }
+            catch (Exception ex)
+            {
+                if (hero.Culture is not null)
+                    _blacklistedCultures.Add(hero.Culture);
+
+                Logger.LogWarning(
+                    $"Name regeneration failed for culture '{hero.Culture?.StringId ?? "<null>"}'; " +
+                    $"keeping the name assigned by CreateSpecialHero. ({ex.GetType().Name}: {ex.Message})");
+            }
 
             HeroDeveloperField(hero) = HeroDeveloperConstructor.Invoke([hero]) as HeroDeveloper;
             hero.HeroDeveloper.InitializeHeroDeveloper();
@@ -116,81 +113,98 @@ namespace BanditMilitias
         internal static void RandomizeHeroAppearance(Hero hero)
             => HeroAppearanceService.RandomizeAppearance(hero);
 
-        // ── Private ───────────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Weighted-random selection from <see cref="Globals.HeroTemplates"/> using
-        /// each template's <c>Frequency</c> trait, then creates a special hero from
-        /// the chosen template.
-        /// Clan and supporterOfClan are intentionally null — the hero is a
-        /// temporary combat leader, not a lord.
-        /// Occupation stays as <see cref="Occupation.Bandit"/> inherited from the
-        /// template so that <see cref="Extensions.IsBM(CharacterObject)"/> and all
-        /// downstream identity checks continue to work correctly.
-        /// </summary>
         private static Hero CustomizedCreateHeroAtOccupation(Settlement settlement)
         {
+            const int MaxAttempts = 6;
+
+            for (var attempt = 0; attempt < MaxAttempts; attempt++)
+            {
+                var template = SelectWeightedTemplate(settlement);
+                if (template is null)
+                {
+                    Logger.LogWarning(
+                        "No usable hero templates available for weighted selection " +
+                        "(all candidate cultures have been blacklisted due to broken name lists).");
+                    return null;
+                }
+
+                Hero specialHero;
+                try
+                {
+                    specialHero = HeroCreator.CreateSpecialHero(
+                        template, settlement, null, null);
+                }
+                catch (Exception ex)
+                {
+                    var culture = template.Culture;
+                    if (culture is not null && _blacklistedCultures.Add(culture))
+                    {
+                        Logger.LogWarning(
+                            $"Culture '{culture.StringId}' produced an exception during " +
+                            $"hero creation (likely missing/empty name lists from a broken " +
+                            $"mod or corrupted save). Blacklisting it for this session. " +
+                            $"({ex.GetType().Name}: {ex.Message})");
+                    }
+                    else if (culture is null)
+                    {
+                        Logger.LogError(
+                            $"Hero template {template?.StringId} has no culture and threw " +
+                            $"during CreateSpecialHero: {ex}");
+                        return null;
+                    }
+                    continue;
+                }
+
+                if (specialHero is null)
+                {
+                    Logger.LogWarning(
+                        $"CreateSpecialHero returned null for template {template} at {settlement?.Name}");
+                    continue;
+                }
+
+                specialHero.AddPower(MBRandom.RandomFloat * 20f);
+                specialHero.ChangeState(Hero.CharacterStates.Active);
+
+                specialHero.IsFemale = RollFemale();
+
+                Logger.LogTrace($"Created a new hero {specialHero}");
+                return specialHero;
+            }
+
+            Logger.LogWarning(
+                $"Could not create a hero after {MaxAttempts} attempts; all chosen " +
+                $"templates produced exceptions. Skipping this spawn.");
+            return null;
+        }
+
+        private static CharacterObject SelectWeightedTemplate(Settlement settlement)
+        {
+            static bool IsUsable(CharacterObject co)
+                => co.Culture is null || !_blacklistedCultures.Contains(co.Culture);
+
             var maxWeight = 0;
             foreach (var characterObject in HeroTemplates)
             {
+                if (!IsUsable(characterObject)) continue;
                 var freq = characterObject.GetTraitLevel(DefaultTraits.Frequency) * 10;
                 maxWeight += freq > 0 ? freq : 100;
             }
 
             if (maxWeight == 0)
-            {
-                Logger.LogWarning("No hero templates available for weighted selection.");
                 return null;
-            }
 
-            CharacterObject template = null;
             var remaining = settlement.RandomInt(1, maxWeight + 1);
 
             foreach (var characterObject in HeroTemplates)
             {
+                if (!IsUsable(characterObject)) continue;
                 var freq = characterObject.GetTraitLevel(DefaultTraits.Frequency) * 10;
                 remaining -= freq > 0 ? freq : 100;
                 if (remaining < 0)
-                {
-                    template = characterObject;
-                    break;
-                }
+                    return characterObject;
             }
 
-            // Fallback: RandomInt upper-bound edge case can leave template null
-            template ??= HeroTemplates.GetRandomElement();
-
-            if (template is null)
-            {
-                Logger.LogWarning("Could not select a hero template.");
-                return null;
-            }
-
-            // Pass null for clan and supporterOfClan — same pattern as the game's
-            // own quest henchman heroes (e.g. RivalGangMovingInIssueQuest).
-            // Occupation stays as whatever the bandit template provides (Occupation.Bandit)
-            // so that CharacterObject.IsBM() and all downstream identity checks continue
-            // to work correctly throughout the mod.
-            var specialHero = HeroCreator.CreateSpecialHero(
-                template, settlement, null, null);
-
-            if (specialHero is null)
-            {
-                Logger.LogWarning(
-                    $"CreateSpecialHero returned null for template {template} at {settlement?.Name}");
-                return null;
-            }
-
-            specialHero.AddPower(MBRandom.RandomFloat * 20f);
-            specialHero.ChangeState(Hero.CharacterStates.Active);
-
-            // Set gender BEFORE returning so that RandomizeAppearance (called by
-            // CreateOrReuseHero) reads the correct IsFemale value and generates
-            // gender-appropriate face params.
-            specialHero.IsFemale = RollFemale();
-
-            Logger.LogTrace($"Created a new hero {specialHero}");
-            return specialHero;
+            return HeroTemplates.FirstOrDefault(IsUsable);
         }
 
         private static bool RollFemale()
