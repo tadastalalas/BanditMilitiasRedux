@@ -4,6 +4,7 @@ using SandBox.View.Map;
 using SandBox.ViewModelCollection.Map;
 using SandBox.ViewModelCollection.Map.Tracker;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Issues;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Map.Tracker;
@@ -38,10 +39,15 @@ namespace BanditMilitias.Patches
             public static bool Prefix(MobileParty mobileParty) => !mobileParty.IsBM();
         }
 
-        // ServeAsSoldier issue where the MobileParty isn't a quest party
         internal static void PatchSaSDeserters(ref MobileParty __result)
         {
             Traverse.Create(__result).Field<bool>("IsCurrentlyUsedByAQuest").Value = true;
+        }
+
+        [HarmonyPatch(typeof(DefaultSkillLevelingManager), "OnAIPartyLootCasualties")]
+        public static class DefaultSkillLevelingManagerOnAIPartyLootCasualtiesPatch
+        {
+            public static bool Prefix(Hero winnerPartyLeader) => winnerPartyLeader is not null;
         }
     }
 }

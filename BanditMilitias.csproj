@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>4.4.4</Version>
+    <Version>4.4.6</Version>
     <TargetFramework>net472</TargetFramework>
     <Platforms>x64</Platforms>
     <LangVersion>default</LangVersion>
@@ -57,8 +57,11 @@
   <ItemGroup>
     <None Remove="global.json" />
     <None Remove="bin\**" />
+    <None Remove="BLSource\**" />
     <Compile Remove="bin\**" />
+    <Compile Remove="BLSource\**" />
     <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="BLSource\**" />
   </ItemGroup>
 
   <ItemGroup>
