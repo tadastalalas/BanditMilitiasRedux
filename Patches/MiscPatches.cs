@@ -43,11 +43,5 @@ namespace BanditMilitias.Patches
         {
             Traverse.Create(__result).Field<bool>("IsCurrentlyUsedByAQuest").Value = true;
         }
-
-        [HarmonyPatch(typeof(DefaultSkillLevelingManager), "OnAIPartyLootCasualties")]
-        public static class DefaultSkillLevelingManagerOnAIPartyLootCasualtiesPatch
-        {
-            public static bool Prefix(Hero winnerPartyLeader) => winnerPartyLeader is not null;
-        }
     }
 }
