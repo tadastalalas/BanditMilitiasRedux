@@ -15,26 +15,12 @@ using static BanditMilitias.Globals;
 
 namespace BanditMilitias
 {
-    /// <summary>
-    /// Owns all item/equipment data used to outfit bandit militia parties and
-    /// their heroes. Call <see cref="Populate"/> once on map init, then use
-    /// <see cref="GetRandomEquipmentSet"/> and <see cref="AdjustCavalryCount"/>
-    /// at party creation time.
-    /// </summary>
     internal static class EquipmentPool
     {
-        private static ILogger _logger;
-        private static ILogger Logger => _logger ??= LogFactory.Get<SubModule>();
-
-        // ── Max retries per weapon slot before giving up on a constraint ─────────
-        // Prevents infinite spin when a modded item set contains only bows/shields.
         private const int SlotRetryLimit = 20;
 
-        // ── Harmony field accessor (only used inside BuildViableEquipmentSet) ────
         private static readonly AccessTools.StructFieldRef<EquipmentElement, ItemModifier> ItemModifier =
             AccessTools.StructFieldRefAccess<EquipmentElement, ItemModifier>("<ItemModifier>k__BackingField");
-
-        // ── Blocked items ────────────────────────────────────────────────────────
 
         private static readonly HashSet<string> VerbotenItemStringIds = new()
         {
@@ -77,8 +63,6 @@ namespace BanditMilitias
             "bandit_saddle_desert",
         };
 
-        // ── Owned data ────────────────────────────────────────────────────────────
-
         internal static Dictionary<ItemObject.ItemTypeEnum, List<ItemObject>> ItemTypes    = new();
         internal static List<EquipmentElement> EquipmentItems                              = new();
         internal static List<EquipmentElement> EquipmentItemsNoBow                         = new();
@@ -89,8 +73,6 @@ namespace BanditMilitias
         internal static List<ItemObject>       Saddles                                     = new();
         internal static List<ItemObject>       CamelSaddles                                = new();
         internal static List<ItemObject>       NonCamelSaddles                             = new();
-
-        // ── Lifecycle ─────────────────────────────────────────────────────────────
 
         internal static void Reset()
         {
@@ -106,9 +88,6 @@ namespace BanditMilitias
             NonCamelSaddles = new List<ItemObject>();
         }
 
-        // ── Public API ────────────────────────────────────────────────────────────
-
-        /// <summary>Builds all item lists and pre-generates the equipment pool.</summary>
         internal static void Populate()
         {
             var maxValue = Globals.Settings.MaxItemValue;
@@ -174,7 +153,6 @@ namespace BanditMilitias
                           && x.Item.ItemType != ItemObject.ItemTypeEnum.Crossbow)
                 .ToList();
 
-            // Armour by slot — minimum value of 1000 filters out placeholder items
             foreach (ItemObject.ItemTypeEnum itemType in Enum.GetValues(typeof(ItemObject.ItemTypeEnum)))
             {
                 ItemTypes[itemType] = allItems
@@ -184,27 +162,14 @@ namespace BanditMilitias
                     .ToList();
             }
 
-            // Pre-generate 10 000 ready-to-use equipment sets up front so
-            // party creation never blocks on building one at runtime.
             BanditEquipment = new List<Equipment>(10000);
             for (var i = 0; i < 10000; i++)
                 BanditEquipment.Add(BuildViableEquipmentSet());
-
-            Logger.LogTrace(
-                $"EquipmentPool populated — weapons:{EquipmentItems.Count} " +
-                $"armour:{ItemTypes.Values.Sum(v => v.Count)} " +
-                $"arrows:{Arrows.Count} bolts:{Bolts.Count} " +
-                $"mounts:{Mounts.Count} saddles:{Saddles.Count}");
         }
 
-        /// <summary>Returns a random pre-built equipment set from the pool.</summary>
         internal static Equipment GetRandomEquipmentSet()
             => BanditEquipment.GetRandomElement();
 
-        /// <summary>
-        /// Reduces mounted troops in <paramref name="troopRoster"/> until they
-        /// make up no more than 50 % of the total headcount.
-        /// </summary>
         internal static void AdjustCavalryCount(TroopRoster troopRoster)
         {
             try
@@ -213,7 +178,6 @@ namespace BanditMilitias
 
                 while (safety++ < 200)
                 {
-                    // Re-query each iteration to get fresh counts after removals
                     var mountedTroops = troopRoster.GetTroopRoster()
                         .WhereQ(c => !c.Character.Equipment[10].IsEmpty
                             && !c.Character.IsHero
@@ -246,31 +210,18 @@ namespace BanditMilitias
                         output.ToString());
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 InformationManager.DisplayMessage(new InformationMessage(
                     "Problem adjusting cavalry count, please open a bug report."));
-                Logger.LogError(ex, "Error adjusting cavalry count.");
             }
         }
 
-        /// <summary>Counts mounted (non-hero) troops in a roster.</summary>
         internal static int NumMountedTroops(TroopRoster troopRoster)
             => troopRoster.GetTroopRoster()
                 .WhereQ(e => e.Character.Equipment[10].Item is not null)
                 .SumQ(e => e.Number);
 
-        // ── Private ───────────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Builds one equipment set: 4 weapon slots obeying the bow/shield
-        /// uniqueness rule, plus a full armour set.
-        /// <para>
-        /// Bug fix: each slot now has a <see cref="SlotRetryLimit"/> retry cap
-        /// so an exotic modded item pool (all bows / all shields) cannot cause
-        /// an infinite loop.
-        /// </para>
-        /// </summary>
         private static Equipment BuildViableEquipmentSet()
         {
             var gear       = new Equipment();
@@ -290,7 +241,6 @@ namespace BanditMilitias
                             randomElement = EquipmentItems.GetRandomElement();
                             break;
                         case 2 when !gear[3].IsEmpty:
-                            // Ammo already placed by a bow in slot 0/1 — no bow allowed here
                             randomElement = EquipmentItemsNoBow.GetRandomElement();
                             break;
                         case 2:
@@ -299,7 +249,6 @@ namespace BanditMilitias
                             break;
                     }
 
-                    // Apply a random item modifier when available
                     if (randomElement.Item?.HasArmorComponent == true)
                         ItemModifier(ref randomElement) = randomElement.Item.ArmorComponent
                             .ItemModifierGroup?.ItemModifiers
@@ -310,7 +259,6 @@ namespace BanditMilitias
                             .ItemModifierGroup?.ItemModifiers
                             .GetRandomElementWithPredicate(i => i.PriceMultiplier > 1);
 
-                    // Slot 3 filled by a bow's ammo earlier — we're done
                     if (slot == 3 && !gear[3].IsEmpty)
                         break;
 
@@ -322,10 +270,8 @@ namespace BanditMilitias
                             if (haveBow)
                             {
                                 if (++retries >= SlotRetryLimit)
-                                {
-                                    Logger.LogWarning("BuildViableEquipmentSet: bow retry limit reached, skipping slot.");
                                     continue;
-                                }
+
                                 slot--;
                                 continue;
                             }
@@ -348,10 +294,8 @@ namespace BanditMilitias
                         if (haveShield)
                         {
                             if (++retries >= SlotRetryLimit)
-                            {
-                                Logger.LogWarning("BuildViableEquipmentSet: shield retry limit reached, skipping slot.");
                                 continue;
-                            }
+
                             slot--;
                             continue;
                         }
@@ -373,15 +317,7 @@ namespace BanditMilitias
                 if (ItemTypes[ItemObject.ItemTypeEnum.Cape].Count > 0)
                     gear[9] = new EquipmentElement(ItemTypes[ItemObject.ItemTypeEnum.Cape].GetRandomElement());
             }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error building equipment set.");
-                Logger.LogError(
-                    $"Armour loaded: {ItemTypes.Values.Sum(v => v.Count)}\n\t" +
-                    $"Non-armour loaded: {EquipmentItems.Count}\n\t" +
-                    $"Arrows:{Arrows.Count}\n\tBolts:{Bolts.Count}\n\t" +
-                    $"Mounts:{Mounts.Count}\n\tSaddles:{Saddles.Count}");
-            }
+            catch (Exception) { }
 
             var clone = gear.Clone();
             clone.SyncEquipments = true;

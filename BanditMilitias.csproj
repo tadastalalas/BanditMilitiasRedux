@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>4.4.8</Version>
+    <Version>4.5.0</Version>
     <TargetFramework>net472</TargetFramework>
     <Platforms>x64</Platforms>
     <LangVersion>default</LangVersion>
@@ -65,7 +65,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="_Module\" />
+    <None Include=".github\copilot-instructions.md" />
   </ItemGroup>
 
   <Target Name="CheckGameFolder" BeforeTargets="BeforeBuild">

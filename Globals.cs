@@ -16,79 +16,64 @@ namespace BanditMilitias
 {
     public static class Globals
     {
-        // ── Constants ────────────────────────────────────────────────────────────
-
-        internal const float MergeDistance = 1.5f;
         internal const float FindRadius = 20;
         internal const float MinDistanceFromHideout = 8;
-        internal const float AvoidanceEffectRadius = 100;
+        internal const float MergeDistanceSq = 2.25f;
+        internal const float SpawnHideoutMinPlayerDistanceSq = 10000f;
+        internal const float AvoidanceEffectRadiusSq = 10000f;
+        internal const int AvoidanceIncreaseMin = 15;
+        internal const int AvoidanceIncreaseMax = 35;
+        internal const float StuckDistanceThresholdSq = 225f;
+        internal const int StuckHourLimit = 12;
+        internal const float EscapeMinDistanceSq = 900f;
 
-        // ── Settings & Timers ────────────────────────────────────────────────────
+        internal const int AdjustRadiusSq = 2500;
+        internal const int SettlementFindRange = 200;
+        internal const int SpawnLoopSafetyLimit = 100;
 
         internal static Settings Settings;
         internal static readonly Stopwatch T = new();
 
-        // ── Power & Size Calculations (owned by PowerCalculationService) ─────────
-        // These forwarding properties keep every existing call-site compiling
-        // without modification while the real state lives in one place.
-
-        internal static float CalculatedMaxPartySize     => PowerCalculationService.CalculatedMaxPartySize;
+        internal static float CalculatedMaxPartySize => PowerCalculationService.CalculatedMaxPartySize;
         internal static float CalculatedGlobalPowerLimit => PowerCalculationService.CalculatedGlobalPowerLimit;
-        internal static float GlobalMilitiaPower         => PowerCalculationService.GlobalMilitiaPower;
-        internal static float MilitiaPowerPercent        => PowerCalculationService.MilitiaPowerPercent;
-        internal static float MilitiaPartyAveragePower   => PowerCalculationService.MilitiaPartyAveragePower;
+        internal static float GlobalMilitiaPower => PowerCalculationService.GlobalMilitiaPower;
+        internal static float MilitiaPowerPercent => PowerCalculationService.MilitiaPowerPercent;
+        internal static float MilitiaPartyAveragePower => PowerCalculationService.MilitiaPartyAveragePower;
 
-        // ── Equipment & Items (owned by EquipmentPool) ───────────────────────────
-
-        internal static Dictionary<ItemObject.ItemTypeEnum, List<ItemObject>> ItemTypes    => EquipmentPool.ItemTypes;
-        internal static List<EquipmentElement> EquipmentItems                              => EquipmentPool.EquipmentItems;
-        internal static List<EquipmentElement> EquipmentItemsNoBow                         => EquipmentPool.EquipmentItemsNoBow;
-        internal static List<Equipment>        BanditEquipment                             => EquipmentPool.BanditEquipment;
-        internal static List<ItemObject>       Arrows                                      => EquipmentPool.Arrows;
-        internal static List<ItemObject>       Bolts                                       => EquipmentPool.Bolts;
-        internal static List<ItemObject>       Mounts                                      => EquipmentPool.Mounts;
-        internal static List<ItemObject>       Saddles                                     => EquipmentPool.Saddles;
-        internal static List<ItemObject>       CamelSaddles                                => EquipmentPool.CamelSaddles;
-        internal static List<ItemObject>       NonCamelSaddles                             => EquipmentPool.NonCamelSaddles;
-
-        // ── Party & Hero Tracking ────────────────────────────────────────────────
+        internal static Dictionary<ItemObject.ItemTypeEnum, List<ItemObject>> ItemTypes  => EquipmentPool.ItemTypes;
+        internal static List<EquipmentElement> EquipmentItems => EquipmentPool.EquipmentItems;
+        internal static List<EquipmentElement> EquipmentItemsNoBow => EquipmentPool.EquipmentItemsNoBow;
+        internal static List<Equipment> BanditEquipment => EquipmentPool.BanditEquipment;
+        internal static List<ItemObject> Arrows => EquipmentPool.Arrows;
+        internal static List<ItemObject> Bolts => EquipmentPool.Bolts;
+        internal static List<ItemObject> Mounts => EquipmentPool.Mounts;
+        internal static List<ItemObject> Saddles => EquipmentPool.Saddles;
+        internal static List<ItemObject> CamelSaddles => EquipmentPool.CamelSaddles;
+        internal static List<ItemObject> NonCamelSaddles => EquipmentPool.NonCamelSaddles;
 
         internal static IReadOnlyList<ModBanditMilitiaPartyComponent> AllBMs => PowerCalculationService.GetCachedBMs();
-        internal static List<Hero>            Heroes       = new();
+        internal static List<Hero> Heroes = new();
         internal static List<CharacterObject> HeroTemplates = new();
         internal static int RaidCap;
 
-        // ── Character Pools ──────────────────────────────────────────────────────
-
         internal static Dictionary<CultureObject, List<CharacterObject>> Recruits = new();
-        internal static List<CharacterObject> BasicRanged  = new();
+        internal static List<CharacterObject> BasicRanged = new();
         internal static List<CharacterObject> BasicInfantry = new();
-        internal static List<CharacterObject> BasicCavalry  = new();
+        internal static List<CharacterObject> BasicCavalry = new();
         internal static CharacterObject Giant;
-
-        // ── Map & UI ─────────────────────────────────────────────────────────────
 
         internal static Dictionary<MobileParty, BannerImageIdentifierVM> PartyImageMap = new();
         internal static readonly List<Banner> Banners = new();
-        internal static MapTrackerProvider MapTrackerProvider;
-        internal static object TrackerContainer;
-
-        // ── World Objects ────────────────────────────────────────────────────────
 
         internal static List<Settlement> Hideouts;
+        internal static List<Settlement> Villages;
         internal static Clan Looters;
-        internal static Clan Wights; // ROT
+        internal static Clan Wights;
         internal static HashSet<int> LordConversationTokens;
-
-        // ── Stuck Detection (transient – not saved, resets on load) ──────────────
 
         internal static readonly Dictionary<MobileParty, (Vec2 LastPos, int HourCount)> StuckTracker = new();
 
-        // ── Compatibility ────────────────────────────────────────────────────────
-
-        internal static CultureObject BlackFlag; // ArmsDealer compatibility
-
-        // ── Difficulty / Gold Maps ────────────────────────────────────────────────
+        internal static CultureObject BlackFlag;
 
         internal static Dictionary<TextObject, int> DifficultyXpMap = new()
         {
@@ -98,6 +83,8 @@ namespace BanditMilitias
             { new TextObject("{=BMXpHardest}Hardest"), 900 },
         };
 
+        internal static readonly int[] DifficultyXpValues = { 0, 300, 600, 900 };
+
         internal static Dictionary<TextObject, int> GoldMap = new()
         {
             { new TextObject("{=BMGoldLow}Low"),         250 },
@@ -106,20 +93,20 @@ namespace BanditMilitias
             { new TextObject("{=BMGoldRichest}Richest"), 2000 },
         };
 
-        // ── Lifecycle ────────────────────────────────────────────────────────────
+        internal static readonly int[] GoldValues = { 250, 500, 900, 2000 };
 
         public static void ClearGlobals()
         {
-            PartyImageMap    = new();
-            Recruits         = new();
-            Banners.Clear();
-            RaidCap          = 0;
-            HeroTemplates    = new();
-            Hideouts         = new();
-            StuckTracker.Clear();
-
             PowerCalculationService.Reset();
             EquipmentPool.Reset();
+            Banners.Clear();
+            StuckTracker.Clear();
+            PartyImageMap = new();
+            Recruits = new();
+            RaidCap = 0;
+            HeroTemplates = new();
+            Hideouts = new();
+            Villages = new();
         }
     }
 }

@@ -16,9 +16,6 @@ namespace BanditMilitias
 {
     public class ModBanditMilitiaPartyComponent : WarPartyComponent
     {
-        private static ILogger _logger;
-        private static ILogger Logger => _logger ??= LogFactory.Get<ModBanditMilitiaPartyComponent>();
-
         [SaveableField(1)] public readonly Banner Banner;
         [SaveableField(2)] public readonly string BannerKey;
         [SaveableField(3)] public CampaignTime LastMergedOrSplitDate = CampaignTime.Now;
@@ -29,7 +26,7 @@ namespace BanditMilitias
 
         public override Settlement HomeSettlement => homeSettlement;
         public override Hero Leader => leader;
-        public override Hero PartyOwner => MobileParty?.ActualClan?.Leader; // clan is null during nuke  
+        public override Hero PartyOwner => MobileParty?.ActualClan?.Leader;
         private static readonly MethodInfo OnWarPartyRemoved = AccessTools.Method(typeof(Clan), "OnWarPartyRemoved");
 
         public override TextObject Name
@@ -54,10 +51,6 @@ namespace BanditMilitias
             }
             else
             {
-                if (leader is not null)
-                {
-                    Logger.LogDebug($"{newLeader.Name} is taking over {MobileParty.Name}({MobileParty.StringId}) from {leader.Name}[{leader.HeroState}].");
-                }
                 leader = newLeader;
                 newLeader.Clan = MobileParty.ActualClan;
                 ClearCachedName();
@@ -75,9 +68,6 @@ namespace BanditMilitias
 
         protected override void OnMobilePartySetOnCreation()
         {
-            // ActualClan must be set here — before OnInitialize fires —
-            // because base.OnInitialize() calls this.Clan.OnWarPartyAdded(this)
-            // which reads MobileParty.ActualClan. If null it crashes.
             MobileParty.ActualClan = _targetClan;
         }
 
@@ -95,11 +85,10 @@ namespace BanditMilitias
 
             _targetClan = clan ?? settlement.OwnerClan;
 
-            hero ??= CreateHero(settlement);
+            hero ??= HeroFactory.CreateHero(settlement);
 
             if (hero is null)
             {
-                Logger.LogError($"Failed to create hero for BM at {settlement?.Name} — party will be leaderless.");
                 homeSettlement = settlement;
                 return;
             }

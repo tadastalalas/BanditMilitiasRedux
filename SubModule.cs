@@ -25,10 +25,7 @@ namespace BanditMilitias
     {
         public static readonly string Name = typeof(SubModule).Namespace!;
         public static readonly PlatformDirectoryPath ConfigDir = EngineFilePaths.ConfigsPath + $"/ModSettings/Global/{Name}";
-        public static readonly bool MEOWMEOW = File.Exists(new PlatformFilePath(ConfigDir, "i_am_a_cat").FileFullPath);
-        public static readonly Harmony harmony = new("ca.gnivler.bannerlord.BanditMilitias");
-        private static ILogger _logger;
-        private static ILogger Logger => _logger ??= LogFactory.Get<SubModule>();
+        public static readonly Harmony harmony = new("BanditMilitiasRedux");
         public static SubModule Instance { get; private set; }
 
         public void OnServiceRegistration()
@@ -42,13 +39,9 @@ namespace BanditMilitias
         {
             Instance = this;
             OnServiceRegistration();
-            if (MEOWMEOW)
-                AccessTools.Field(typeof(Module), "_splashScreenPlayed").SetValue(Module.CurrentModule, true);
             RunManualPatches();
         }
 
-        // Need to cache the banners before CEK adds background colours which
-        // Causes custom banners to crash for reasons unknown
         internal static void CacheBanners()
         {
             for (var i = 0; i < 5000; i++)
@@ -64,17 +57,13 @@ namespace BanditMilitias
         {
             Globals.Settings = Settings.Instance;
             if (Globals.Settings is null)
-            {
-                Logger.LogError("MCM Settings.Instance is null — mod cannot initialize settings.");
                 return;
-            }
+
             Globals.Settings!.XpGift = new(Globals.DifficultyXpMap.Keys.SelectQ(k => k.ToString()), 1);
             Globals.Settings!.GoldReward = new(Globals.GoldMap.Keys.SelectQ(k => k.ToString()), 1);
             AdjustForLoadOrder();
-            Logger.LogInformation($"{Globals.Settings!.DisplayName} starting up...");
         }
 
-        // Calradia Expanded: Kingdoms
         private static void AdjustForLoadOrder()
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -85,16 +74,9 @@ namespace BanditMilitias
                     Globals.Settings.RandomBanners = false;
         }
 
-        protected override void OnApplicationTick(float dt)
-        {
-            Commands.OnTick();
-        }
-
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
             harmony.PatchAll(Assembly.GetExecutingAssembly());
-            // Manual patch applied AFTER PatchAll so it registers last and
-            // runs after all other postfixes (including BanditVoiceFix).
             VoicePatches.ApplyManualPatch(harmony);
             if (gameStarterObject is CampaignGameStarter gameStarter)
                 gameStarter.AddBehavior(new MilitiaBehavior());
@@ -103,9 +85,10 @@ namespace BanditMilitias
         }
 
         private static readonly MethodInfo _resetCached = AccessTools.Method(typeof(MobileParty), "ResetCached");
+
         private static void OnSettingsChanged()
         {
-            foreach (ModBanditMilitiaPartyComponent bm in Helper.GetCachedBMs(true).ToArrayQ())
+            foreach (ModBanditMilitiaPartyComponent bm in PowerCalculationService.GetCachedBMs(true).ToArrayQ())
             {
                 bm.ClearCachedName();
                 if (bm.MobileParty is null) continue;
@@ -118,7 +101,7 @@ namespace BanditMilitias
             Globals.ClearGlobals();
             Globals.Banners.Clear();
             Globals.Heroes.Clear();
-            Helper.ResetUpgraderBehavior();
+            MilitiaPartyFactory.ResetUpgraderBehavior();
             Settings.OnSettingsChanged -= OnSettingsChanged;
         }
 
@@ -126,28 +109,17 @@ namespace BanditMilitias
         {
             base.OnGameInitializationFinished(game);
             CacheBanners();
-            if (MEOWMEOW)
-            {
-                CampaignCheats.SetMainPartyAttackable(new List<string> { "0" });
-                CampaignCheats.SetCampaignSpeed(new List<string> { "100" });
-            }
-            // if (MEOWMEOW)
-            //     Dev.RunDevPatches();
         }
 
         private static void RunManualPatches()
         {
             try
             {
-                // fix issue in ServeAsSoldier where a Deserters Party is created without being a quest party
                 var original = AccessTools.Method("ServeAsSoldier.ExtortionByDesertersEvent:CreateDeserterParty");
                 if (original is not null)
-                    harmony.Patch(original, postfix: new HarmonyMethod(AccessTools.Method(typeof(MiscPatches), nameof(MiscPatches.PatchSaSDeserters))));
+                    harmony.Patch(original, postfix: new HarmonyMethod(AccessTools.Method(typeof(MilitiaPatches), nameof(MilitiaPatches.PatchSaSDeserters))));
             }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error while running manual patches.");
-            }
+            catch (Exception) { }
         }
     }
 }

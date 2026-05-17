@@ -167,7 +167,7 @@ namespace BanditMilitias
 
         // ==================== PRIVATE FIELDS ====================
 
-        private const string id = "BanditMilitias";
+        private const string id = "BanditMilitiasRedux";
         private string displayName = $"Bandit Militias Redux";
 
         // ==================== OVERRIDES ====================

@@ -20,6 +20,7 @@ using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.GameMenus;
+using TaleWorlds.CampaignSystem.Issues;
 using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
@@ -28,28 +29,16 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Map.Tracker;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.ImageIdentifiers;
+using TaleWorlds.InputSystem;
 using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using static BanditMilitias.Globals;
 using static BanditMilitias.Helper;
 
-// ReSharper disable ConvertIfStatementToReturnStatement
-// ReSharper disable UnusedMember.Global
-// ReSharper disable UnusedType.Global
-// ReSharper disable UnusedMember.Local
-// ReSharper disable RedundantAssignment
-// ReSharper disable InconsistentNaming
-
 namespace BanditMilitias.Patches
 {
     internal sealed class MilitiaPatches
     {
-        private static ILogger _logger;
-        private static ILogger Logger => _logger ??= LogFactory.Get<MilitiaPatches>();
-
-        //private static readonly AccessTools.FieldRef<MobilePartyAi, int> numberOfRecentFleeingFromAParty =
-        //    AccessTools.FieldRefAccess<MobilePartyAi, int>("_numberOfRecentFleeingFromAParty");
-
         private static readonly AccessTools.FieldRef<MobilePartyAi, MobileParty> getMobileParty =
             AccessTools.FieldRefAccess<MobilePartyAi, MobileParty>("_mobileParty");
 
@@ -64,19 +53,16 @@ namespace BanditMilitias.Patches
                     attackerParty.MobileParty.IsUsedByAQuest() || defenderParty.MobileParty.IsUsedByAQuest())
                     return true;
 
-                // Don't merge parties the player is actively chasing — 
-                // merging destroys them mid-pursuit, causing ghost pauses and lost targets
                 if (MobileParty.MainParty.ShortTermBehavior == AiBehavior.EngageParty
                     && (MobileParty.MainParty.ShortTermTargetParty == attackerParty.MobileParty
                         || MobileParty.MainParty.ShortTermTargetParty == defenderParty.MobileParty))
                     return true;
 
-                TryMergeParties(attackerParty.MobileParty, defenderParty.MobileParty);
+                MilitiaPartyFactory.TryMergeParties(attackerParty.MobileParty, defenderParty.MobileParty);
                 return false;
             }
         }
 
-        // changes the flag
         [HarmonyPatch(typeof(MobilePartyVisual), "AddCharacterToPartyIcon")]
         public static class PartyVisualAddCharacterToPartyIconPatch
         {
@@ -94,7 +80,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // changes the little shield icon under the party
         [HarmonyPatch(typeof(PartyBase), "Banner", MethodType.Getter)]
         public static class PartyBaseBannerPatch
         {
@@ -104,15 +89,11 @@ namespace BanditMilitias.Patches
                 {
                     var bmBanner = __instance.MobileParty.GetBM()?.Banner;
                     if (bmBanner is not null)
-                    {
                         __result = bmBanner;
-                    }
-                    // If bmBanner is null, leave __result as-is (original game banner)
                 }
             }
         }
 
-        // changes the shields in combat
         [HarmonyPatch(typeof(PartyGroupAgentOrigin), "Banner", MethodType.Getter)]
         public static class PartyGroupAgentOriginBannerGetterPatch
         {
@@ -132,7 +113,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // prevent bandit militias from entering hideouts
         [HarmonyPatch(typeof(EnterSettlementAction), "ApplyForParty")]
         public static class EnterSettlementActionApplyForPartyPatch
         {
@@ -140,16 +120,13 @@ namespace BanditMilitias.Patches
             {
                 if (mobileParty.IsBM())
                 {
-                    Logger.LogTrace($"Preventing {mobileParty} from entering {settlement.Name}");
                     mobileParty.SetMoveModeHold();
                     return false;
                 }
-
                 return true;
             }
         }
 
-        // changes the name on the campaign map (hot path)
         [HarmonyPatch(typeof(PartyNameplateVM), "RefreshDynamicProperties")]
         public static class PartyNameplateVMRefreshDynamicPropertiesPatch
         {
@@ -157,8 +134,6 @@ namespace BanditMilitias.Patches
             {
                 __state = false;
                 
-                // Leader is null after a battle, crashes after-action
-                // this staged approach feels awkward but it's fast
                 if (__instance.Party?.LeaderHero is null)
                 {
                     return;
@@ -180,7 +155,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // blocks conversations with militias
         [HarmonyPatch(typeof(PlayerEncounter), "DoMeetingInternal")]
         public static class PlayerEncounterDoMeetingInternalPatch
         {
@@ -196,7 +170,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // prevent bandit militia leaders from being identified as lords
         [HarmonyPatch(typeof(ConversationManager), "GetSentenceMatch")]
         public static class ConversationManagerGetSentenceMatchPatch
         {
@@ -217,7 +190,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // skip the dialogues with bandit militia heroes after combat
         [HarmonyPatch(typeof(PlayerEncounter), "DoCaptureHeroes")]
         public static class PlayerEncounterDoCaptureHeroesPatch
         {
@@ -225,7 +197,6 @@ namespace BanditMilitias.Patches
             {
                 var codeMatcher = new CodeMatcher(instructions);
 
-                // if (this._capturedHeroes.Count > 0)
                 CodeMatcher target = codeMatcher
                     .MatchStartForward(
                         new CodeMatch(OpCodes.Ldarg_0),
@@ -235,7 +206,6 @@ namespace BanditMilitias.Patches
                         CodeMatch.Branches()
                     ).ThrowIfInvalid("Could not find the target at DoCaptureHeroes");
 
-                // insert UnCaptureBMHeroes
                 CodeInstruction[] insertion =
                 [
                     CodeInstruction.LoadArgument(0),
@@ -260,7 +230,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // skip the dialogues with bandit militia heroes when freeing them from enemy parties
         [HarmonyPatch(typeof(PlayerEncounter), "DoFreeOrCapturePrisonerHeroes")]
         public static class PlayerEncounterDoFreeHeroesPatch
         {
@@ -268,7 +237,6 @@ namespace BanditMilitias.Patches
             {
                 var codeMatcher = new CodeMatcher(instructions);
 
-                // if (this._capturedAlreadyPrisonerHeroes.AnyQ(...))
                 CodeMatcher target = codeMatcher
                     .MatchStartForward(
                         new CodeMatch(OpCodes.Ldarg_0),
@@ -278,7 +246,6 @@ namespace BanditMilitias.Patches
                         CodeMatch.Branches()
                     ).ThrowIfInvalid("Could not find the target at DoFreeOrCapturePrisonerHeroes");
 
-                // insert UnFreeBMHeroes
                 CodeInstruction[] insertion =
                 [
                     CodeInstruction.LoadArgument(0),
@@ -326,7 +293,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // conversation voice filter
         [HarmonyPatch(typeof(DefaultVoiceOverModel), nameof(DefaultVoiceOverModel.GetSoundPathForCharacter))]
         public static class DefaultVoiceOverModelGetSoundPathForCharacterPatch
         {
@@ -343,7 +309,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // Prevent militias from attacking parties they can destroy easily
         [HarmonyPatch(typeof(MobilePartyAi), "SetAiBehavior")]
         public static class MobilePartyCanAttackPatch
         {
@@ -378,8 +343,6 @@ namespace BanditMilitias.Patches
 
                 if (party2Strength > party1Strength)
                 {
-                    // Target is stronger — check against MaxStrongerTargetPercent
-                    // 100 = attack regardless of how strong the target is
                     if (Globals.Settings.MaxStrongerTargetPercent >= 100)
                         return true;
                     var deltaPercent = (party2Strength - party1Strength) / party1Strength * 100;
@@ -387,8 +350,6 @@ namespace BanditMilitias.Patches
                 }
                 else
                 {
-                    // Target is weaker — check against MaxWeakerTargetPercent
-                    // 100 = attack regardless of how weak the target is
                     if (Globals.Settings.MaxWeakerTargetPercent >= 100)
                         return true;
                     var deltaPercent = (party1Strength - party2Strength) / party1Strength * 100;
@@ -397,7 +358,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // changes the optional Tracker icons to match banners
         [HarmonyPatch(typeof(MapTrackerItemVM), "UpdateProperties")]
         public static class MobilePartyTrackItemVMUpdatePropertiesPatch
         {
@@ -416,8 +376,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // skip the regular bandit AI stuff, looks at moving into hideouts
-        // and other stuff I don't really want happening
         [HarmonyPatch(typeof(AiLandBanditPatrollingBehavior), "AiHourlyTick")]
         public static class AiBanditPatrollingBehaviorAiHourlyTickPatch
         {
@@ -449,7 +407,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // the hero died after winning the battle
         [HarmonyPatch(typeof(DefaultSkillLevelingManager), "OnPersonalSkillExercised")]
         public static class DefaultSkillLevelingManagerOnPersonalSkillExercisedPatch
         {
@@ -466,7 +423,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // the hero died in a simulated battle?
         [HarmonyPatch(typeof(MobilePartyHelper), nameof(MobilePartyHelper.CanTroopGainXp))]
         public static class MobilePartyHelperCanTroopGainXpPatch
         {
@@ -496,21 +452,14 @@ namespace BanditMilitias.Patches
                 if (!mobileParty.IsBM())
                     return;
 
-                // Naval parties from other mods/DLC — skip entirely.
                 if (mobileParty.HasNavalNavigationCapability)
                     return;
 
-                // Land BMs: when TargetSettlement is null (cleared by
-                // EnterSettlementAction's Hold) delegate to BMThink so it picks a
-                // fresh non-hideout patrol target.  Never call SetMoveGoToSettlement
-                // with HomeSettlement here — HomeSettlement IS the hideout and that
-                // is exactly what causes the back-and-forth loop.
                 if (mobileParty.DefaultBehavior == AiBehavior.Hold && mobileParty.TargetSettlement is null)
-                    MilitiaBehavior.BMThink(mobileParty);
+                    MilitiaBehaviorService.BMThink(mobileParty);
             }
         }
 
-        // avoid stuffing the BM into PartiesWithoutPartyComponent at CampaignObjectManager.InitializeOnLoad
         [HarmonyPatch(typeof(MobileParty), "UpdatePartyComponentFlags")]
         public static class MobilePartyInitializeOnLoad
         {
@@ -521,8 +470,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // final gate rejects bandit troops from being upgraded to non-bandit troops
-        // put an if-BM-jump at the start to bypass the vanilla blockage
         [HarmonyPatch(typeof(PartyUpgraderCampaignBehavior), "GetPossibleUpgradeTargets")]
         public static class PartyUpgraderCampaignBehaviorGetPossibleUpgradeTargets
         {
@@ -534,7 +481,6 @@ namespace BanditMilitias.Patches
                 int index;
                 for (index = codes.Count - 1; index >= 0; index--)
                 {
-                    // float upgradeChanceForTroopUpgrade = Campaign.Current.Models.PartyTroopUpgradeModel.GetUpgradeChanceForTroopUpgrade(party, character, i);
                     if (codes[index].opcode == OpCodes.Call
                         && codes[index + 1].opcode == OpCodes.Callvirt
                         && codes[index + 2].opcode == OpCodes.Callvirt
@@ -564,7 +510,6 @@ namespace BanditMilitias.Patches
                 int insertion = 0;
                 for (; index >= 0; index--)
                 {
-                    // if ((!party.Culture.IsBandit || characterObject.Culture.IsBandit) && (character.Occupation != Occupation.Bandit || partyTroopUpgradeModel.CanPartyUpgradeTroopToTarget(party, character, characterObject)))
                     if (codes[index].opcode == OpCodes.Ldarg_1
                         && codes[index + 1].opcode == OpCodes.Callvirt
                         && codes[index + 2].opcode == OpCodes.Callvirt
@@ -577,7 +522,7 @@ namespace BanditMilitias.Patches
                 }
                 
                 if (insertion == 0)
-                    throw new Exception("Could not find insertion point");
+                    throw new Exception("Could not find insertion point.");
             
                 codes.InsertRange(insertion, stack);
                 return codes.AsEnumerable();
@@ -589,7 +534,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // allow BMs to upgrade to whatever, mostly so more cavalry are created
         [HarmonyPatch(typeof(DefaultPartyTroopUpgradeModel), "CanPartyUpgradeTroopToTarget")]
         public class DefaultPartyTroopUpgradeModelCanPartyUpgradeTroopToTarget
         {
@@ -614,7 +558,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // bandit heroes' home settlements will be their born settlements if there is none
         [HarmonyPatch(typeof(Hero), nameof(Hero.UpdateHomeSettlement))]
         public class HeroUpdateHomeSettlement
         {
@@ -625,7 +568,6 @@ namespace BanditMilitias.Patches
             }
         }
         
-        // remove from Heroes list when killed
         [HarmonyPatch(typeof(KillCharacterAction), "ApplyInternal")]
         public class KillCharacterActionApplyInternalPatch
         {
@@ -635,8 +577,8 @@ namespace BanditMilitias.Patches
                 bool showNotification,
                 bool isForced = false)
             {
-                if (!Heroes.Contains(victim)) return;
-                Logger.LogTrace($"{victim} is killed by {killer} due to {actionDetail}");
+                if (!Heroes.Contains(victim))
+                    return;
                 Heroes.Remove(victim);
                 CharacterRelationManager.Instance.RemoveHero(victim);
             }
@@ -655,7 +597,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // would've been null if there's no clan leader e.g. bandit clans
         [HarmonyPatch(typeof(DefaultDiplomacyModel), nameof(DefaultDiplomacyModel.GetHeroesForEffectiveRelation))]
         public static class DefaultDiplomacyModelGetHeroesForEffectiveRelationPatch
         {
@@ -666,31 +607,67 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // ignore the logs of militia leaders being taken as prisoners
         [HarmonyPatch(typeof(DefaultLogsCampaignBehavior), "OnPrisonerTaken")]
         public static class DefaultLogsCampaignBehaviorOnPrisonerTakenPatch
         {
             public static bool Prefix(PartyBase party, Hero hero)
             {
                 if (Globals.Settings.RemovePrisonerMessages && party != PartyBase.MainParty && hero.IsBM())
-                {
                     return false;
-                }
 
                 return true;
             }
         }
 
-        // ignore the logs of militia leaders being released as prisoners
         [HarmonyPatch(typeof(DefaultLogsCampaignBehavior), "OnHeroPrisonerReleased")]
         public static class DefaultLogsCampaignBehaviorOnHeroPrisonerReleasedPatch
         {
             public static bool Prefix(PartyBase party, Hero hero)
             {
                 if (Globals.Settings.RemovePrisonerMessages && party != PartyBase.MainParty && hero.IsBM())
-                {
                     return false;
-                }
+
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(MapScreen), "OnInitialize")]
+        public static class MapScreenOnInitializePatch
+        {
+            public static void Prefix()
+            {
+                if (Input.IsKeyDown(InputKey.LeftShift) || Input.IsKeyDown(InputKey.RightShift))
+                    Nuke();
+            }
+
+            public static void Postfix()
+            {
+                InitMap();
+                RemoveBadItems();
+            }
+        }
+
+        [HarmonyPatch(typeof(MerchantNeedsHelpWithOutlawsIssueQuestBehavior.MerchantNeedsHelpWithOutlawsIssueQuest), "HourlyTickParty")]
+        public static class MerchantNeedsHelpWithOutlawsIssueQuestHourlyTickParty
+        {
+            public static bool Prefix(MobileParty mobileParty) => !mobileParty.IsBM();
+        }
+
+        internal static void PatchSaSDeserters(ref MobileParty __result)
+        {
+            Traverse.Create(__result).Field<bool>("IsCurrentlyUsedByAQuest").Value = true;
+        }
+
+        [HarmonyPatch(typeof(DefaultSkillLevelingManager), "OnAIPartyLootCasualties")]
+        public static class OnAIPartyLootCasualtiesPatch
+        {
+            public static bool Prefix(Hero winnerPartyLeader, PartyBase defeatedParty)
+            {
+                if (winnerPartyLeader is null || winnerPartyLeader.IsDead)
+                    return false;
+
+                if (defeatedParty is null || (!defeatedParty.IsSettlement && defeatedParty.MobileParty is null))
+                    return false;
 
                 return true;
             }

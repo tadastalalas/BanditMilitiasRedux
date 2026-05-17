@@ -14,18 +14,10 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.LinQuick;
 using static BanditMilitias.Helper;
 
-// ReSharper disable UnusedType.Global
-// ReSharper disable InconsistentNaming
-// ReSharper disable UnusedMember.Local
-
 namespace BanditMilitias.Patches
 {
     public sealed class PrisonerPatches
     {
-        private static ILogger _logger;
-        private static ILogger Logger => _logger ??= LogFactory.Get<PrisonerPatches>();
-        
-        // rename leaderless BMs after they've lost the battle
         [HarmonyPatch(typeof(MapEvent), "FinishBattle")]
         public static class MapEventFinishBattlePatch
         {
@@ -38,18 +30,12 @@ namespace BanditMilitias.Patches
                 {
                     MobileParty mobileParty = party.Party.MobileParty;
                     if (mobileParty.LeaderHero?.IsDead != false && mobileParty.MemberRoster.TotalHealthyCount >= Globals.Settings.DisperseSize)
-                    {
-                        Logger.LogDebug($"{mobileParty.Name}({mobileParty.StringId}) has lost a battle and its leader, but was not dispersed.");
                         RemoveMilitiaLeader(mobileParty);
-                    }
                 }
-
-                DoPowerCalculations();
+                PowerCalculationService.DoPowerCalculations();
             }
         }
 
-        // upgrades all troops with any looted equipment in Postfix
-        // drops Avoidance scores when BMs win
         [HarmonyPatch(typeof(MapEvent), "CalculateAndCommitMapEventResults")]
         public static class MapEventLootDefeatedPartiesPatch
         {
@@ -58,9 +44,8 @@ namespace BanditMilitias.Patches
                 if (!__instance.HasWinner)
                     return;
 
-                // Only recalculate when a BM is involved — this fires on every battle in the world
                 if (__instance.InvolvedParties.AnyQ(p => p?.IsMobile == true && p.MobileParty?.IsBM() == true))
-                    DoPowerCalculations();
+                    PowerCalculationService.DoPowerCalculations();
             }
 
             public static void Postfix(MapEvent __instance)
@@ -76,26 +61,12 @@ namespace BanditMilitias.Patches
                 foreach (var party in loserBMs)
                 {
                     if (party?.Party?.MobileParty?.IsActive != true)
-                    {
-                        Logger.LogWarning($"Skipping invalid/destroyed party in LootDefeatedParties.Postfix");
                         continue;
-                    }
-
-                    Logger.LogDebug($"{party.Party.MobileParty.Name}({party.Party.MobileParty.StringId}) is defeated in battle.");
 
                     if (party.Party.MobileParty.MemberRoster.TotalHealthyCount < Globals.Settings.DisperseSize)
                     {
-                        // Do not trash the party while the player is still registered as
-                        // its prisoner. The game's own LootDefeatedPartyPrisoners has not
-                        // yet run at this point — destroying the captor party now leaves
-                        // PlayerCaptivity._captorParty pointing to a dead party, which
-                        // causes a NullReferenceException inside EndCaptivityInternal.
-                        // The party will be cleaned up on the next hourly tick instead.
                         if (Hero.MainHero.PartyBelongedToAsPrisoner == party.Party)
-                        {
-                            Logger.LogDebug($"Skipping trash of {party.Party.MobileParty.StringId} — player is still a prisoner of this party.");
                             continue;
-                        }
 
                         Trash(party.Party.MobileParty);
                     }
@@ -117,16 +88,12 @@ namespace BanditMilitias.Patches
                 foreach (var bm in winnerBMs)
                 {
                     if (bm?.Party?.MobileParty?.IsActive != true)
-                    {
-                        Logger.LogWarning($"Skipping invalid winner BM in LootDefeatedParties.Postfix");
                         continue;
-                    }
 
                     PartyBase party = bm.Party;
 
                     if (party.LeaderHero?.IsDead == true)
                     {
-                        Logger.LogDebug($"{party.MobileParty.Name}({party.MobileParty.StringId}) has won a battle but lost its leader {party.LeaderHero.Name}.");
                         if (party.MemberRoster.Contains(party.LeaderHero.CharacterObject))
                             party.MemberRoster.RemoveTroop(party.LeaderHero.CharacterObject);
                         RemoveMilitiaLeader(party.MobileParty);
@@ -137,7 +104,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // convert heroes to prisoners after they surrendered and agreed to join.
         [HarmonyPatch(typeof(BanditInteractionsCampaignBehavior), "OpenRosterScreenAfterBanditEncounter")]
         public static class BanditsCampaignBehaviorOpenRosterScreenAfterBanditEncounterPatch
         {
@@ -165,15 +131,9 @@ namespace BanditMilitias.Patches
                         troop.Character.HeroObject.IsKnownToPlayer = true;
                     }
                 }
-
-                Logger.LogDebug(doBanditsJoinPlayerSide
-                    ? $"{conversationParty.Name}({conversationParty.StringId}) has joined to the player."
-                    : $"{conversationParty.Name}({conversationParty.StringId}) has surrendered to the player.");
             }
         }
 
-        // BM heroes have a bandit faction clan with no meaningful leader for ransom purposes.
-        // Skip vanilla ransom processing entirely — BM heroes should not be ransomed.
         [HarmonyPatch(typeof(RansomOfferCampaignBehavior), "ConsiderRansomPrisoner")]
         public static class RansomOfferCampaignBehaviorConsiderRansomPrisonerPatch
         {
@@ -186,7 +146,6 @@ namespace BanditMilitias.Patches
             }
         }
 
-        // prevent stray BM heroes from entering settlements
         [HarmonyPatch(typeof(TeleportHeroAction), nameof(TeleportHeroAction.ApplyImmediateTeleportToSettlement))]
         public static class TeleportHeroActionApplyImmediateTeleportToSettlementPatch
         {
@@ -194,11 +153,9 @@ namespace BanditMilitias.Patches
             {
                 if (heroToBeMoved.IsBM() && targetSettlement is not null)
                 {
-                    Logger.LogDebug($"Removing stray hero {heroToBeMoved.Name} before they enter settlement {targetSettlement.Name}.");
                     KillCharacterAction.ApplyByRemove(heroToBeMoved);
                     return false;
                 }
-
                 return true;
             }
         }

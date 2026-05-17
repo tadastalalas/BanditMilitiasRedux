@@ -5,8 +5,6 @@ using TaleWorlds.SaveSystem;
 
 namespace BanditMilitias
 {
-    // ReSharper disable once UnusedType.Global
-    // class is loaded by reflection automatically
     public class BanditMilitiasSaveableTypeDefiner : SaveableTypeDefiner
     {
         public BanditMilitiasSaveableTypeDefiner() : base(42069)

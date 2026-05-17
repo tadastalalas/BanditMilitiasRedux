@@ -28,9 +28,6 @@ namespace BanditMilitias
 {
     internal sealed class Helper
     {
-        private static ILogger _logger;
-        private static ILogger Logger => _logger ??= LogFactory.Get<Helper>();
-
         internal static readonly AccessTools.FieldRef<MobileParty, bool> IsBandit =
             AccessTools.FieldRefAccess<MobileParty, bool>("<IsBandit>k__BackingField");
 
@@ -43,53 +40,34 @@ namespace BanditMilitias
         internal static readonly AccessTools.FieldRef<CharacterObject, bool> HiddenInEncyclopedia =
             AccessTools.FieldRefAccess<CharacterObject, bool>("<HiddenInEncyclopedia>k__BackingField");
 
-        internal static readonly AccessTools.FieldRef<MBObjectBase, bool> IsRegistered =
-            AccessTools.FieldRefAccess<MBObjectBase, bool>("<IsRegistered>k__BackingField");
-
         internal static void ReHome()
         {
-            foreach (var BM in GetCachedBMs(true).WhereQ(p => p.Leader is not null))
+            foreach (var BM in PowerCalculationService.GetCachedBMs(true).WhereQ(p => p.Leader is not null))
                 _bornSettlement(BM.Leader) = BM.HomeSettlement;
         }
 
-        /// <summary>
-        /// Returns true if the settlement is a land hideout (not a seaside/naval hideout).
-        /// </summary>
         internal static bool IsLandHideout(Settlement s) => !s.StringId.StartsWith("hideout_seaside");
 
-        internal static bool TrySplitParty(MobileParty mobileParty)
-            => MilitiaPartyFactory.TrySplitParty(mobileParty);
-
-        internal static bool IsAvailableBanditParty(MobileParty __instance)
-            => MilitiaPartyFactory.IsAvailableBanditParty(__instance);
-
-        internal static bool TryMergeParties(MobileParty mobileParty, MobileParty mergeTarget)
-            => MilitiaPartyFactory.TryMergeParties(mobileParty, mergeTarget);
-
-        internal static TroopRoster[] MergeRosters(MobileParty sourceParty, MobileParty targetParty)
-            => MilitiaPartyFactory.MergeRosters(sourceParty, targetParty);
-
-        internal static void ResetUpgraderBehavior()
-            => MilitiaPartyFactory.ResetUpgraderBehavior();
+        internal static List<Settlement> FindHideoutsAwayFromMainParty()
+        {
+            var playerPos = MobileParty.MainParty.Position.ToVec2();
+            return Settlement.All
+                .WhereQ(s => s.IsHideout
+                    && s.GatePosition.ToVec2().DistanceSquared(playerPos) > SpawnHideoutMinPlayerDistanceSq)
+                .ToListQ();
+        }
 
         internal static void Trash(MobileParty mobileParty)
         {
             if (mobileParty?.IsActive != true)
-            {
-                Logger.LogTrace($"Skipping trash - party already inactive: {mobileParty?.StringId}");
                 return;
-            }
 
-            Logger.LogTrace($"Trashing {mobileParty.Name}({mobileParty.StringId})");
             try
             {
                 mobileParty.Ai?.DisableAi();
                 DestroyPartyAction.Apply(null, mobileParty);
             }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, $"Error trashing {mobileParty.StringId}");
-            }
+            catch (Exception) { }
         }
 
         internal static bool Nuke()
@@ -103,18 +81,15 @@ namespace BanditMilitias
                 FlushMapEvents();
                 LegacyFlushBanditMilitias();
                 RemoveBadItems();
-                GetCachedBMs(true).Do(bm => Trash(bm.MobileParty));
+                PowerCalculationService.GetCachedBMs(true).Do(bm => Trash(bm.MobileParty));
                 Hero.FindAll(h => h.IsBM()).ToArrayQ().Do(h => KillCharacterAction.ApplyByRemove(h));
                 Heroes.ToArrayQ().Do(h => KillCharacterAction.ApplyByRemove(h));
                 Heroes.Clear();
-                InformationManager.DisplayMessage(new InformationMessage("BANDIT MILITIAS CLEARED"));
-                // should be zero
-                Logger.LogDebug($"Militias after nuke: {MobileParty.All.CountQ(m => m.IsBM())}.");
+                InformationManager.DisplayMessage(new InformationMessage("BANDIT MILITIAS CLEARED."));
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Logger.LogError(ex, "Error during nuke.");
                 return false;
             }
         }
@@ -127,18 +102,13 @@ namespace BanditMilitias
             {
                 Traverse.Create(Campaign.Current.CampaignObjectManager).Field<List<MobileParty>>("_partiesWithoutPartyComponent").Value =
                     Traverse.Create(Campaign.Current.CampaignObjectManager).Field<List<MobileParty>>("_partiesWithoutPartyComponent").Value.Except(parties).ToListQ();
-                Logger.LogTrace($">>> FLUSH {parties.Count} {Globals.Settings.BanditMilitiaString}");
                 foreach (var mobileParty in parties)
                 {
                     try
                     {
                         Trash(mobileParty);
                     }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex, $"Error flushing {mobileParty}");
-                        Meow();
-                    }
+                    catch (Exception) { }
                 }
             }
 
@@ -156,16 +126,12 @@ namespace BanditMilitias
                         KillCharacterAction.ApplyByRemove(prisoner.HeroObject);
                     }
                 }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, $"Error flushing {settlement}");
-                }
+                catch (Exception) { }
             }
 
             var leftovers = Hero.AllAliveHeroes.WhereQ(h => h.StringId.EndsWith("Bandit_Militia")).ToListQ();
             foreach (Hero hero in leftovers)
             {
-                Logger.LogTrace("Removing leftover hero " + hero);
                 KillCharacterAction.ApplyByRemove(hero);
             }
         }
@@ -207,28 +173,14 @@ namespace BanditMilitias
                             if (mobileParty?.IsActive == true)
                             {
                                 Trash(mobileParty);
-                                Logger.LogTrace($"Trashed BM party {mobileParty.StringId} after MapEvent finalization");
                             }
                         }
-                        Logger.LogTrace($"Flushed MapEvent with {bmPartiesToClean.Count} BM parties");
                     }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex, $"Error flushing MapEvent: {ex.Message}");
-                    }
+                    catch (Exception) { }
                 }
             }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, $"Error flushing MapEvent: {ex.Message}");
-            }
+            catch (Exception) { }
         }
-
-        internal static void PopulateItems()
-            => EquipmentPool.Populate();
-
-        internal static void DoPowerCalculations(bool force = false)
-            => PowerCalculationService.DoPowerCalculations(force);
 
         internal static CultureObject GetMostPrevalentFromNearbySettlements(Vec2 position)
         {
@@ -239,15 +191,12 @@ namespace BanditMilitias
                  settlement != null;
                  settlement = Settlement.FindNextLocatable(ref locatableSearchData))
             {
-                if (settlement.IsHideout) continue;
+                if (settlement.IsHideout)
+                    continue;
                 if (map.ContainsKey(settlement.Culture))
-                {
                     map[settlement.Culture]++;
-                }
                 else
-                {
                     map.Add(settlement.Culture, 1);
-                }
             }
 
             if (BlackFlag is not null)
@@ -256,83 +205,11 @@ namespace BanditMilitias
             }
 
             if (map.Count == 0)
-            {
-                Logger.LogWarning($"No settlements found near {position}, defaulting to Empire culture");
                 return MBObjectManager.Instance.GetObject<CultureObject>("empire");
-            }
 
             var maxValue = map.Values.Max();
             var highest = map.WhereQ(x => x.Value == maxValue).SelectQ(x => x.Key).ToListQ();
             return highest[MBRandom.RandomInt(0, highest.Count)];
-        }
-
-        internal static void PrintInstructionsAroundInsertion(List<CodeInstruction> codes, int insertPoint, int insertSize, int adjacentNum = 5)
-        {
-            Logger.LogTrace($"Inserting {insertSize} at {insertPoint}.");
-
-            var adjustedAdjacent = codes.Count - adjacentNum >= 0 ? adjacentNum : Math.Max(0, codes.Count - adjacentNum);
-            for (var i = 0; i < adjustedAdjacent; i++)
-            {
-                Logger.LogTrace($"{codes[insertPoint - adjustedAdjacent + i].opcode,-10}{codes[insertPoint - adjustedAdjacent + i].operand}");
-            }
-
-            for (var i = 0; i < insertSize; i++)
-            {
-                Logger.LogTrace($"{codes[insertPoint + i].opcode,-10}{codes[insertPoint + i].operand}");
-            }
-
-            adjustedAdjacent = insertPoint + adjacentNum <= codes.Count ? adjacentNum : Math.Max(codes.Count, adjustedAdjacent);
-            for (var i = 0; i < adjustedAdjacent; i++)
-            {
-                Logger.LogTrace($"{codes[insertPoint + insertSize + adjustedAdjacent + i].opcode,-10}{codes[insertPoint + insertSize + adjustedAdjacent + i].operand}");
-            }
-        }
-
-        internal static int NumMountedTroops(TroopRoster troopRoster)
-            => EquipmentPool.NumMountedTroops(troopRoster);
-
-        internal static Hero CreateOrReuseHero(Settlement settlement)
-            => HeroFactory.CreateOrReuseHero(settlement);
-
-        internal static Hero CreateHero(Settlement settlement)
-            => HeroFactory.CreateHero(settlement);
-
-        internal static void RandomizeHeroAppearance(Hero hero)
-            => HeroFactory.RandomizeHeroAppearance(hero);
-
-        internal static void AdjustCavalryCount(TroopRoster troopRoster)
-            => EquipmentPool.AdjustCavalryCount(troopRoster);
-
-        internal static void TrainMilitia(MobileParty mobileParty)
-            => MilitiaPartyFactory.TrainMilitia(mobileParty);
-
-        internal static IEnumerable<ModBanditMilitiaPartyComponent> GetCachedBMs(bool forceRefresh = false)
-            => PowerCalculationService.GetCachedBMs(forceRefresh);
-
-        internal static void InitMilitia(MobileParty militia, TroopRoster[] rosters, CampaignVec2 position)
-            => MilitiaPartyFactory.InitMilitia(militia, rosters, position);
-
-        internal static void LogMilitiaFormed(MobileParty mobileParty)
-        {
-            try
-            {
-                var troopString = $"{mobileParty.Party.NumberOfAllMembers} troop" + (mobileParty.Party.NumberOfAllMembers > 1 ? "s" : "");
-                var strengthString = $"{Math.Round(mobileParty.Party.EstimatedStrength)} strength";
-                Logger.LogTrace($"{$"New Bandit Militia led by {mobileParty.LeaderHero?.Name}",-70} | {troopString,10} | {strengthString,12} | >>> {GlobalMilitiaPower / CalculatedGlobalPowerLimit * 100}%");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error in LogMilitiaFormed");
-            }
-        }
-
-        internal static void Meow()
-        {
-            if (SubModule.MEOWMEOW)
-            {
-                Campaign.Current.TimeControlMode = CampaignTimeControlMode.Stop;
-                Debugger.Break();
-            }
         }
 
         internal static void DecreaseAvoidance(List<Hero> loserHeroes, MapEventParty mep)
@@ -342,16 +219,14 @@ namespace BanditMilitias
 
             foreach (var loserHero in loserHeroes)
             {
-                // Only decrease existing avoidance — winning doesn't create new fear
                 if (bm.Avoidance.TryGetValue(loserHero, out _))
-                    bm.Avoidance[loserHero] = Math.Max(0, bm.Avoidance[loserHero] - MilitiaBehavior.Increment);
+                    bm.Avoidance[loserHero] = Math.Max(0, bm.Avoidance[loserHero] - Globals.AvoidanceIncreaseMin);
             }
         }
 
         internal static void InitMap()
         {
             T.Restart();
-            Logger.LogTrace("MapScreen.OnInitialize");
             ClearGlobals();
             if (Banners.Count == 0)
                 SubModule.CacheBanners();
@@ -364,7 +239,7 @@ namespace BanditMilitias
             HeroTemplates = CharacterObject.All
                 .WhereQ(c => c.Occupation is Occupation.Bandit)
                 .WhereQ(c => !c.StringId.Contains("quest") && !c.StringId.Contains("radagos"))
-                .ToListQ(); // && c.StringId.StartsWith("bm_hero_")).ToListQ();
+                .ToListQ();
             Giant = MBObjectManager.Instance.GetObject<CharacterObject>("giant");
 
             var stateMap = AccessTools.FieldRefAccess<ConversationManager, Dictionary<string, int>>("stateMap")(Campaign.Current.ConversationManager);
@@ -397,10 +272,10 @@ namespace BanditMilitias
             Globals.BasicRanged = availableBandits.WhereQ(c => c.DefaultFormationClass is FormationClass.Ranged).ToListQ();
             Globals.BasicInfantry = availableBandits.WhereQ(c => c.DefaultFormationClass is FormationClass.Infantry && c.StringId != "storymode_quest_raider").ToListQ();
             Globals.BasicCavalry = availableBandits.WhereQ(c => c.DefaultFormationClass is FormationClass.Cavalry).ToListQ();
+            Globals.Villages = Settlement.All.WhereQ(s => s.IsVillage).ToListQ();
 
-            DoPowerCalculations(true);
+            PowerCalculationService.DoPowerCalculations(true);
             ReHome();
-            Logger.LogTrace($"InitMap took {T.ElapsedTicks / 10000F:F3}ms to finish, there are {MobileParty.All.CountQ(m => m.IsBM())} bandit militias.");
         }
 
         internal static void RemoveBadItems()
