@@ -39,7 +39,8 @@ namespace BanditMilitias.Helpers
                             int seen = 0;
                             for (var s = Settlement.FindNextLocatable(ref locData); s != null; s = Settlement.FindNextLocatable(ref locData))
                             {
-                                if (s.IsHideout) continue;
+                                if (s.IsHideout || s.IsTown || s.IsCastle)
+                                    continue;
                                 seen++;
                                 if (MBRandom.RandomInt(seen) == 0) chosen = s;
                             }
@@ -68,11 +69,6 @@ namespace BanditMilitias.Helpers
                             && mobileParty.Party.EstimatedStrength > MilitiaPartyAveragePower
                             && MBRandom.RandomFloat < (Globals.Settings?.PillagingChance ?? 0) * 0.01f)
                         {
-                            var raidingCount = PowerCalculationService.GetCachedBMs().CountQ(m => m?.MobileParty?.ShortTermBehavior is AiBehavior.RaidSettlement);
-
-                            if (raidingCount >= RaidCap)
-                                break;
-
                             try
                             {
                                 var partyPos = mobileParty.Position.ToVec2();
@@ -82,17 +78,12 @@ namespace BanditMilitias.Helpers
                                 for (int i = 0, n = villages.Count; i < n; i++)
                                 {
                                     var s = villages[i];
-                                    if (s?.Village is null)
-                                        continue;
+                                    if (s?.Village is null) continue;
                                     var state = s.Village.VillageState;
-                                    if (state is Village.VillageStates.BeingRaided or Village.VillageStates.Looted)
-                                        continue;
-                                    if (s.Owner is null)
-                                        continue;
-                                    if (s.MapFaction is null || !s.MapFaction.IsAtWarWith(mobileParty.MapFaction))
-                                        continue;
-                                    if (s.GetValue() <= 0)
-                                        continue;
+                                    if (state is Village.VillageStates.BeingRaided or Village.VillageStates.Looted) continue;
+                                    if (s.Owner is null) continue;
+                                    if (s.MapFaction is null || !s.MapFaction.IsAtWarWith(mobileParty.MapFaction)) continue;
+                                    if (s.GetValue() <= 0) continue;
 
                                     var d = s.GatePosition.ToVec2().DistanceSquared(partyPos);
                                     if (d < nearestDistSq)
@@ -110,6 +101,16 @@ namespace BanditMilitias.Helpers
                             }
 
                             if (target is null)
+                                break;
+
+                            var raidingCount = 0;
+                            var cachedBMs = PowerCalculationService.GetCachedBMs();
+                            for (int i = 0, n = cachedBMs.Count; i < n; i++)
+                            {
+                                if (cachedBMs[i]?.MobileParty?.ShortTermBehavior == AiBehavior.RaidSettlement)
+                                    raidingCount++;
+                            }
+                            if (raidingCount >= RaidCap)
                                 break;
 
                             if (target.OwnerClan is not null && BM.Avoidance is not null)
@@ -226,7 +227,11 @@ namespace BanditMilitias.Helpers
                 if (validHideouts.Count == 0)
                     return;
 
-                var maxIterations = (int)Math.Max(0, (Globals.Settings.GlobalPowerPercent - MilitiaPowerPercent) / 24f);
+                var headroom = Globals.Settings.GlobalPowerPercent - MilitiaPowerPercent;
+                if (headroom <= 0f)
+                    return;
+
+                var maxIterations = Math.Max(1, (int)Math.Ceiling(headroom / 24f));
                 maxIterations = Math.Min(maxIterations, SpawnLoopSafetyLimit);
 
                 var landHideouts = validHideouts
@@ -252,7 +257,10 @@ namespace BanditMilitias.Helpers
                     if (MBRandom.RandomInt(0, 101) > Globals.Settings.HourlySpawnChance)
                         continue;
 
-                    var baseSettlement = validHideouts.GetRandomElement();
+                    if (landHideouts.Count == 0)
+                        continue;
+
+                    var baseSettlement = landHideouts.GetRandomElement();
                     if (baseSettlement is null)
                         continue;
 
@@ -263,7 +271,8 @@ namespace BanditMilitias.Helpers
                     if (banditClan?.HasNavalNavigationCapability == true)
                         continue;
 
-                    if (landHideouts.Count == 0)
+                    int clanCap = Globals.Settings.MaxLandPartiesPerClan;
+                    if (clanCap > 0 && landMilitiaCountByClan.TryGetValue(banditClan, out var partiesForClan) && partiesForClan >= clanCap)
                         continue;
 
                     var settlement = landHideouts.GetRandomElement();
@@ -313,16 +322,6 @@ namespace BanditMilitias.Helpers
                     if (roster.TotalManCount == 0)
                         continue;
 
-                    int clanCap = Globals.Settings.MaxLandPartiesPerClan;
-
-                    if (clanCap > 0)
-                    {
-                        landMilitiaCountByClan.TryGetValue(banditClan, out var partiesForClan);
-
-                        if (partiesForClan >= clanCap)
-                            continue;
-                    }
-
                     var banditMilitia = MobileParty.CreateParty("Bandit_Militia",
                         new ModBanditMilitiaPartyComponent(settlement, null, banditClan));
 
@@ -342,6 +341,7 @@ namespace BanditMilitias.Helpers
                     banditMilitia.DesiredAiNavigationType = MobileParty.NavigationType.Default;
 
                     PowerCalculationService.DoPowerCalculations();
+
                     if (banditClan is not null)
                     {
                         landMilitiaCountByClan.TryGetValue(banditClan, out var currentClanCount);

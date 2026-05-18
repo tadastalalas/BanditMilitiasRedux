@@ -20,6 +20,9 @@ namespace BanditMilitias
 {
     public class MilitiaBehavior : CampaignBehaviorBase
     {
+        private static readonly List<MobileParty> _nearbyBanditsBuffer = new List<MobileParty>(8);
+        private static readonly Dictionary<MobileParty, int> _mountedCountBuffer = new Dictionary<MobileParty, int>(8);
+
         public override void RegisterEvents()
         {
             CampaignEvents.VillageBeingRaided.AddNonSerializedListener(this, village =>
@@ -70,15 +73,13 @@ namespace BanditMilitias
                             var anchorPos = raidedSettlement?.GatePosition.ToVec2() ?? MobileParty.MainParty.Position.ToVec2();
                             Settlement nearestTown = null;
                             var nearestDist = float.MaxValue;
-                            foreach (var s in Settlement.All)
+
+                            var search = Settlement.StartFindingLocatablesAroundPosition(anchorPos, SettlementFindRange);
+                            for (var s = Settlement.FindNextLocatable(ref search); s != null; s = Settlement.FindNextLocatable(ref search))
                             {
-                                if (s?.IsTown != true) continue;
+                                if (!s.IsTown) continue;
                                 var d = s.GatePosition.ToVec2().DistanceSquared(anchorPos);
-                                if (d < nearestDist)
-                                {
-                                    nearestDist = d;
-                                    nearestTown = s;
-                                }
+                                if (d < nearestDist) { nearestDist = d; nearestTown = s; }
                             }
 
                             var townName = nearestTown?.Name?.ToString() ?? "(Unknown Town)";
@@ -201,16 +202,16 @@ namespace BanditMilitias
             if (mobileParty.MapEvent is not null)
                 return;
 
+            var currentBMPositionVec2 = mobileParty.Position.ToVec2();
+
             if (mobileParty.IsBM()
                 && !mobileParty.IsCurrentlyAtSea
                 && mobileParty.Ai?.IsDisabled == false
                 && mobileParty.Ai?.DoNotMakeNewDecisions == false)
             {
-                var currentPos2D = mobileParty.Position.ToVec2();
-
                 if (StuckTracker.TryGetValue(mobileParty, out var stuckState))
                 {
-                    if (currentPos2D.DistanceSquared(stuckState.LastPos) < Globals.StuckDistanceThresholdSq)
+                    if (currentBMPositionVec2.DistanceSquared(stuckState.LastPos) < Globals.StuckDistanceThresholdSq)
                     {
                         var newCount = stuckState.HourCount + 1;
                         StuckTracker[mobileParty] = (stuckState.LastPos, newCount);
@@ -221,14 +222,14 @@ namespace BanditMilitias
 
                             var escapePool = Hideouts
                                 .WhereQ(s => s != null
-                                    && s.GatePosition.ToVec2().DistanceSquared(currentPos2D) > Globals.EscapeMinDistanceSq)
+                                    && s.GatePosition.ToVec2().DistanceSquared(currentBMPositionVec2) > Globals.EscapeMinDistanceSq)
                                 .ToListQ();
 
                             if (escapePool.Count == 0)
                                 escapePool = Settlement.All
                                     .WhereQ(s => s != null
                                         && !s.IsTown && !s.IsCastle
-                                        && s.GatePosition.ToVec2().DistanceSquared(currentPos2D) > Globals.EscapeMinDistanceSq)
+                                        && s.GatePosition.ToVec2().DistanceSquared(currentBMPositionVec2) > Globals.EscapeMinDistanceSq)
                                     .ToListQ();
 
                             if (escapePool.Count > 0)
@@ -241,12 +242,12 @@ namespace BanditMilitias
                     }
                     else
                     {
-                        StuckTracker[mobileParty] = (currentPos2D, 0);
+                        StuckTracker[mobileParty] = (currentBMPositionVec2, 0);
                     }
                 }
                 else
                 {
-                    StuckTracker[mobileParty] = (currentPos2D, 0);
+                    StuckTracker[mobileParty] = (currentBMPositionVec2, 0);
                 }
             }
 
@@ -304,7 +305,7 @@ namespace BanditMilitias
 
                 if (isBM)
                 {
-                    var locatableSearchData = Settlement.StartFindingLocatablesAroundPosition(mobileParty.Position.ToVec2(), MinDistanceFromHideout);
+                    var locatableSearchData = Settlement.StartFindingLocatablesAroundPosition(currentBMPositionVec2, MinDistanceFromHideout);
                     for (Settlement settlement =
                              Settlement.FindNextLocatable(ref locatableSearchData);
                          settlement != null;
@@ -316,12 +317,14 @@ namespace BanditMilitias
                         return;
                     }
                 }
+                var cooldown = CampaignTime.Hours(Globals.Settings.CooldownHours);
+                var now = CampaignTime.Now;
 
                 if (isBM)
                 {
                     var bm = mobileParty.GetBM();
                     if (bm?.LastMergedOrSplitDate != null
-                        && CampaignTime.Now < bm.LastMergedOrSplitDate + CampaignTime.Hours(Globals.Settings.CooldownHours))
+                        && now < bm.LastMergedOrSplitDate + cooldown)
                     {
                         MilitiaBehaviorService.BMThink(mobileParty);
                         return;
@@ -336,14 +339,11 @@ namespace BanditMilitias
                     return;
                 }
 
-                List<MobileParty> nearbyBandits = [];
+                var nearbyBandits = _nearbyBanditsBuffer;
+                nearbyBandits.Clear();
                 {
-                    var locatableSearchData = MobileParty.StartFindingLocatablesAroundPosition(mobileParty.Position.ToVec2(), FindRadius);
-                    for (MobileParty party =
-                             MobileParty.FindNextLocatable(ref locatableSearchData);
-                         party != null;
-                         party =
-                             MobileParty.FindNextLocatable(ref locatableSearchData))
+                    var locatableSearchData = MobileParty.StartFindingLocatablesAroundPosition(currentBMPositionVec2, FindRadius);
+                    for (MobileParty party = MobileParty.FindNextLocatable(ref locatableSearchData); party != null; party = MobileParty.FindNextLocatable(ref locatableSearchData))
                     {
                         if (party == mobileParty)
                             continue;
@@ -368,10 +368,10 @@ namespace BanditMilitias
                 }
 
                 int mobilePartyMountedCount = EquipmentPool.NumMountedTroops(mobileParty.MemberRoster);
-                var myPos = mobileParty.Position.ToVec2();
-                nearbyBandits.Sort((a, b) => a.Position.ToVec2().DistanceSquared(myPos).CompareTo(b.Position.ToVec2().DistanceSquared(myPos)));
+                nearbyBandits.Sort((a, b) => a.Position.ToVec2().DistanceSquared(currentBMPositionVec2).CompareTo(b.Position.ToVec2().DistanceSquared(currentBMPositionVec2)));
 
-                var mountedCountByParty = new Dictionary<MobileParty, int>();
+                var mountedCountByParty = _mountedCountBuffer;
+                mountedCountByParty.Clear();
 
                 foreach (var target in nearbyBandits)
                 {
@@ -386,7 +386,7 @@ namespace BanditMilitias
                     {
                         var targetBM = target.GetBM();
                         if (targetBM?.LastMergedOrSplitDate != null
-                            && CampaignTime.Now < targetBM.LastMergedOrSplitDate + CampaignTime.Hours(Globals.Settings.CooldownHours))
+                            && now < targetBM.LastMergedOrSplitDate + cooldown)
                             continue;
                     }
 
@@ -415,7 +415,7 @@ namespace BanditMilitias
 
                 if (Campaign.Current?.Models?.MapDistanceModel is not null)
                 {
-                    var distanceSq = mobileParty.Position.ToVec2().DistanceSquared(mergeTarget.Position.ToVec2());
+                    var distanceSq = currentBMPositionVec2.DistanceSquared(mergeTarget.Position.ToVec2());
                     if (distanceSq <= Globals.MergeDistanceSq)
                     {
                         MilitiaPartyFactory.TryMergeParties(mobileParty, mergeTarget);
@@ -429,11 +429,8 @@ namespace BanditMilitias
             }
             catch (Exception)
             {
-                try { Trash(mobileParty); } catch { }
-                if (mergeTarget is not null)
-                {
-                    try { Trash(mergeTarget); } catch { }
-                }
+                if (mobileParty?.PartyComponent is null || mobileParty.MemberRoster is null)
+                    try { Trash(mobileParty); } catch { }
             }
         }
 
@@ -467,13 +464,14 @@ namespace BanditMilitias
 
         public override void SyncData(IDataStore dataStore)
         {
-            dataStore.SyncData("Heroes", ref Heroes);
-            if (dataStore.IsLoading)
+            
+            if (dataStore.IsLoading || dataStore.IsSaving)
             {
                 Heroes ??= [];
                 var aliveSet = new HashSet<Hero>(Hero.AllAliveHeroes);
                 Globals.Heroes.RemoveAll(hero => hero is null || !aliveSet.Contains(hero));
             }
+            dataStore.SyncData("Heroes", ref Heroes);
         }
     }
 }

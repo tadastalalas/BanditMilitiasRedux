@@ -59,13 +59,19 @@ namespace BanditMilitias
             }
         }
 
+        private static readonly MethodInfo _createRandomBannerInternal = AccessTools.Method(typeof(Banner), "CreateRandomBannerInternal");
+
         internal static void CacheBanners()
         {
+            if (_createRandomBannerInternal is null)
+                return;
+            var args = new object[2];
+            Banners.Capacity = Math.Max(Banners.Capacity, 5000);
             for (var i = 0; i < 5000; i++)
             {
-                var banner = (Banner)AccessTools.Method(typeof(Banner), "CreateRandomBannerInternal")
-                    .Invoke(typeof(Banner), [MBRandom.RandomInt(0, int.MaxValue), -1]);
-                if (banner is not null)
+                args[0] = MBRandom.RandomInt(0, int.MaxValue);
+                args[1] = -1;
+                if (_createRandomBannerInternal.Invoke(null, args) is Banner banner)
                     Banners.Add(banner);
             }
         }

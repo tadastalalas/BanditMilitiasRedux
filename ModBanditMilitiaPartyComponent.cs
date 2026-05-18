@@ -82,8 +82,8 @@ namespace BanditMilitias
 
         public ModBanditMilitiaPartyComponent(Settlement settlement, Hero hero, Clan clan = null)
         {
-            Banner = Banners.GetRandomElement();
-            BannerKey = Banner.Serialize();
+            Banner = Banners.Count > 0 ? Banners.GetRandomElement() : null;
+            BannerKey = Banner?.Serialize() ?? string.Empty;
 
             _targetClan = clan ?? settlement.OwnerClan;
 
