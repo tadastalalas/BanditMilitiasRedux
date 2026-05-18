@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BanditMilitias.Helpers;
 using BanditMilitias.Patches;
 using Bannerlord.ButterLib.Common.Extensions;
 using HarmonyLib;
@@ -13,6 +14,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
+using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.LinQuick;
 using TaleWorlds.MountAndBlade;
@@ -42,12 +44,27 @@ namespace BanditMilitias
             RunManualPatches();
         }
 
+        protected override void OnApplicationTick(float dt)
+        {
+            base.OnApplicationTick(dt);
+
+            if (Campaign.Current is null)
+                return;
+
+            if (Input.IsKeyPressed(InputKey.N)
+                && Input.IsKeyDown(InputKey.LeftControl)
+                && Input.IsKeyDown(InputKey.LeftAlt))
+            {
+                Helper.Nuke();
+            }
+        }
+
         internal static void CacheBanners()
         {
             for (var i = 0; i < 5000; i++)
             {
                 var banner = (Banner)AccessTools.Method(typeof(Banner), "CreateRandomBannerInternal")
-                    .Invoke(typeof(Banner), new object[] { MBRandom.RandomInt(0, int.MaxValue), -1 });
+                    .Invoke(typeof(Banner), [MBRandom.RandomInt(0, int.MaxValue), -1]);
                 if (banner is not null)
                     Banners.Add(banner);
             }
@@ -55,7 +72,7 @@ namespace BanditMilitias
 
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
-            Globals.Settings = Settings.Instance;
+            Globals.Settings = MCMSettings.Instance;
             if (Globals.Settings is null)
                 return;
 
@@ -80,8 +97,8 @@ namespace BanditMilitias
             VoicePatches.ApplyManualPatch(harmony);
             if (gameStarterObject is CampaignGameStarter gameStarter)
                 gameStarter.AddBehavior(new MilitiaBehavior());
-            if (Settings.Instance != null)
-                Settings.OnSettingsChanged += OnSettingsChanged;
+            if (MCMSettings.Instance != null)
+                MCMSettings.OnSettingsChanged += OnSettingsChanged;
         }
 
         private static readonly MethodInfo _resetCached = AccessTools.Method(typeof(MobileParty), "ResetCached");
@@ -102,7 +119,7 @@ namespace BanditMilitias
             Globals.Banners.Clear();
             Globals.Heroes.Clear();
             MilitiaPartyFactory.ResetUpgraderBehavior();
-            Settings.OnSettingsChanged -= OnSettingsChanged;
+            MCMSettings.OnSettingsChanged -= OnSettingsChanged;
         }
 
         public override void OnGameInitializationFinished(Game game)

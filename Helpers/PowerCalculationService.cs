@@ -8,7 +8,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.LinQuick;
 
-namespace BanditMilitias
+namespace BanditMilitias.Helpers
 {
     internal static class PowerCalculationService
     {
@@ -20,15 +20,15 @@ namespace BanditMilitias
 
         private static double _lastCalculated;
         private static double _partyCacheInterval;
-        private static List<ModBanditMilitiaPartyComponent> _allBMs = new();
+        private static List<ModBanditMilitiaPartyComponent> _allBMs = [];
 
         private static float Variance => MBRandom.RandomFloatRanged(0.925f, 1.075f);
 
         internal static void Reset()
         {
+            _allBMs = [];
             _lastCalculated = 0;
             _partyCacheInterval = 0;
-            _allBMs = new List<ModBanditMilitiaPartyComponent>();
             CalculatedMaxPartySize = 0;
             CalculatedGlobalPowerLimit = 0;
             GlobalMilitiaPower = 0;

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using BanditMilitias.Helpers;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using TaleWorlds.CampaignSystem;
@@ -12,7 +13,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.LinQuick;
-using static BanditMilitias.Helper;
+using static BanditMilitias.Helpers.Helper;
 
 namespace BanditMilitias.Patches
 {
@@ -109,8 +110,8 @@ namespace BanditMilitias.Patches
         {
             public static void Prefix(MobileParty conversationParty, bool doBanditsJoinPlayerSide)
             {
-                List<MobileParty> partiesToJoinPlayerSide = new List<MobileParty>();
-                List<MobileParty> partiesToJoinEnemySide = new List<MobileParty>();
+                List<MobileParty> partiesToJoinPlayerSide = [];
+                List<MobileParty> partiesToJoinEnemySide = [];
                 
                 if (PlayerEncounter.Current != null)
                 {

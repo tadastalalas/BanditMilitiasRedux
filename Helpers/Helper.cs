@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using BanditMilitias.Helpers;
 using HarmonyLib;
 using Helpers;
 using Microsoft.Extensions.Logging;
@@ -24,7 +23,7 @@ using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
 using static BanditMilitias.Globals;
 
-namespace BanditMilitias
+namespace BanditMilitias.Helpers
 {
     internal sealed class Helper
     {
@@ -243,7 +242,7 @@ namespace BanditMilitias
             Giant = MBObjectManager.Instance.GetObject<CharacterObject>("giant");
 
             var stateMap = AccessTools.FieldRefAccess<ConversationManager, Dictionary<string, int>>("stateMap")(Campaign.Current.ConversationManager);
-            LordConversationTokens = stateMap.Keys.WhereQ(k => k.Contains("lord_") || k.Contains("_lord")).SelectQ(k => stateMap[k]).ToHashSet();
+            LordConversationTokens = [.. stateMap.Keys.WhereQ(k => k.Contains("lord_") || k.Contains("_lord")).SelectQ(k => stateMap[k])];
             
             var filter = new List<string>
             {
@@ -265,7 +264,7 @@ namespace BanditMilitias
                 if (Recruits.ContainsKey(recruit.Culture))
                     Recruits[recruit.Culture].Add(recruit);
                 else
-                    Recruits.Add(recruit.Culture, new List<CharacterObject> { recruit });
+                    Recruits.Add(recruit.Culture, [recruit]);
             }
 
             var availableBandits = CharacterObject.All.WhereQ(c => c.Occupation is Occupation.Bandit && c.Level <= 11 && !c.HiddenInEncyclopedia).ToListQ();
@@ -301,9 +300,7 @@ namespace BanditMilitias
         public static void RemoveMilitiaLeader(MobileParty party)
         {
             if (party.PartyComponent is ModBanditMilitiaPartyComponent bm)
-            {
                 bm.ForceRemoveLeader();
-            }
         }
     }
 }

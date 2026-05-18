@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using BanditMilitias.Helpers;
 using HarmonyLib;
 using Helpers;
 using Microsoft.Extensions.Logging;
@@ -14,7 +13,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using static BanditMilitias.Globals;
 
-namespace BanditMilitias
+namespace BanditMilitias.Helpers
 {
     internal static class HeroFactory
     {
@@ -66,7 +65,7 @@ namespace BanditMilitias
                     hero, out TextObject firstName, out TextObject fullName, false);
                 hero.SetName(fullName, firstName);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 if (hero.Culture is not null)
                     _blacklistedCultures.Add(hero.Culture);

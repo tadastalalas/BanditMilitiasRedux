@@ -4,7 +4,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 
-namespace BanditMilitias
+namespace BanditMilitias.Helpers
 {
     internal static class Extensions
     {

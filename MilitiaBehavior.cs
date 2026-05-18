@@ -12,8 +12,9 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.LinQuick;
 using TaleWorlds.TwoDimension;
-using static BanditMilitias.Helper;
+using static BanditMilitias.Helpers.Helper;
 using static BanditMilitias.Globals;
+using BanditMilitias.Helpers;
 
 namespace BanditMilitias
 {
@@ -41,7 +42,7 @@ namespace BanditMilitias
                         InformationManager.DisplayMessage(new InformationMessage($"{village.Name} is being raided by {party.Name}!"));
                     }
                 }
-                catch (Exception ex) { }
+                catch (Exception) { }
             });
             CampaignEvents.RaidCompletedEvent.AddNonSerializedListener(this, (_, m) =>
             {
@@ -85,10 +86,10 @@ namespace BanditMilitias
                                 new InformationMessage($"{raidedSettlement?.Name} raided!  " +
                                                        $"{party.Name} is fat with loot near {townName}!"));
                         }
-                        catch (Exception ex) { }
+                        catch (Exception) { }
                     }
                 }
-                catch (Exception ex) {  }
+                catch (Exception) {  }
             });
 
             CampaignEvents.TickPartialHourlyAiEvent.AddNonSerializedListener(this, TickPartialHourlyAiEvent);
@@ -148,7 +149,7 @@ namespace BanditMilitias
                 if (mobileParty?.IsBM() != true || destroyer?.LeaderHero is null)
                     return;
 
-                int AvoidanceIncrease() => MBRandom.RandomInt(AvoidanceIncreaseMin, AvoidanceIncreaseMax);
+                static int AvoidanceIncrease() => MBRandom.RandomInt(AvoidanceIncreaseMin, AvoidanceIncreaseMax);
                 var destroyerBM = destroyer.MobileParty?.GetBM();
 
                 if (destroyerBM?.Avoidance != null && mobileParty.LeaderHero != null)
@@ -255,12 +256,6 @@ namespace BanditMilitias
             if (mobileParty.HasNavalNavigationCapability)
                 return;
 
-            if (isBM && !Globals.Settings.SpawnLandMilitias)
-            {
-                MilitiaBehaviorService.BMThink(mobileParty);
-                return;
-            }
-
             try
             {
                 if (isBM)
@@ -341,7 +336,7 @@ namespace BanditMilitias
                     return;
                 }
 
-                List<MobileParty> nearbyBandits = new List<MobileParty>();
+                List<MobileParty> nearbyBandits = [];
                 {
                     var locatableSearchData = MobileParty.StartFindingLocatablesAroundPosition(mobileParty.Position.ToVec2(), FindRadius);
                     for (MobileParty party =
@@ -475,7 +470,7 @@ namespace BanditMilitias
             dataStore.SyncData("Heroes", ref Heroes);
             if (dataStore.IsLoading)
             {
-                Heroes ??= new List<Hero>();
+                Heroes ??= [];
                 var aliveSet = new HashSet<Hero>(Hero.AllAliveHeroes);
                 Globals.Heroes.RemoveAll(hero => hero is null || !aliveSet.Contains(hero));
             }

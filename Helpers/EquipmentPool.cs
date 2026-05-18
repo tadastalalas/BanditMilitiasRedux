@@ -13,7 +13,7 @@ using TaleWorlds.LinQuick;
 using TaleWorlds.ModuleManager;
 using static BanditMilitias.Globals;
 
-namespace BanditMilitias
+namespace BanditMilitias.Helpers
 {
     internal static class EquipmentPool
     {
@@ -22,8 +22,8 @@ namespace BanditMilitias
         private static readonly AccessTools.StructFieldRef<EquipmentElement, ItemModifier> ItemModifier =
             AccessTools.StructFieldRefAccess<EquipmentElement, ItemModifier>("<ItemModifier>k__BackingField");
 
-        private static readonly HashSet<string> VerbotenItemStringIds = new()
-        {
+        private static readonly HashSet<string> VerbotenItemStringIds =
+        [
             "bound_adarga",
             "old_kite_sparring_shield_shoulder",
             "old_horsemans_kite_shield_shoulder",
@@ -51,41 +51,41 @@ namespace BanditMilitias
             "grapeshot_projectile",
             "grapeshot_fire_projectile",
             "oval_shield",
-        };
+        ];
 
-        private static readonly HashSet<string> VerbotenSaddleStringIds = new()
-        {
+        private static readonly HashSet<string> VerbotenSaddleStringIds =
+        [
             "celtic_frost",
             "saddle_of_aeneas",
             "fortunas_choice",
             "aseran_village_harness",
             "bandit_saddle_steppe",
             "bandit_saddle_desert",
-        };
+        ];
 
-        internal static Dictionary<ItemObject.ItemTypeEnum, List<ItemObject>> ItemTypes    = new();
-        internal static List<EquipmentElement> EquipmentItems                              = new();
-        internal static List<EquipmentElement> EquipmentItemsNoBow                         = new();
-        internal static List<Equipment>        BanditEquipment                             = new();
-        internal static List<ItemObject>       Arrows                                      = new();
-        internal static List<ItemObject>       Bolts                                       = new();
-        internal static List<ItemObject>       Mounts                                      = new();
-        internal static List<ItemObject>       Saddles                                     = new();
-        internal static List<ItemObject>       CamelSaddles                                = new();
-        internal static List<ItemObject>       NonCamelSaddles                             = new();
+        internal static Dictionary<ItemObject.ItemTypeEnum, List<ItemObject>> ItemTypes = [];
+        internal static List<EquipmentElement> EquipmentItems = [];
+        internal static List<EquipmentElement> EquipmentItemsNoBow = [];
+        internal static List<Equipment> BanditEquipment = [];
+        internal static List<ItemObject> Arrows = [];
+        internal static List<ItemObject> Bolts = [];
+        internal static List<ItemObject> Mounts = [];
+        internal static List<ItemObject> Saddles = [];
+        internal static List<ItemObject> CamelSaddles = [];
+        internal static List<ItemObject> NonCamelSaddles = [];
 
         internal static void Reset()
         {
-            ItemTypes       = new Dictionary<ItemObject.ItemTypeEnum, List<ItemObject>>();
-            EquipmentItems  = new List<EquipmentElement>();
-            EquipmentItemsNoBow = new List<EquipmentElement>();
-            BanditEquipment = new List<Equipment>();
-            Arrows          = new List<ItemObject>();
-            Bolts           = new List<ItemObject>();
-            Mounts          = new List<ItemObject>();
-            Saddles         = new List<ItemObject>();
-            CamelSaddles    = new List<ItemObject>();
-            NonCamelSaddles = new List<ItemObject>();
+            ItemTypes = [];
+            EquipmentItems = [];
+            EquipmentItemsNoBow = [];
+            BanditEquipment = [];
+            Arrows = [];
+            Bolts = [];
+            Mounts = [];
+            Saddles = [];
+            CamelSaddles = [];
+            NonCamelSaddles = [];
         }
 
         internal static void Populate()
@@ -93,21 +93,19 @@ namespace BanditMilitias
             var maxValue = Globals.Settings.MaxItemValue;
             var allItems = Items.All.ToListQ();
 
-            Mounts = allItems
+            Mounts = [.. allItems
                 .WhereQ(i => i.ItemType == ItemObject.ItemTypeEnum.Horse
                     && !i.StringId.Contains("unmountable")
-                    && i.Value <= maxValue)
-                .ToList();
+                    && i.Value <= maxValue)];
 
-            Saddles = allItems
+            Saddles = [.. allItems
                 .WhereQ(i => i.ItemType == ItemObject.ItemTypeEnum.HorseHarness
                     && !i.StringId.Contains("mule")
                     && !VerbotenSaddleStringIds.Contains(i.StringId)
-                    && i.Value <= maxValue)
-                .ToList();
+                    && i.Value <= maxValue)];
 
-            CamelSaddles    = Saddles.WhereQ(s => s.StringId.Contains("camel")).ToList();
-            NonCamelSaddles = Saddles.WhereQ(s => !s.StringId.Contains("camel")).ToList();
+            CamelSaddles = [.. Saddles.WhereQ(s => s.StringId.Contains("camel"))];
+            NonCamelSaddles = [.. Saddles.WhereQ(s => !s.StringId.Contains("camel"))];
 
             var weapons = allItems.WhereQ(i =>
                     !i.IsCraftedByPlayer
@@ -131,8 +129,8 @@ namespace BanditMilitias
 
             weapons.RemoveAll(item => VerbotenItemStringIds.Contains(item.StringId));
 
-            Arrows = weapons.WhereQ(i => i.ItemType == ItemObject.ItemTypeEnum.Arrows).ToList();
-            Bolts  = weapons.WhereQ(i => i.ItemType == ItemObject.ItemTypeEnum.Bolts).ToList();
+            Arrows = [.. weapons.WhereQ(i => i.ItemType == ItemObject.ItemTypeEnum.Arrows)];
+            Bolts  = [.. weapons.WhereQ(i => i.ItemType == ItemObject.ItemTypeEnum.Bolts)];
 
             var weaponPool = weapons
                 .WhereQ(i => i.ItemType is
@@ -145,21 +143,19 @@ namespace BanditMilitias
                     ItemObject.ItemTypeEnum.Crossbow)
                 .ToList();
 
-            EquipmentItems = new List<EquipmentElement>();
+            EquipmentItems = [];
             weaponPool.Do(i => EquipmentItems.Add(new EquipmentElement(i)));
 
-            EquipmentItemsNoBow = EquipmentItems
+            EquipmentItemsNoBow = [.. EquipmentItems
                 .WhereQ(x => x.Item.ItemType != ItemObject.ItemTypeEnum.Bow
-                          && x.Item.ItemType != ItemObject.ItemTypeEnum.Crossbow)
-                .ToList();
+                          && x.Item.ItemType != ItemObject.ItemTypeEnum.Crossbow)];
 
             foreach (ItemObject.ItemTypeEnum itemType in Enum.GetValues(typeof(ItemObject.ItemTypeEnum)))
             {
-                ItemTypes[itemType] = allItems
+                ItemTypes[itemType] = [.. allItems
                     .WhereQ(i => i.Type == itemType
                         && i.Value >= 1000
-                        && i.Value <= maxValue)
-                    .ToList();
+                        && i.Value <= maxValue)];
             }
 
             BanditEquipment = new List<Equipment>(10000);

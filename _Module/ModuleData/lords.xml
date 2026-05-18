@@ -12,13 +12,10 @@
                 face_mesh_cache="true"
 				is_obsolete="true">
     <face>
-      <!--face_key value="0012cd2fc6fc0088e45555148d5769926c95a9ab67b906a757469877267ab9a8000e72b49b6d62b800001105000030a30000001f000000000000000000009000" /-->
-      <BodyProperties version="4"
-                      key="0011CC0FC6FC0088E45555148D5569926C95A9AB67B906A757469877267AB9A8000452B50B6D62B800001105000030A30000001F000000000000000000A09000" />
+      <BodyProperties version="4" key="0011CC0FC6FC0088E45555148D5569926C95A9AB67B906A757469877267AB9A8000452B50B6D62B800001105000030A30000001F000000000000000000A09000" />
     </face>
     <skills></skills>
     <Traits>
-      <!-- USED TO DERIVE SKILLS-->
       <Trait id="BalancedFightingSkills"
              value="5" />
       <Trait id="Commander"
@@ -77,13 +74,10 @@
                 face_mesh_cache="true"
 				is_obsolete="true">
     <face>
-      <!--face_key value="00197d24887c32c27c7537b7a8c498c6ca7b94247bd3b7a374a37946969cc9ba000a44c45c89979900001105000030a30000001f000000000000000000004000" /-->
-      <BodyProperties version="4"
-                      key="00167C04487C32C27C7537B7A8C398C6CA7B94247BD3B7A374A37946969CC9BA000434C30C89979900001105000030A30000001F000000000000000000504000" />
+      <BodyProperties version="4" key="00167C04487C32C27C7537B7A8C398C6CA7B94247BD3B7A374A37946969CC9BA000434C30C89979900001105000030A30000001F000000000000000000504000" />
     </face>
     <skills></skills>
     <Traits>
-      <!-- USED TO DERIVE SKILLS-->
       <Trait id="BalancedFightingSkills"
              value="5" />
       <Trait id="Commander"
@@ -146,13 +140,10 @@
                 face_mesh_cache="true"
 				is_obsolete="true">
     <face>
-      <!--face_key value="0032952c800012865897773981684655d9d8c798581b5696684c587363987795000484947cc7c49a00001105000030a30000001f000000000000000000007000" /-->
-      <BodyProperties version="4"
-                      key="0033940CC00012865897773981684655D9D8C798581B5696684C587363987795000404950CC7C49A00001105000030A30000001F000000000000000000007000" />
+      <BodyProperties version="4" key="0033940CC00012865897773981684655D9D8C798581B5696684C587363987795000404950CC7C49A00001105000030A30000001F000000000000000000007000" />
     </face>
     <skills></skills>
     <Traits>
-      <!-- USED TO DERIVE SKILLS-->
       <Trait id="BalancedFightingSkills"
              value="5" />
       <Trait id="Commander"
@@ -211,13 +202,10 @@
                 face_mesh_cache="true"
 				is_obsolete="true">
     <face>
-      <!--face_key value="00196520083c20c55aca7947c4672588b888929c37a98b74576645cb59574ad7000a7ab4a97569ed00001105000030a30000001f000000000000000000007000" /-->
-      <BodyProperties version="4"
-                      key="00166400083C20C55ACA7947C4642588B888929C37A98B74576645CB59574AD700044AB4097569ED00001105000030A30000001F000000000000000000507000" />
+      <BodyProperties version="4" key="00166400083C20C55ACA7947C4642588B888929C37A98B74576645CB59574AD700044AB4097569ED00001105000030A30000001F000000000000000000507000" />
     </face>
     <skills></skills>
     <Traits>
-      <!-- USED TO DERIVE SKILLS-->
       <Trait id="BalancedFightingSkills"
              value="5" />
       <Trait id="Commander"
@@ -276,13 +264,10 @@
                 face_mesh_cache="true"
 				is_obsolete="true">
     <face>
-      <!--face_key value="001f2926407c24852639456d593673a9968446b5568c66a8c53582b9ab545c34000a6934968b5ab300001105000030a30000001f000000000000000000008000" /-->
-      <BodyProperties version="4"
-                      key="001C2805807C24852639456D593473A9968446B5568C66A8C53582B9AB545C3400044934068B5AB300001105000030A30000001F000000000000000000508000" />
+      <BodyProperties version="4" key="001C2805807C24852639456D593473A9968446B5568C66A8C53582B9AB545C3400044934068B5AB300001105000030A30000001F000000000000000000508000" />
     </face>
     <skills></skills>
     <Traits>
-      <!-- USED TO DERIVE SKILLS-->
       <Trait id="BalancedFightingSkills"
              value="5" />
       <Trait id="Commander"
@@ -345,13 +330,10 @@
                 face_mesh_cache="true"
 				is_obsolete="true">
     <face>
-      <!--face_key value="001f2926407c24852639456d593673a9968446b5568c66a8c53582b9ab545c34000a6934968b5ab300001105000030a30000001f000000000000000000008000" /-->
-      <BodyProperties version="4"
-                      key="001F2806407C24852639456D593273A9968446B5568C66A8C53582B9AB545C3400042935068B5AB300001105000030A30000001F000000000000000000008000" />
+      <BodyProperties version="4" key="001F2806407C24852639456D593273A9968446B5568C66A8C53582B9AB545C3400042935068B5AB300001105000030A30000001F000000000000000000008000" />
     </face>
     <skills></skills>
     <Traits>
-      <!-- USED TO DERIVE SKILLS-->
       <Trait id="BalancedFightingSkills"
              value="5" />
       <Trait id="Commander"

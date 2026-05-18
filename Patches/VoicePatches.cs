@@ -25,7 +25,7 @@ namespace BanditMilitias.Patches
             harmony.Patch(original, postfix: new HarmonyMethod(
                 AccessTools.Method(typeof(VoicePatches), nameof(GenderVoicePostfix)))
             {
-                after = new[] { "BanditVoiceFix" }
+                after = ["BanditVoiceFix"]
             });
         }
 

@@ -41,7 +41,7 @@
   </SubModules>
   <Xmls>
     <XmlNode>
-      <XmlName id="NPCCharacters" path="lords"/>
+      <XmlName id="NPCCharacters" path="Lords"/>
       <IncludedGameTypes>
         <GameType value = "Campaign"/>
         <GameType value = "CampaignStoryMode"/>

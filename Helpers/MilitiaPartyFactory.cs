@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BanditMilitias.Helpers;
 using HarmonyLib;
 using Helpers;
 using Microsoft.Extensions.Logging;
@@ -18,9 +17,9 @@ using TaleWorlds.Library;
 using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using static BanditMilitias.Globals;
-using static BanditMilitias.Helper;
+using static BanditMilitias.Helpers.Helper;
 
-namespace BanditMilitias
+namespace BanditMilitias.Helpers
 {
     internal static class MilitiaPartyFactory
     {
@@ -35,8 +34,8 @@ namespace BanditMilitias
 
         internal static void ResetUpgraderBehavior() => UpgraderCampaignBehavior = null;
 
-        private static readonly HashSet<string> verbotenParties = new()
-        {
+        private static readonly HashSet<string> verbotenParties =
+        [
             "ebdi_deserters_party",
             "caravan_ambush_quest",
             "arzagos_banner_piece_quest_raider_party",
@@ -48,7 +47,7 @@ namespace BanditMilitias
             "company_of_trouble",
             "villagers_of_landlord_needs_access_to_village_common_quest",
             "manhunter"
-        };
+        ];
 
         internal static bool IsAvailableBanditParty(MobileParty __instance)
         {
@@ -108,13 +107,6 @@ namespace BanditMilitias
                 
                 if (mobileParty.ActualClan?.HasNavalNavigationCapability == true
                     || mergeTarget.ActualClan?.HasNavalNavigationCapability == true)
-                {
-                    mobileParty.SetMoveModeHold();
-                    mergeTarget.SetMoveModeHold();
-                    return false;
-                }
-
-                if (!Globals.Settings.SpawnLandMilitias)
                 {
                     mobileParty.SetMoveModeHold();
                     mergeTarget.SetMoveModeHold();
@@ -239,9 +231,6 @@ namespace BanditMilitias
             }
 
             if (mobileParty.ActualClan?.HasNavalNavigationCapability == true)
-                return false;
-
-            if (!Globals.Settings.SpawnLandMilitias)
                 return false;
 
             int roll = MBRandom.RandomInt(0, 101);
@@ -419,7 +408,7 @@ namespace BanditMilitias
                 ConfigureMilitia(militia);
                 TrainMilitia(militia);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 if (militia?.IsActive == true)
                     Helper.Trash(militia);
@@ -468,25 +457,14 @@ namespace BanditMilitias
                 if (!Globals.Settings.CanTrain || MilitiaPowerPercent > Globals.Settings.GlobalPowerPercent)
                     return;
 
-                int iterations;
-                switch (Globals.Settings.XpGift.SelectedIndex)
+                var iterations = Globals.Settings.XpGift.SelectedIndex switch
                 {
-                    case 0:
-                        iterations = 0;
-                        break;
-                    case 1:
-                        iterations = 1;
-                        break;
-                    case 2:
-                        iterations = 2;
-                        break;
-                    case 3:
-                        iterations = 4;
-                        break;
-                    default:
-                        iterations = 0;
-                        break;
-                }
+                    0 => 0,
+                    1 => 1,
+                    2 => 2,
+                    3 => 4,
+                    _ => 0,
+                };
 
                 int number, numberToUpgrade;
                 if (Globals.Settings.UpgradeUnitsPercent > 0)
@@ -552,7 +530,7 @@ namespace BanditMilitias
                     UpgraderCampaignBehavior.UpgradeReadyTroops(mobileParty.Party);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Helper.Trash(mobileParty);
             }

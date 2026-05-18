@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using BanditMilitias.Helpers;
 using SandBox.ViewModelCollection.Map;
 using SandBox.ViewModelCollection.Map.Tracker;
 using TaleWorlds.CampaignSystem;
@@ -26,12 +27,12 @@ namespace BanditMilitias
         internal const float StuckDistanceThresholdSq = 225f;
         internal const int StuckHourLimit = 12;
         internal const float EscapeMinDistanceSq = 900f;
-
+        internal const float ArrivedAtHideoutEpsilonSq = 0.1f;
         internal const int AdjustRadiusSq = 2500;
         internal const int SettlementFindRange = 200;
         internal const int SpawnLoopSafetyLimit = 100;
 
-        internal static Settings Settings;
+        internal static MCMSettings Settings;
         internal static readonly Stopwatch T = new();
 
         internal static float CalculatedMaxPartySize => PowerCalculationService.CalculatedMaxPartySize;
@@ -52,18 +53,18 @@ namespace BanditMilitias
         internal static List<ItemObject> NonCamelSaddles => EquipmentPool.NonCamelSaddles;
 
         internal static IReadOnlyList<ModBanditMilitiaPartyComponent> AllBMs => PowerCalculationService.GetCachedBMs();
-        internal static List<Hero> Heroes = new();
-        internal static List<CharacterObject> HeroTemplates = new();
+        internal static List<Hero> Heroes = [];
+        internal static List<CharacterObject> HeroTemplates = [];
         internal static int RaidCap;
 
-        internal static Dictionary<CultureObject, List<CharacterObject>> Recruits = new();
-        internal static List<CharacterObject> BasicRanged = new();
-        internal static List<CharacterObject> BasicInfantry = new();
-        internal static List<CharacterObject> BasicCavalry = new();
+        internal static Dictionary<CultureObject, List<CharacterObject>> Recruits = [];
+        internal static List<CharacterObject> BasicRanged = [];
+        internal static List<CharacterObject> BasicInfantry = [];
+        internal static List<CharacterObject> BasicCavalry = [];
         internal static CharacterObject Giant;
 
-        internal static Dictionary<MobileParty, BannerImageIdentifierVM> PartyImageMap = new();
-        internal static readonly List<Banner> Banners = new();
+        internal static Dictionary<MobileParty, BannerImageIdentifierVM> PartyImageMap = [];
+        internal static readonly List<Banner> Banners = [];
 
         internal static List<Settlement> Hideouts;
         internal static List<Settlement> Villages;
@@ -71,29 +72,29 @@ namespace BanditMilitias
         internal static Clan Wights;
         internal static HashSet<int> LordConversationTokens;
 
-        internal static readonly Dictionary<MobileParty, (Vec2 LastPos, int HourCount)> StuckTracker = new();
+        internal static readonly Dictionary<MobileParty, (Vec2 LastPos, int HourCount)> StuckTracker = [];
 
         internal static CultureObject BlackFlag;
 
         internal static Dictionary<TextObject, int> DifficultyXpMap = new()
         {
-            { new TextObject("{=BMXpOff}Off"),        0 },
+            { new TextObject("{=BMXpOff}Off"), 0 },
             { new TextObject("{=BMXpNormal}Normal"), 300 },
-            { new TextObject("{=BMXpHard}Hard"),     600 },
+            { new TextObject("{=BMXpHard}Hard"), 600 },
             { new TextObject("{=BMXpHardest}Hardest"), 900 },
         };
 
-        internal static readonly int[] DifficultyXpValues = { 0, 300, 600, 900 };
+        internal static readonly int[] DifficultyXpValues = [0, 300, 600, 900];
 
         internal static Dictionary<TextObject, int> GoldMap = new()
         {
-            { new TextObject("{=BMGoldLow}Low"),         250 },
-            { new TextObject("{=BMGoldNormal}Normal"),   500 },
-            { new TextObject("{=BMGoldRich}Rich"),       900 },
+            { new TextObject("{=BMGoldLow}Low"), 250 },
+            { new TextObject("{=BMGoldNormal}Normal"), 500 },
+            { new TextObject("{=BMGoldRich}Rich"), 900 },
             { new TextObject("{=BMGoldRichest}Richest"), 2000 },
         };
 
-        internal static readonly int[] GoldValues = { 250, 500, 900, 2000 };
+        internal static readonly int[] GoldValues = [250, 500, 900, 2000];
 
         public static void ClearGlobals()
         {
@@ -101,12 +102,12 @@ namespace BanditMilitias
             EquipmentPool.Reset();
             Banners.Clear();
             StuckTracker.Clear();
-            PartyImageMap = new();
-            Recruits = new();
+            PartyImageMap = [];
+            Recruits = [];
             RaidCap = 0;
-            HeroTemplates = new();
-            Hideouts = new();
-            Villages = new();
+            HeroTemplates = [];
+            Hideouts = [];
+            Villages = [];
         }
     }
 }

@@ -11,9 +11,9 @@ using TaleWorlds.Library;
 using TaleWorlds.LinQuick;
 using TaleWorlds.TwoDimension;
 using static BanditMilitias.Globals;
-using static BanditMilitias.Helper;
+using static BanditMilitias.Helpers.Helper;
 
-namespace BanditMilitias
+namespace BanditMilitias.Helpers
 {
     internal static class MilitiaBehaviorService
     {
@@ -35,21 +35,25 @@ namespace BanditMilitias
                         if (mobileParty.TargetSettlement is null)
                         {
                             var locData = Settlement.StartFindingLocatablesAroundPosition(mobileParty.Position.ToVec2(), SettlementFindRange);
-                            var candidates = new List<Settlement>();
+                            Settlement chosen = null;
+                            int seen = 0;
                             for (var s = Settlement.FindNextLocatable(ref locData); s != null; s = Settlement.FindNextLocatable(ref locData))
                             {
-                                if (!s.IsHideout)
-                                    candidates.Add(s);
+                                if (s.IsHideout) continue;
+                                seen++;
+                                if (MBRandom.RandomInt(seen) == 0) chosen = s;
                             }
-                            if (candidates.Count > 0)
-                                mobileParty.SetMovePatrolAroundSettlement(candidates.GetRandomElement(), MobileParty.NavigationType.Default, false);
+                            if (chosen is not null)
+                                mobileParty.SetMovePatrolAroundSettlement(chosen, MobileParty.NavigationType.Default, false);
                         }
                         break;
 
                     case AiBehavior.GoToSettlement:
                         if (mobileParty.TargetSettlement?.IsHideout == true)
                         {
-                            if (!mobileParty.IsEngaging && mobileParty.Position.ToVec2().DistanceSquared(mobileParty.TargetSettlement.Position.ToVec2()) == 0f)
+                            var partyPos2D = mobileParty.Position.ToVec2();
+                            var targetPos2D = mobileParty.TargetSettlement.Position.ToVec2();
+                            if (!mobileParty.IsEngaging && partyPos2D.DistanceSquared(targetPos2D) < ArrivedAtHideoutEpsilonSq)
                                 mobileParty.SetMoveModeHold();
                         }
                         break;
@@ -59,7 +63,7 @@ namespace BanditMilitias
                         if (BM is null || mobileParty.MapFaction is null)
                             return;
 
-                        if (Globals.Settings?.AllowPillaging == true
+                        if (Globals.Settings.AllowPillaging == true
                             && mobileParty.LeaderHero is not null
                             && mobileParty.Party.EstimatedStrength > MilitiaPartyAveragePower
                             && MBRandom.RandomFloat < (Globals.Settings?.PillagingChance ?? 0) * 0.01f)
@@ -71,21 +75,44 @@ namespace BanditMilitias
 
                             try
                             {
-                                target = Globals.Villages
-                                    .WhereQ(s => s.Village is not { VillageState: Village.VillageStates.BeingRaided or Village.VillageStates.Looted }
-                                        && s.Owner is not null
-                                        && s.MapFaction?.IsAtWarWith(mobileParty.MapFaction) != false
-                                        && s.GetValue() > 0)
-                                    .OrderByQ(s => s.GatePosition.ToVec2().DistanceSquared(mobileParty.Position.ToVec2()))
-                                    .FirstOrDefault();
+                                var partyPos = mobileParty.Position.ToVec2();
+                                Settlement nearest = null;
+                                var nearestDistSq = float.MaxValue;
+                                var villages = Globals.Villages;
+                                for (int i = 0, n = villages.Count; i < n; i++)
+                                {
+                                    var s = villages[i];
+                                    if (s?.Village is null)
+                                        continue;
+                                    var state = s.Village.VillageState;
+                                    if (state is Village.VillageStates.BeingRaided or Village.VillageStates.Looted)
+                                        continue;
+                                    if (s.Owner is null)
+                                        continue;
+                                    if (s.MapFaction is null || !s.MapFaction.IsAtWarWith(mobileParty.MapFaction))
+                                        continue;
+                                    if (s.GetValue() <= 0)
+                                        continue;
+
+                                    var d = s.GatePosition.ToVec2().DistanceSquared(partyPos);
+                                    if (d < nearestDistSq)
+                                    {
+                                        nearestDistSq = d;
+                                        nearest = s;
+                                    }
+                                }
+                                target = nearest;
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             {
                                 Helper.Trash(mobileParty);
                                 return;
                             }
 
-                            if (target is not null && target.OwnerClan is not null && BM.Avoidance is not null)
+                            if (target is null)
+                                break;
+
+                            if (target.OwnerClan is not null && BM.Avoidance is not null)
                             {
                                 foreach (var clanHero in target.OwnerClan.Heroes)
                                 {
@@ -97,21 +124,21 @@ namespace BanditMilitias
                                         break;
                                     }
                                 }
-
                                 if (target is null)
                                     break;
                             }
 
-                            if (target.OwnerClan == Hero.MainHero.Clan)
-                                InformationManager.DisplayMessage(new InformationMessage($"{mobileParty.Name} is raiding your village {target.Name} near {target.Town?.Name}!"));
+                            if (Hero.MainHero?.Clan is not null && target.OwnerClan == Hero.MainHero.Clan)
+                                InformationManager.DisplayMessage(new InformationMessage(
+                                    $"{mobileParty.Name} is raiding your village {target.Name} near {target.Town?.Name}!"));
 
                             mobileParty.SetMoveRaidSettlement(target, MobileParty.NavigationType.Default);
                             mobileParty.Ai.SetDoNotMakeNewDecisions(true);
                         }
-                        break;
+                    break;
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
         }
 
         internal static void TryGrowing(MobileParty mobileParty)
@@ -123,10 +150,13 @@ namespace BanditMilitias
                 && MilitiaPartyFactory.IsAvailableBanditParty(mobileParty)
                 && MBRandom.RandomFloat <= Globals.Settings.GrowthChance / 100f)
             {
+                if (mobileParty.IsVisible)
+                    return;
+                var maxTier = Globals.Settings.MaxTrainingTier;
                 var eligibleToGrow = mobileParty.MemberRoster.GetTroopRoster().WhereQ(rosterElement =>
-                        rosterElement.Character.Tier < Globals.Settings.MaxTrainingTier
+                        rosterElement.Character is not null
                         && !rosterElement.Character.IsHero
-                        && !mobileParty.IsVisible
+                        && rosterElement.Character.Tier < maxTier
                         && !rosterElement.Character.Name.ToString().StartsWith("Glorious"))
                     .ToListQ();
 
@@ -141,9 +171,6 @@ namespace BanditMilitias
 
                 for (var i = 0; i < growthAmount && mobileParty.MemberRoster.TotalManCount + 1 < CalculatedMaxPartySize; i++)
                 {
-                    if (eligibleToGrow.Count == 0)
-                        break;
-
                     var rosterElement = eligibleToGrow.GetRandomElement();
                     if (rosterElement.Character is null)
                         continue;
@@ -165,29 +192,31 @@ namespace BanditMilitias
                 if (mobileParty?.Position is null)
                     return;
 
+                var partyPos2D = mobileParty.Position.ToVec2();
                 foreach (var BM in PowerCalculationService.GetCachedBMs(false).WhereQ(bm => bm?.Leader is not null
                     && bm.MobileParty?.Position is not null
-                    && bm.MobileParty.Position.ToVec2().DistanceSquared(mobileParty.Position.ToVec2()) < Globals.AdjustRadiusSq))
+                    && bm.MobileParty.Position.ToVec2().DistanceSquared(partyPos2D) < Globals.AdjustRadiusSq))
                 {
                     if (BM?.Avoidance is null)
                         continue;
 
-                    var avoidanceKeysCopy = BM.Avoidance.Keys.ToListQ();
-                    foreach (var heroKey in avoidanceKeysCopy)
+                    foreach (var heroKey in BM.Avoidance.Keys)
                     {
-                        if (heroKey is null || !BM.Avoidance.ContainsKey(heroKey))
+                        if (heroKey is null)
                             continue;
 
-                        BM.Avoidance[heroKey] = Math.Max(0, BM.Avoidance[heroKey] - Globals.AvoidanceIncreaseMin);
+                        var current = BM.Avoidance[heroKey];
+                        var reduced = current - Globals.AvoidanceIncreaseMin;
+                        BM.Avoidance[heroKey] = reduced < 0 ? 0 : reduced;
                     }
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
         }
 
         internal static void SpawnBM()
         {
-            if (!Globals.Settings.MilitiaSpawn)
+            if (!Globals.Settings.SpontaneousMilitiaSpawn)
                 return;
 
             try
@@ -204,17 +233,23 @@ namespace BanditMilitias
                     .WhereQ(s => Helper.IsLandHideout(s))
                     .ToListQ();
 
-                var landMilitiaCountByClan = PowerCalculationService.GetCachedBMs()
-                    .WhereQ(bm => bm?.MobileParty?.ActualClan is not null)
-                    .GroupBy(bm => bm.MobileParty.ActualClan)
-                    .ToDictionary(group => group.Key, group => group.Count());
+                var landMilitiaCountByClan = new Dictionary<Clan, int>();
+                var cached = PowerCalculationService.GetCachedBMs();
+                for (int i = 0, n = cached.Count; i < n; i++)
+                {
+                    var clan = cached[i]?.MobileParty?.ActualClan;
+                    if (clan is null)
+                        continue;
+                    landMilitiaCountByClan.TryGetValue(clan, out var c);
+                    landMilitiaCountByClan[clan] = c + 1;
+                }
 
                 for (var i = 0; i < maxIterations; i++)
                 {
                     if (MilitiaPowerPercent + 1 > Globals.Settings.GlobalPowerPercent)
                         break;
 
-                    if (MBRandom.RandomInt(0, 101) > Globals.Settings.SpawnChance)
+                    if (MBRandom.RandomInt(0, 101) > Globals.Settings.HourlySpawnChance)
                         continue;
 
                     var baseSettlement = validHideouts.GetRandomElement();
@@ -226,9 +261,6 @@ namespace BanditMilitias
                         ?? baseSettlement.OwnerClan;
 
                     if (banditClan?.HasNavalNavigationCapability == true)
-                        continue;
-
-                    if (!Globals.Settings.SpawnLandMilitias)
                         continue;
 
                     if (landHideouts.Count == 0)
@@ -299,9 +331,9 @@ namespace BanditMilitias
 
                     try
                     {
-                        MilitiaPartyFactory.InitMilitia(banditMilitia, new[] { roster, TroopRoster.CreateDummyTroopRoster() }, settlement.GatePosition);
+                        MilitiaPartyFactory.InitMilitia(banditMilitia, [roster, TroopRoster.CreateDummyTroopRoster()], settlement.GatePosition);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         Helper.Trash(banditMilitia);
                         continue;
@@ -320,7 +352,7 @@ namespace BanditMilitias
                         TeleportMilitiasNearPlayer(banditMilitia);
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
         }
 
         internal static void TeleportMilitiasNearPlayer(MobileParty banditMilitia)
@@ -340,7 +372,7 @@ namespace BanditMilitias
 
                 banditMilitia.Position = targetParty.Position;
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
         }
     }
 }

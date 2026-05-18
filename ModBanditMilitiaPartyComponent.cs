@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
+using BanditMilitias.Helpers;
 using HarmonyLib;
-using Microsoft.Extensions.Logging;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -10,7 +10,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.SaveSystem;
 using static BanditMilitias.Globals;
-using static BanditMilitias.Helper;
+using static BanditMilitias.Helpers.Helper;
 
 namespace BanditMilitias
 {
@@ -19,14 +19,21 @@ namespace BanditMilitias
         [SaveableField(1)] public readonly Banner Banner;
         [SaveableField(2)] public readonly string BannerKey;
         [SaveableField(3)] public CampaignTime LastMergedOrSplitDate = CampaignTime.Now;
-        [SaveableField(4)] public Dictionary<Hero, float> Avoidance = new();
+        [SaveableField(4)] public Dictionary<Hero, float> Avoidance = [];
         [SaveableField(5)] private Hero leader;
-        [SaveableField(6)] private Settlement homeSettlement;
+        [SaveableField(6)] private readonly Settlement homeSettlement;
         [CachedData] private TextObject cachedName;
 
         public override Settlement HomeSettlement => homeSettlement;
         public override Hero Leader => leader;
-        public override Hero PartyOwner => MobileParty?.ActualClan?.Leader;
+        public override Hero PartyOwner
+        {
+            get
+            {
+                return MobileParty?.ActualClan?.Leader;
+            }
+        }
+
         private static readonly MethodInfo OnWarPartyRemoved = AccessTools.Method(typeof(Clan), "OnWarPartyRemoved");
 
         public override TextObject Name
@@ -38,23 +45,18 @@ namespace BanditMilitias
             }
         }
 
-        public void ChangePartyLeader(Hero newLeader)
+        protected override void OnChangePartyLeader(Hero newLeader)
         {
-            base.ChangePartyLeader(newLeader);
-
+            base.OnChangePartyLeader(newLeader);
             if (newLeader is null)
             {
                 if (!Heroes.Contains(leader))
-                {
                     ForceRemoveLeader();
-                }
+                return;
             }
-            else
-            {
-                leader = newLeader;
-                newLeader.Clan = MobileParty.ActualClan;
-                ClearCachedName();
-            }
+            leader = newLeader;
+            newLeader.Clan = MobileParty.ActualClan;
+            ClearCachedName();
         }
 
         public void ForceRemoveLeader()

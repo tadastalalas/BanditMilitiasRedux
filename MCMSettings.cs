@@ -7,7 +7,7 @@ using TaleWorlds.Localization;
 
 namespace BanditMilitias
 {
-    public class Settings : AttributeGlobalSettings<Settings>
+    public class MCMSettings : AttributeGlobalSettings<MCMSettings>
     {
         public delegate void OnSettingsChangedDelegate();
         public static event OnSettingsChangedDelegate OnSettingsChanged;
@@ -18,30 +18,26 @@ namespace BanditMilitias
 
         [SettingPropertyBool("{=BMSpawn}Enable Spontaneous Spawning", Order = 0, RequireRestart = false, HintText = "{=BMSpawnDesc}New Bandit Militias will form spontaneously as well as by merging together normally.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation", GroupOrder = 0)]
-        public bool MilitiaSpawn { get; private set; } = false;
+        public bool SpontaneousMilitiaSpawn { get; private set; } = false;
 
         [SettingPropertyInteger("{=BMSpawnChance}Hourly Spawn Chance %", 1, 100, Order = 1, RequireRestart = false, HintText = "{=BMSpawnChanceDesc}Bandit Militias will spawn hourly at this likelihood.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
-        public int SpawnChance { get; private set; } = 1;
+        public int HourlySpawnChance { get; private set; } = 1;
 
-        [SettingPropertyBool("{=BMSpawnLand}Allow Land Militias", Order = 2, RequireRestart = false, HintText = "{=BMSpawnLandDesc}Allow land Bandit Militias to exist. When disabled, land militias will not spawn, merge, or split.")]
-        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
-        public bool SpawnLandMilitias { get; private set; } = true;
-
-        [SettingPropertyInteger("{=BMMaxPerClan}Max Militias Per Clan", 0, 50, Order = 3, RequireRestart = false, HintText = "{=BMMaxPerClanDesc}Maximum Bandit Militia parties per bandit clan. Set to 0 for no limit.")]
+        [SettingPropertyInteger("{=BMMaxPerClan}Max Militias Per Clan", 0, 50, Order = 2, RequireRestart = false, HintText = "{=BMMaxPerClanDesc}Maximum Bandit Militia parties per bandit clan. Set to 0 for no limit.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int MaxLandPartiesPerClan { get; private set; } = 10;
 
-        [SettingPropertyInteger("{=BMMergeSize}Minimum Size to Merge", 1, 100, Order = 4, RequireRestart = false, HintText = "{=BMMergeSizeDesc}Bandit parties smaller than this will not merge into a Bandit Militia.")]
+        [SettingPropertyInteger("{=BMMergeSize}Minimum Size to Merge", 1, 100, Order = 3, RequireRestart = false, HintText = "{=BMMergeSizeDesc}Bandit parties smaller than this will not merge into a Bandit Militia.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int MergeableSize { get; private set; } = 15;
         public int MinPartySize => MergeableSize * 2;
 
-        [SettingPropertyInteger("{=BMSplit}Daily Split Chance %", 0, 100, Order = 5, RequireRestart = false, HintText = "{=BMSplitDesc}How likely every day Bandit Militias is to split when large enough.")]
+        [SettingPropertyInteger("{=BMSplit}Daily Split Chance %", 0, 100, Order = 4, RequireRestart = false, HintText = "{=BMSplitDesc}How likely every day Bandit Militias is to split when large enough.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int RandomSplitChance { get; private set; } = 5;
 
-        [SettingPropertyInteger("{=BMDisperse}Disband Below Troop Count", 10, 100, Order = 6, RequireRestart = false, HintText = "{=BMDisperseDesc}Militias defeated with fewer than this many remaining troops will be disbanded.")]
+        [SettingPropertyInteger("{=BMDisperse}Disband Below Troop Count", 10, 100, Order = 5, RequireRestart = false, HintText = "{=BMDisperseDesc}Militias defeated with fewer than this many remaining troops will be disbanded.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int DisperseSize { get; private set; } = 20;
 
@@ -57,7 +53,7 @@ namespace BanditMilitias
 
         [SettingPropertyDropdown("{=BMXpBoost}Bonus XP on Training", Order = 2, RequireRestart = false, HintText = "{=BMXpBoostDesc}Extra XP granted when training occurs. Hardest grants enough to significantly upgrade troops. Off grants no bonus XP.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
-        public Dropdown<string> XpGift { get; internal set; } = new(new[] { "{=BMXpOff}Off", "{=BMXpNormal}Normal", "{=BMXpHard}Hard", "{=BMXpHardest}Hardest" }, 1);
+        public Dropdown<string> XpGift { get; internal set; } = new(["{=BMXpOff}Off", "{=BMXpNormal}Normal", "{=BMXpHard}Hard", "{=BMXpHardest}Hardest"], 1);
 
         [SettingPropertyInteger("{=BMUpgrade}Upgrade % of Troops per Training", 0, 100, Order = 3, RequireRestart = false, HintText = "{=BMUpgradeDesc}At most this percentage of troops will be upgraded each time training occurs. Looters are included.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
@@ -79,11 +75,11 @@ namespace BanditMilitias
 
         [SettingPropertyInteger("{=BMPower}Global Power Cap %", 1, 100, Order = 0, RequireRestart = false, HintText = "{=BMPowerDesc}Caps the total combat strength of all Bandit Militias combined as a percentage of all other parties in the world. Higher values allow more and stronger BMs but can noticeably impact world balance.")]
         [SettingPropertyGroup("{=BMPower}Power & Balance", GroupOrder = 2)]
-        public int GlobalPowerPercent { get; private set; } = 30;
+        public int GlobalPowerPercent { get; private set; } = 20;
 
         [SettingPropertyDropdown("{=BMGoldReward}Gold Reward on Hero Kill", Order = 1, RequireRestart = false, HintText = "{=BMGoldRewardDesc}How much gold the player receives for defeating a Bandit Militia hero.")]
         [SettingPropertyGroup("{=BMPower}Power & Balance")]
-        public Dropdown<string> GoldReward { get; internal set; } = new(new[] { "{=BMGoldLow}Low", "{=BMGoldNormal}Normal", "{=BMGoldRich}Rich", "{=BMGoldRichest}Richest" }, 1);
+        public Dropdown<string> GoldReward { get; internal set; } = new(["{=BMGoldLow}Low", "{=BMGoldNormal}Normal", "{=BMGoldRich}Rich", "{=BMGoldRichest}Richest"], 1);
 
         // ==================== BEHAVIOR & AI ====================
 
@@ -168,7 +164,7 @@ namespace BanditMilitias
         // ==================== PRIVATE FIELDS ====================
 
         private const string id = "BanditMilitiasRedux";
-        private string displayName = $"Bandit Militias Redux";
+        private readonly string displayName = $"Bandit Militias Redux";
 
         // ==================== OVERRIDES ====================
 

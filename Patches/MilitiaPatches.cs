@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using BanditMilitias.Helpers;
 using HarmonyLib;
 using Helpers;
 using Microsoft.Extensions.Logging;
@@ -33,7 +34,7 @@ using TaleWorlds.InputSystem;
 using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using static BanditMilitias.Globals;
-using static BanditMilitias.Helper;
+using static BanditMilitias.Helpers.Helper;
 
 namespace BanditMilitias.Patches
 {
@@ -47,18 +48,22 @@ namespace BanditMilitias.Patches
         {
             public static bool Prefix(PartyBase attackerParty, PartyBase defenderParty)
             {
+                var a = attackerParty?.MobileParty;
+                var d = defenderParty?.MobileParty;
+
                 if (PartyBase.MainParty == attackerParty || PartyBase.MainParty == defenderParty ||
-                    attackerParty?.MobileParty?.IsBandit != true || defenderParty?.MobileParty?.IsBandit != true ||
+                    a?.IsBandit != true || d?.IsBandit != true ||
+                    a?.IsActive != true || d?.IsActive != true ||
                     FactionManager.IsAtWarAgainstFaction(attackerParty.MapFaction, defenderParty.MapFaction) ||
-                    attackerParty.MobileParty.IsUsedByAQuest() || defenderParty.MobileParty.IsUsedByAQuest())
+                    a.IsUsedByAQuest() || d.IsUsedByAQuest())
                     return true;
 
                 if (MobileParty.MainParty.ShortTermBehavior == AiBehavior.EngageParty
-                    && (MobileParty.MainParty.ShortTermTargetParty == attackerParty.MobileParty
-                        || MobileParty.MainParty.ShortTermTargetParty == defenderParty.MobileParty))
+                    && (MobileParty.MainParty.ShortTermTargetParty == a
+                        || MobileParty.MainParty.ShortTermTargetParty == d))
                     return true;
 
-                MilitiaPartyFactory.TryMergeParties(attackerParty.MobileParty, defenderParty.MobileParty);
+                MilitiaPartyFactory.TryMergeParties(a, d);
                 return false;
             }
         }
@@ -118,40 +123,31 @@ namespace BanditMilitias.Patches
         {
             private static bool Prefix(MobileParty mobileParty, Settlement settlement)
             {
-                if (mobileParty.IsBM())
-                {
-                    mobileParty.SetMoveModeHold();
-                    return false;
-                }
-                return true;
+                if (mobileParty?.IsBM() != true)
+                    return true;
+
+                mobileParty.SetMoveModeHold();
+                return false;
             }
         }
 
         [HarmonyPatch(typeof(PartyNameplateVM), "RefreshDynamicProperties")]
         public static class PartyNameplateVMRefreshDynamicPropertiesPatch
         {
-            public static void Prefix(PartyNameplateVM __instance, TextObject ____latestNameTextObject, out bool __state)
+            public static void Prefix(PartyNameplateVM __instance, out bool __state)
             {
-                __state = false;
-                
-                if (__instance.Party?.LeaderHero is null)
-                {
-                    return;
-                }
-
-                if (!__instance.Party.IsBandit || !__instance.Party.IsBM())
-                {
-                    return;
-                }
-
-                __state = ____latestNameTextObject != __instance.Party.LeaderHero.Name;
+                __state = __instance.Party is not null
+                          && __instance.Party.IsBandit
+                          && __instance.Party.IsBM();
             }
-            
+
             public static void Postfix(PartyNameplateVM __instance, ref string ____fullNameBind, bool __state)
             {
                 if (!__state) return;
-                
-                ____fullNameBind = __instance.Party.Name.ToString();
+
+                var desired = __instance.Party.Name?.ToString();
+                if (!string.IsNullOrEmpty(desired) && ____fullNameBind != desired)
+                    ____fullNameBind = desired;
             }
         }
 
@@ -338,23 +334,18 @@ namespace BanditMilitias.Patches
                 var party1Strength = attacker.GetTotalLandStrengthWithFollowers();
                 var party2Strength = targetParty.GetTotalLandStrengthWithFollowers();
 
-                if (party1Strength <= 0)
+                if (party1Strength <= 0f)
                     return true;
 
-                if (party2Strength > party1Strength)
-                {
-                    if (Globals.Settings.MaxStrongerTargetPercent >= 100)
-                        return true;
-                    var deltaPercent = (party2Strength - party1Strength) / party1Strength * 100;
-                    return deltaPercent <= Globals.Settings.MaxStrongerTargetPercent;
-                }
-                else
-                {
-                    if (Globals.Settings.MaxWeakerTargetPercent >= 100)
-                        return true;
-                    var deltaPercent = (party1Strength - party2Strength) / party1Strength * 100;
-                    return deltaPercent <= Globals.Settings.MaxWeakerTargetPercent;
-                }
+                var stronger = Math.Max(party1Strength, party2Strength);
+                var weaker = Math.Min(party1Strength, party2Strength);
+                var deltaPercent = (stronger - weaker) / party1Strength * 100f;
+
+                var cap = party2Strength > party1Strength
+                    ? Globals.Settings.MaxStrongerTargetPercent
+                    : Globals.Settings.MaxWeakerTargetPercent;
+
+                return cap >= 100 || deltaPercent <= cap;
             }
         }
 
@@ -394,7 +385,7 @@ namespace BanditMilitias.Patches
 
                 var textObject = heroFirstName;
                 var index = (int)AccessTools.Method(typeof(NameGenerator), "SelectNameIndex")
-                    .Invoke(NameGenerator.Current, new object[] { hero, GangLeaderNames(NameGenerator.Current), 0u, false });
+                    .Invoke(NameGenerator.Current, [hero, GangLeaderNames(NameGenerator.Current), 0u, false]);
                 NameGenerator.Current.AddName(GangLeaderNames(NameGenerator.Current)[index]);
                 textObject = GangLeaderNames(NameGenerator.Current)[index].CopyTextObject();
                 textObject.SetTextVariable("FEMALE", hero.IsFemale ? 1 : 0);
@@ -415,29 +406,7 @@ namespace BanditMilitias.Patches
                 if (hero is null) return true;
                 
                 if (hero.HeroDeveloper is null)
-                {
                     return false;
-                }
-
-                return true;
-            }
-        }
-
-        [HarmonyPatch(typeof(MobilePartyHelper), nameof(MobilePartyHelper.CanTroopGainXp))]
-        public static class MobilePartyHelperCanTroopGainXpPatch
-        {
-            public static bool Prefix(PartyBase owner, CharacterObject character, ref bool __result)
-            {
-                if (character?.UpgradeTargets is null)
-                {
-                    if (owner?.MemberRoster?.Contains(character) == true)
-                    {
-                        owner.MemberRoster.RemoveTroop(character);
-                    }
-                    
-                    __result = false;
-                    return false;
-                }
 
                 return true;
             }
@@ -475,57 +444,64 @@ namespace BanditMilitias.Patches
         {
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                var codes = instructions.ToListQ();
-                Label jumpLabel = new();
-                var method = AccessTools.Method(typeof(PartyUpgraderCampaignBehaviorGetPossibleUpgradeTargets), nameof(IsBM));
-                int index;
-                for (index = codes.Count - 1; index >= 0; index--)
+                try
                 {
-                    if (codes[index].opcode == OpCodes.Call
-                        && codes[index + 1].opcode == OpCodes.Callvirt
-                        && codes[index + 2].opcode == OpCodes.Callvirt
-                        && codes[index + 3].opcode == OpCodes.Ldarg_1)
+                    var codes = instructions.ToListQ();
+                    Label jumpLabel = new();
+                    var method = AccessTools.Method(typeof(PartyUpgraderCampaignBehaviorGetPossibleUpgradeTargets), nameof(IsBM));
+                    int index;
+                    for (index = codes.Count - 1; index >= 0; index--)
                     {
+                        if (codes[index].opcode == OpCodes.Call
+                            && codes[index + 1].opcode == OpCodes.Callvirt
+                            && codes[index + 2].opcode == OpCodes.Callvirt
+                            && codes[index + 3].opcode == OpCodes.Ldarg_1)
+                        {
+                            break;
+                        }
+                    }
+
+                    for (; index >= 0; index--)
+                    {
+                        if (codes[index].labels.Count <= 0) continue;
+                        jumpLabel = codes[index].labels[0];
                         break;
                     }
-                }
-                
-                for (; index >= 0; index--)
-                {
-                    if (codes[index].labels.Count <= 0) continue;
-                    jumpLabel = codes[index].labels[0];
-                    break;
-                }
-                
-                if (jumpLabel.GetHashCode() == 0)
-                    throw new Exception("Could not find jumpLabel");
-            
-                var stack = new List<CodeInstruction>
-                {
-                    new (OpCodes.Ldarg_1),
+
+                    if (jumpLabel.GetHashCode() == 0)
+                        throw new Exception("Could not find jumpLabel");
+
+                    var stack = new List<CodeInstruction>
+        {
+                    new(OpCodes.Ldarg_1),
                     new(OpCodes.Call, method),
                     new(OpCodes.Brtrue_S, jumpLabel)
-                };
-                
-                int insertion = 0;
-                for (; index >= 0; index--)
-                {
-                    if (codes[index].opcode == OpCodes.Ldarg_1
-                        && codes[index + 1].opcode == OpCodes.Callvirt
-                        && codes[index + 2].opcode == OpCodes.Callvirt
-                        && codes[index + 3].opcode == OpCodes.Brfalse_S)
+        };
+
+                    int insertion = 0;
+                    for (; index >= 0; index--)
                     {
-                        insertion = index;
-                        codes[index].MoveLabelsTo(stack[0]);
-                        break;
+                        if (codes[index].opcode == OpCodes.Ldarg_1
+                            && codes[index + 1].opcode == OpCodes.Callvirt
+                            && codes[index + 2].opcode == OpCodes.Callvirt
+                            && codes[index + 3].opcode == OpCodes.Brfalse_S)
+                        {
+                            insertion = index;
+                            codes[index].MoveLabelsTo(stack[0]);
+                            break;
+                        }
                     }
+
+                    if (insertion == 0)
+                        throw new Exception("Could not find insertion point.");
+
+                    codes.InsertRange(insertion, stack);
+                    return codes.AsEnumerable();
                 }
-                
-                if (insertion == 0)
-                    throw new Exception("Could not find insertion point.");
-            
-                codes.InsertRange(insertion, stack);
-                return codes.AsEnumerable();
+                catch (Exception)
+                {
+                    return instructions;
+                }
             }
 
             private static bool IsBM(PartyBase party)
@@ -571,11 +547,7 @@ namespace BanditMilitias.Patches
         [HarmonyPatch(typeof(KillCharacterAction), "ApplyInternal")]
         public class KillCharacterActionApplyInternalPatch
         {
-            public static void Postfix(Hero victim,
-                Hero killer,
-                KillCharacterAction.KillCharacterActionDetail actionDetail,
-                bool showNotification,
-                bool isForced = false)
+            public static void Postfix(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail actionDetail, bool showNotification, bool isForced = false)
             {
                 if (!Heroes.Contains(victim))
                     return;
@@ -602,8 +574,11 @@ namespace BanditMilitias.Patches
         {
             public static void Postfix(Hero hero1, Hero hero2, ref Hero effectiveHero1, ref Hero effectiveHero2)
             {
-                effectiveHero1 ??= hero1;
-                effectiveHero2 ??= hero2;
+                if (hero1?.IsBM() == true || hero2?.IsBM() == true)
+                {
+                    effectiveHero1 ??= hero1;
+                    effectiveHero2 ??= hero2;
+                }
             }
         }
 
@@ -612,7 +587,7 @@ namespace BanditMilitias.Patches
         {
             public static bool Prefix(PartyBase party, Hero hero)
             {
-                if (Globals.Settings.RemovePrisonerMessages && party != PartyBase.MainParty && hero.IsBM())
+                if (Globals.Settings.RemovePrisonerMessages && party != PartyBase.MainParty && hero?.IsBM() == true)
                     return false;
 
                 return true;
@@ -624,7 +599,7 @@ namespace BanditMilitias.Patches
         {
             public static bool Prefix(PartyBase party, Hero hero)
             {
-                if (Globals.Settings.RemovePrisonerMessages && party != PartyBase.MainParty && hero.IsBM())
+                if (Globals.Settings.RemovePrisonerMessages && party != PartyBase.MainParty && hero?.IsBM() == true)
                     return false;
 
                 return true;
@@ -663,14 +638,45 @@ namespace BanditMilitias.Patches
         {
             public static bool Prefix(Hero winnerPartyLeader, PartyBase defeatedParty)
             {
-                if (winnerPartyLeader is null || winnerPartyLeader.IsDead)
-                    return false;
-
-                if (defeatedParty is null || (!defeatedParty.IsSettlement && defeatedParty.MobileParty is null))
-                    return false;
-
+                if (winnerPartyLeader?.PartyBelongedTo?.IsBM() == true
+                    || defeatedParty?.MobileParty?.IsBM() == true)
+                {
+                    if (winnerPartyLeader is null || winnerPartyLeader.IsDead) return false;
+                    if (defeatedParty is null || (!defeatedParty.IsSettlement && defeatedParty.MobileParty is null)) return false;
+                }
                 return true;
             }
         }
+
+        /*
+        Removed because:
+
+        In plain English: "If this troop has no upgrade path, kick it out of the roster and say it can't gain XP."
+        That's a problem because top?tier troops (Khan's Guard, Banner Knight, Imperial Cataphract, etc.) legally have no upgrade targets. Vanilla returns false for them (they can't be upgraded ? they're already max), but vanilla does not delete them. This patch does.
+        So if a Bandit Militia recruits / merges in a tier 6 unit, this code throws it away.
+        If your goal is "BMs can keep top?tier troops": ? Just delete the whole patch. The vanilla method already handles "no upgrade targets" correctly ? it just returns false for XP gain, which is harmless.
+        Why does the patch exist at all? It looks like a leftover defensive measure from when the mod was generating broken cloned troop objects with UpgradeTargets == null (bad/corrupt entries). That problem is better handled where the troops are created, not by silently nuking them everywhere.
+        Recommendation: Delete the patch. If you ever see broken troops, fix the creator (in MilitiaPartyFactory / EquipmentPool), not this getter.
+
+        [HarmonyPatch(typeof(MobilePartyHelper), nameof(MobilePartyHelper.CanTroopGainXp))]
+        public static class MobilePartyHelperCanTroopGainXpPatch
+        {
+            public static bool Prefix(PartyBase owner, CharacterObject character, ref bool __result)
+            {
+                if (character?.UpgradeTargets is not null)
+                    return true;
+
+                if (owner?.IsMobile == true && owner.MobileParty.IsBM()
+                    && character is not null
+                    && owner.MemberRoster?.Contains(character) == true)
+                {
+                    owner.MemberRoster.RemoveTroop(character);
+                }
+
+                __result = false;
+                return false;
+            }
+        }
+        */
     }
 }
