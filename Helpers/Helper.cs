@@ -1,31 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using BanditMilitiasRedux.Behaviours;
+using BanditMilitiasRedux.Managers;
 using HarmonyLib;
-using Helpers;
-using Microsoft.Extensions.Logging;
-using SandBox.View.Map;
-using SandBox.ViewModelCollection.Map;
-using SandBox.ViewModelCollection.Map.Tracker;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
-using static BanditMilitias.Globals;
+using static BanditMilitiasRedux.Globals;
 
-namespace BanditMilitias.Helpers
+namespace BanditMilitiasRedux.Helpers
 {
-    internal sealed class Helper
+    internal static class Helper
     {
         internal static readonly AccessTools.FieldRef<MobileParty, bool> IsBandit =
             AccessTools.FieldRefAccess<MobileParty, bool>("<IsBandit>k__BackingField");
@@ -33,70 +28,77 @@ namespace BanditMilitias.Helpers
         internal static readonly AccessTools.FieldRef<NameGenerator, MBList<TextObject>> GangLeaderNames =
             AccessTools.FieldRefAccess<NameGenerator, MBList<TextObject>>("_gangLeaderNames");
 
-        internal static readonly AccessTools.FieldRef<Hero, Settlement> _bornSettlement =
-            AccessTools.FieldRefAccess<Hero, Settlement>("_bornSettlement");
-
-        internal static readonly AccessTools.FieldRef<CharacterObject, bool> HiddenInEncyclopedia =
-            AccessTools.FieldRefAccess<CharacterObject, bool>("<HiddenInEncyclopedia>k__BackingField");
-
-        internal static void ReHome()
+        internal static Settlement BestSettlementForMerge(MobileParty mergeInitiatorParty, MobileParty mergeTargetParty)
         {
-            foreach (var BM in PowerCalculationService.GetCachedBMs(true).WhereQ(p => p.Leader is not null))
-                _bornSettlement(BM.Leader) = BM.HomeSettlement;
+            Settlement? mobilePartyHomeSettlement = mergeInitiatorParty.HomeSettlement?.IsHideout ?? false ? mergeInitiatorParty.HomeSettlement : null;
+            Settlement? mergeTargetHomeSettlement = mergeTargetParty.HomeSettlement?.IsHideout ?? false ? mergeTargetParty.HomeSettlement : null;
+
+            Settlement? bestSettlement = new[] { mobilePartyHomeSettlement, mergeTargetHomeSettlement }
+                .FirstOrDefault(settlement => settlement != null && Helper.IsLandHideout(settlement));
+
+            return bestSettlement ?? FindClosestHideout(mergeInitiatorParty.Position.ToVec2());
+        }
+        
+        private static Settlement FindClosestHideout(Vec2 position)
+        {
+            Settlement? closestHideout = null;
+            float hideoutDistance = float.MaxValue;
+            float anyDistance = float.MaxValue;
+
+            foreach (Settlement hideout in Hideouts)
+            {
+                float distanceSquared = hideout.GatePosition.ToVec2().DistanceSquared(position);
+                
+                if (distanceSquared < anyDistance)
+                    anyDistance = distanceSquared;
+
+                if (!IsLandHideout(hideout) || distanceSquared > hideoutDistance)
+                    continue;
+                
+                hideoutDistance = distanceSquared;
+                closestHideout = hideout;
+            }
+            return closestHideout;
         }
 
-        internal static bool IsLandHideout(Settlement s) => !s.StringId.StartsWith("hideout_seaside");
+        private static bool IsLandHideout(Settlement hideout) => !hideout.StringId.StartsWith("hideout_seaside");
 
-        internal static List<Settlement> FindHideoutsAwayFromMainParty()
+        internal static void TryTrashMobilePartySafelyReservingBanditLeader(MobileParty mobileParty)
         {
-            var playerPos = MobileParty.MainParty.Position.ToVec2();
-            return Settlement.All
-                .WhereQ(s => s.IsHideout
-                    && s.GatePosition.ToVec2().DistanceSquared(playerPos) > SpawnHideoutMinPlayerDistanceSq)
-                .ToListQ();
+            Hero? leaderToReserve = mobileParty.LeaderHero;
+            
+            if (leaderToReserve is { IsAlive: true, IsPrisoner: false })
+                ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(mobileParty.LeaderHero);
+                
+            mobileParty.Ai?.DisableAi();
+            DestroyPartyAction.Apply(null, mobileParty);
         }
 
-        internal static void Trash(MobileParty mobileParty)
+        internal static void NukeEverything()
         {
-            if (mobileParty?.IsActive != true)
-                return;
-
-            try
+            if (Settlement.CurrentSettlement == null)
+                GameMenu.ExitToLast();
+            Campaign.Current.TimeControlMode = CampaignTimeControlMode.Stop;
+            PartyImageMap.Clear();
+            FlushMapEvents();
+            LegacyFlushBanditMilitias();
+            PowerCalculationManager.GetActiveBanditMilitiaParties(true).Do(bm => TryTrashMobilePartySafelyReservingBanditLeader(bm.MobileParty));
+            foreach (var hero in Hero.FindAll(hero => hero.IsBanditMilitiaHero()).ToArrayQ())
             {
-                mobileParty.Ai?.DisableAi();
-                DestroyPartyAction.Apply(null, mobileParty);
+                KillCharacterAction.ApplyByRemove(hero);
             }
-            catch (Exception) { }
-        }
-
-        internal static bool Nuke()
-        {
-            try
+            foreach (var hero in AllAliveBanditMilitiaHeroes.ToArrayQ())
             {
-                if (Settlement.CurrentSettlement == null)
-                    GameMenu.ExitToLast();
-                Campaign.Current.TimeControlMode = CampaignTimeControlMode.Stop;
-                PartyImageMap.Clear();
-                FlushMapEvents();
-                LegacyFlushBanditMilitias();
-                RemoveBadItems();
-                PowerCalculationService.GetCachedBMs(true).Do(bm => Trash(bm.MobileParty));
-                Hero.FindAll(h => h.IsBM()).ToArrayQ().Do(h => KillCharacterAction.ApplyByRemove(h));
-                Heroes.ToArrayQ().Do(h => KillCharacterAction.ApplyByRemove(h));
-                Heroes.Clear();
-                InformationManager.DisplayMessage(new InformationMessage("BANDIT MILITIAS CLEARED."));
-                return true;
+                KillCharacterAction.ApplyByRemove(hero);
             }
-            catch (Exception)
-            {
-                return false;
-            }
+            AllAliveBanditMilitiaHeroes.Clear();
+            InformationManager.DisplayMessage(new InformationMessage("BANDIT MILITIAS CLEARED"));
         }
 
         private static void LegacyFlushBanditMilitias()
         {
             var parties = Traverse.Create(Campaign.Current.CampaignObjectManager).Field<List<MobileParty>>("_partiesWithoutPartyComponent").Value
-                .WhereQ(m => m.IsBM()).ToListQ();
+                .WhereQ(m => m.IsBanditMilitiaParty()).ToListQ();
             if (parties.Count > 0)
             {
                 Traverse.Create(Campaign.Current.CampaignObjectManager).Field<List<MobileParty>>("_partiesWithoutPartyComponent").Value =
@@ -105,7 +107,7 @@ namespace BanditMilitias.Helpers
                 {
                     try
                     {
-                        Trash(mobileParty);
+                        TryTrashMobilePartySafelyReservingBanditLeader(mobileParty);
                     }
                     catch (Exception) { }
                 }
@@ -122,7 +124,8 @@ namespace BanditMilitias.Helpers
                     if (prisoner.StringId.EndsWith("Bandit_Militia"))
                     {
                         settlement.Party.PrisonRoster.AddToCounts(prisoner, -1);
-                        KillCharacterAction.ApplyByRemove(prisoner.HeroObject);
+                        if (prisoner.HeroObject is not null)
+                                KillCharacterAction.ApplyByRemove(prisoner.HeroObject);
                     }
                 }
                 catch (Exception) { }
@@ -151,7 +154,7 @@ namespace BanditMilitias.Helpers
                         continue;
 
                     var hasBMParties = mapEvent.InvolvedParties
-                        .AnyQ(p => p?.IsMobile == true && p.MobileParty?.IsBM() == true);
+                        .AnyQ(p => p?.IsMobile == true && p.MobileParty?.IsBanditMilitiaParty() == true);
 
                     if (!hasBMParties)
                         continue;
@@ -159,7 +162,7 @@ namespace BanditMilitias.Helpers
                     try
                     {
                         var bmPartiesToClean = mapEvent.InvolvedParties
-                            .WhereQ(p => p?.IsMobile == true && p.MobileParty?.IsBM() == true)
+                            .WhereQ(p => p?.IsMobile == true && p.MobileParty?.IsBanditMilitiaParty() == true)
                             .SelectQ(p => p.MobileParty)
                             .WhereQ(m => m != null)
                             .ToListQ();
@@ -171,7 +174,7 @@ namespace BanditMilitias.Helpers
                         {
                             if (mobileParty?.IsActive == true)
                             {
-                                Trash(mobileParty);
+                                TryTrashMobilePartySafelyReservingBanditLeader(mobileParty);
                             }
                         }
                     }
@@ -206,35 +209,21 @@ namespace BanditMilitias.Helpers
             if (map.Count == 0)
                 return MBObjectManager.Instance.GetObject<CultureObject>("empire");
 
-            var maxValue = map.Values.Max();
+            int maxValue = map.Values.Max();
             var highest = map.WhereQ(x => x.Value == maxValue).SelectQ(x => x.Key).ToListQ();
             return highest[MBRandom.RandomInt(0, highest.Count)];
         }
 
-        internal static void DecreaseAvoidance(List<Hero> loserHeroes, MapEventParty mep)
+        internal static void InitializeGlobalModState()
         {
-            var bm = mep.Party.MobileParty?.GetBM();
-            if (bm?.Avoidance is null) return;
-
-            foreach (var loserHero in loserHeroes)
-            {
-                if (bm.Avoidance.TryGetValue(loserHero, out _))
-                    bm.Avoidance[loserHero] = Math.Max(0, bm.Avoidance[loserHero] - Globals.AvoidanceIncreaseMin);
-            }
-        }
-
-        internal static void InitMap()
-        {
-            T.Restart();
             ClearGlobals();
             if (Banners.Count == 0)
                 SubModule.CacheBanners();
             EquipmentPool.Populate();
             BlackFlag = MBObjectManager.Instance.GetObject<CultureObject>("ad_bandit_blackflag");
             Looters = Clan.BanditFactions.First(c => c.StringId == "looters");
-            Wights = Clan.BanditFactions.FirstOrDefaultQ(c => c.StringId == "wights");
             Hideouts = Settlement.All.WhereQ(s => s.IsHideout).ToListQ();
-            RaidCap = Convert.ToInt32(Settlement.FindAll(s => s.IsVillage).CountQ() / 10f);
+            RaidCap = CalculateRaidCap();
             HeroTemplates = CharacterObject.All
                 .WhereQ(c => c.Occupation is Occupation.Bandit)
                 .WhereQ(c => !c.StringId.Contains("quest") && !c.StringId.Contains("radagos"))
@@ -273,34 +262,90 @@ namespace BanditMilitias.Helpers
             Globals.BasicCavalry = availableBandits.WhereQ(c => c.DefaultFormationClass is FormationClass.Cavalry).ToListQ();
             Globals.Villages = Settlement.All.WhereQ(s => s.IsVillage).ToListQ();
 
-            PowerCalculationService.DoPowerCalculations(true);
-            ReHome();
+            PowerCalculationManager.DoPowerCalculations(true);
+            IsGlobalModStateInitialized = true;
         }
 
-        internal static void RemoveBadItems()
+        internal static PartyBase? FirstBanditMilitiaPartyOnSide(MapEvent mapEvent, BattleSideEnum side)
         {
-            var logged = false;
-            var badItems = MobileParty.MainParty.ItemRoster.WhereQ(i => !i.IsEmpty && i.EquipmentElement.Item?.Name is null).ToListQ();
-            foreach (var item in badItems)
-            {
-                if (!logged)
-                {
-                    logged = true;
-                    InformationManager.DisplayMessage(new("Bandit Militias found bad item(s) in player inventory:"));
-                }
+            return mapEvent.PartiesOnSide(side)
+                .FirstOrDefaultQ(eventParty => eventParty?.Party?.IsMobile == true
+                    && eventParty.Party.MobileParty?.IsBanditMilitiaParty() == true)?.Party;
+        }
 
-                InformationManager.DisplayMessage(new($"removing {item.EquipmentElement.Item?.StringId}"));
-                MobileParty.MainParty.ItemRoster.Remove(item);
+        internal static Settlement FindNearestTown(Vec2 anchorPos)
+        {
+            Settlement nearest = null;
+            var nearestDistSq = float.MaxValue;
+            var search = Settlement.StartFindingLocatablesAroundPosition(anchorPos, SettlementFindRange);
+            for (var s = Settlement.FindNextLocatable(ref search); s != null; s = Settlement.FindNextLocatable(ref search))
+            {
+                if (!s.IsTown) continue;
+                var d = s.GatePosition.ToVec2().DistanceSquared(anchorPos);
+                if (d < nearestDistSq) { nearestDistSq = d; nearest = s; }
+            }
+            return nearest;
+        }
+
+        internal static Hero SelectStrongestHero(IEnumerable<Hero> heroes)
+        {
+            Hero? strongest = null;
+            float bestPower = float.NegativeInfinity;
+            foreach (var hero in heroes)
+            {
+                if (hero.Power < bestPower)
+                    continue;
+                bestPower = hero.Power;
+                strongest = hero;
             }
 
-            if (logged)
-                InformationManager.DisplayMessage(new("Please save to a new spot then reload it."));
+            return strongest;
+        }
+        
+        internal static void GrantDefeatBounty(Hero defeatedLeader, float militiaStrength)
+        {
+            if (defeatedLeader is null || Hero.MainHero is null)
+                return;
+
+            var t = militiaStrength <= 0f
+                ? 0f
+                : Math.Min(1f, militiaStrength / Globals.BountyStrengthForMaxReward);
+
+            var gold = (int)(Globals.BountyGoldMin + t * (Globals.BountyGoldMax - Globals.BountyGoldMin));
+            var renown = (int)Math.Round(Globals.BountyRenownMin + t * (Globals.BountyRenownMax - Globals.BountyRenownMin));
+            if (renown < Globals.BountyRenownMin)
+                renown = Globals.BountyRenownMin;
+
+            GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, gold, disableNotification: true);
+            if (renown > 0)
+                GainRenownAction.Apply(Hero.MainHero, renown);
+
+            var msg = new TextObject("{=BMRBounty}You collected a bounty of {GOLD} denars and {RENOWN} renown for {LEADER}.");
+            msg.SetTextVariable("GOLD", gold);
+            msg.SetTextVariable("RENOWN", renown);
+            msg.SetTextVariable("LEADER", defeatedLeader.Name);
+            InformationManager.DisplayMessage(new InformationMessage(msg.ToString()));
         }
 
-        public static void RemoveMilitiaLeader(MobileParty party)
+        internal static bool IsHeroCapReached(Clan targetClan)
         {
-            if (party.PartyComponent is ModBanditMilitiaPartyComponent bm)
-                bm.ForceRemoveLeader();
+            int counter = 0;
+            for (int i = 0; i < AllAliveBanditMilitiaHeroes.Count; i++)
+            {
+                if (AllAliveBanditMilitiaHeroes[i].Clan != targetClan)
+                    continue;
+                
+                counter++;
+                if (counter >= HeroesCapPerClan)
+                    return true;
+            }
+            return false;
+        }
+
+        public static int CalculateRaidCap()
+        {
+            float baseRaidCap = Settlement.FindAll(s => s.IsVillage).CountQ() / 10f;
+            return Math.Max(1, Convert.ToInt32(baseRaidCap * (Settings.RaidCapPercent / 100f)));
         }
     }
 }

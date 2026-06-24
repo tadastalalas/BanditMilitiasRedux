@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+	<tags>
+		<tag language="简体中文" />
+	</tags>
+        <strings>
+                <string id="BMPrimary" text="主要设置"/>
+                <string id="BMSizeAdjustments" text="规模调整"/>
+                <string id="BMAdjustments" text="民兵调整"/>
+                <string id="BMXpOff" text="关闭"/>
+                <string id="BMXpNormal" text="普通"/>
+                <string id="BMXpHard" text="困难"/>
+                <string id="BMXpHardest" text="最困难"/>
+                <string id="BMGoldLow" text="低"/>
+                <string id="BMGoldNormal" text="普通"/>
+                <string id="BMGoldRich" text="富裕"/>
+                <string id="BMGoldRichest" text="最富裕"/>
+
+                <string id="BMHeroPoolCap" text="强盗英雄池上限（每个氏族）"/>
+                <string id="BMHeroPoolCapDesc" text="每个强盗氏族在回收池中保留存活的强盗民兵英雄最大数量。被释放、逃脱和被囚禁的 BM 英雄会在此上限内复用；被击杀/处决的英雄将被永久移除，并会创建新英雄。"/>
+                <string id="BMSpawning" text="生成与编组"/>
+                <string id="BMMergeSize" text="合并最小规模"/>
+                <string id="BMMergeSizeDesc" text="小于此规模的强盗队伍不会合并为强盗民兵。"/>
+                <string id="BMSplit" text="每日分裂几率 %"/>
+                <string id="BMSplitDesc" text="强盗民兵在规模足够大时每天分裂的概率。"/>
+                <string id="BMDisperse" text="低于此兵力即解散"/>
+                <string id="BMDisperseDesc" text="被击败后剩余兵力少于该值的民兵将被解散。"/>
+
+                <string id="BMTrain" text="启用民兵训练"/>
+                <string id="BMTrainDesc" text="强盗英雄会训练他们的民兵。"/>
+                <string id="BMDailyTrain" text="每日训练几率"/>
+                <string id="BMDailyTrainDesc" text="他们每天可能会进一步训练。"/>
+                <string id="BMTraining" text="训练与成长"/>
+                <string id="BMXpBoost" text="民兵经验加成"/>
+                <string id="BMXpBoostDesc" text="“最困难”会提供足够经验以显著升级部队。“关闭”不提供额外经验。"/>
+                <string id="BMUpgrade" text="每次训练升级部队比例 %"/>
+                <string id="BMUpgradeDesc" text="每次训练最多只有该百分比的部队会被升级。劫匪也包含在内。"/>
+                <string id="BMGrowChance" text="成长几率百分比"/>
+                <string id="BMGrowChanceDesc" text="民兵每天获得更多部队的概率（0 为关闭）。"/>
+                <string id="BMGrowPercent" text="成长百分比"/>
+                <string id="BMGrowPercentDesc" text="按该百分比提升每种部队数量。"/>
+                <string id="BMTier" text="训练可达最高兵种阶级"/>
+                <string id="BMTierDesc" text="训练不会将部队升级到超过该阶级。"/>
+
+                <string id="BMIgnore" text="忽略村民/商队"/>
+                <string id="BMIgnoreDesc" text="他们不会被 BM 攻击。"/>
+                <string id="BMStronger" text="可攻击更强目标最大 %"/>
+                <string id="BMStrongerDesc" text="BM 不会与比自身强出超过该百分比的队伍交战。100 表示无论目标多强都会攻击。"/>
+                <string id="BMWeaker" text="忽略较弱队伍"/>
+                <string id="BMWeakerDesc" text="10 表示任何弱 10% 的队伍都会被忽略。\n100 表示无任何限制地攻击。"/>
+                <string id="BMPillage" text="允许劫掠"/>
+                <string id="BMPillageDesc" text="允许劫掠。"/>
+                <string id="BMPillageChance" text="劫掠几率"/>
+                <string id="BMPillageChanceDesc" text="强盗民兵 AI 考虑劫掠村庄的概率。每个强盗民兵队伍每个游戏内小时都会触发一次，因此建议使用较小数值。"/>
+                <string id="BMRaidCapScale" text="突袭上限缩放 %"/>
+                <string id="BMRaidCapScaleDesc" text="缩放同时进行的村庄突袭最大数量。基线自动计算为（村庄总数 ÷ 10）。100% = 默认。更低 = 同时突袭更少，更高 = 同时突袭更多。"/>
+
+                <string id="BMStringSetting" text="强盗民兵"/>
+                <string id="BMStringSettingDesc" text="强盗民兵的名称。"/>
+                <string id="BMLeaderlessStringSetting" text="无首领强盗民兵"/>
+                <string id="BMLeaderlessStringSettingDesc" text="无首领的强盗民兵名称。"/>
+                <string id="BMStringSettingDefault" text="强盗民兵"/>
+                <string id="BMLeaderlessStringSettingDefault" text="无首领强盗民兵"/>
+                <string id="BMPartyName" text="{LEADER_NAME}的{PARTY_NAME}"/>
+                <string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
+
+                <string id="BMMarkers" text="民兵地图标记"/>
+                <string id="BMMarkersDesc" text="在地图上显示所有强盗民兵。"/>
+                <string id="BMTrackSize" text="追踪 BM 的最小规模"/>
+                <string id="BMTrackSizeDesc" text="更小的 BM 将不会被追踪。"/>
+                <string id="BMBanners" text="随机旗帜"/>
+                <string id="BMBannersDesc" text="强盗民兵将使用独特旗帜，或默认强盗氏族旗帜。"/>
+                <string id="BMRaidNotices" text="村庄突袭通知"/>
+                <string id="BMRaidNoticesDesc" text="当你的封地被突袭时，你会看到横幅消息。"/>
+                <string id="BMRemovePrisonerMessages" text="移除囚犯消息"/>
+                <string id="BMRemovePrisonerMessagesDesc" text="移除关于强盗民兵英雄被俘或获释为囚犯的消息。"/>
+                <string id="BMCheckVoiceGender" text="检查语音性别"/>
+                <string id="BMCheckVoiceGenderDesc" text="再次检查强盗语音是否与首领性别匹配。部分官方语音使用男声但未指定性别，因此若禁用此选项，女性强盗首领将使用男声。"/>
+                <string id="BMLoggingLevel" text="日志级别"/>
+                <string id="BMLoggingLevelDesc" text="日志文件位于 &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
+                <string id="BMTesting" text="测试模式"/>
+                <string id="BMTestingDesc" text="将 BM 传送到你身边。"/>
+                <string id="BMMaxPerClan" text="每氏族最大民兵数"/>
+
+                <string id="BMREncBase" text="{LEADER.FIRSTNAME} 是一名强盗头目，率领一伙暴徒，以 {CLAN_NAME} 之名劫掠。"/>
+                <string id="BMREncNoClan" text="无主强盗"/>
+                <string id="BMREncEpithet1" text="在这片土地上，{?LEADER.GENDER}她{?}他{\\?}被称为 {LEADER.FIRSTNAME} {EPITHET}，赢得了 {WINS} 场{?MANY}战斗{?}战斗{\\?}。"/>
+                <string id="BMREncEpithet2" text="在这片土地上，{?LEADER.GENDER}她{?}他{\\?}被称为 {LEADER.FIRSTNAME} {EPITHET}。"/>
+                <string id="BMREncDefeats" text="{?LEADER.GENDER}她{?}他{\\?}在战斗中被击败了 {DEFEATS} {?MANY}次{?}次{\\?}。"/>
+                <string id="BMREncFear" text="在所有人中，{?LEADER.GENDER}她{?}他{\\?}最害怕 {HUNTER}。"/>
+
+                <string id="BMRWho" text="你是谁？你为谁效力？" />
+                <string id="BMRWhoAnswer" text="他们叫我 {LEADER_NAME}。我们不听命于领主或国王——只认钱币与大道。" />
+                <string id="BMRContinue" text="明白了。现在，回到正事上。" />
+                <string id="BMRThreaten" text="现在投降，我也许会饶你一命。"/>
+                <string id="BMRThreatenAnswer" text="哈！先砍下我们的脑袋再说。兄弟们，上！"/>
+
+                <string id="BMGoldReward" text="强盗英雄金币奖励"/>
+                <string id="BMRBounty" text="你因 {LEADER} 获得了 {GOLD} 第纳尔和 {RENOWN} 声望的悬赏。"/>
+                <string id="BMChatLogging" text="启用聊天日志"/>
+                <string id="BMChatLoggingDesc" text="将诊断消息写入游戏内聊天。默认关闭；仅在排障时启用。"/>
+                <string id="BMFileLogging" text="启用文件日志"/>
+                <string id="BMFileLoggingDesc" text="将诊断消息写入 Modules\BanditMilitiasRedux\Logs\BMR_*.log。默认关闭；仅在排障时启用。"/>
+                <string id="BMSkipConversations" text="跳过遭遇对话"/>
+                <string id="BMSkipConversationsDesc" text="遭遇强盗民兵时跳过对话。启用后将无法贿赂。"/>
+                <string id="BMMaxValue" text="物品最大价值"/>
+                <string id="BMMaxValueDesc" text="限制给予英雄装备的单件价值。\n主要用于其他模组提供英雄战利品时。"/>
+                <string id="BMMinSize" text="最小规模"/>
+                <string id="BMMinSizeDesc" text="不会形成小于该规模的 BM。"/>
+                <string id="BMLooter" text="劫匪转化"/>
+                <string id="BMLooterDesc" text="训练时有多少劫匪会被转化为更好的单位。"/>
+                <string id="BMPower" text="全局强度"/>
+                <string id="BMPowerDesc" text="将所有强盗民兵合计的总战斗力限制为世界中其他所有队伍总战斗力的百分比。更高数值允许更多且更强的 BM，但可能明显影响世界平衡。"/>
+        </strings>
+</base>

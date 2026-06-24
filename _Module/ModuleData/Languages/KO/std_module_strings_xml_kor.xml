@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+	<tags>
+		<tag language="한국어" />
+	</tags>
+        <strings>
+                <string id="BMPrimary" text="기본 설정"/>
+                <string id="BMSizeAdjustments" text="규모 조정"/>
+                <string id="BMAdjustments" text="민병대 조정"/>
+                <string id="BMXpOff" text="끔"/>
+                <string id="BMXpNormal" text="보통"/>
+                <string id="BMXpHard" text="어려움"/>
+                <string id="BMXpHardest" text="매우 어려움"/>
+                <string id="BMGoldLow" text="낮음"/>
+                <string id="BMGoldNormal" text="보통"/>
+                <string id="BMGoldRich" text="부유"/>
+                <string id="BMGoldRichest" text="매우 부유"/>
+
+                <string id="BMHeroPoolCap" text="도적 영웅 풀 한도(클랜당)"/>
+                <string id="BMHeroPoolCapDesc" text="재활용 풀에서 생존 상태로 유지되는 도적 민병대 영웅의 클랜당 최대 수입니다. 석방·탈출·수감된 BM 영웅은 이 한도까지 재사용되며, 전사/처형된 영웅은 영구 제거되고 새 영웅이 생성됩니다."/>
+                <string id="BMSpawning" text="생성 &amp; 편성"/>
+                <string id="BMMergeSize" text="합류 최소 규모"/>
+                <string id="BMMergeSizeDesc" text="이 값보다 작은 도적 파티는 도적 민병대로 합쳐지지 않습니다."/>
+                <string id="BMSplit" text="일일 분열 확률 %"/>
+                <string id="BMSplitDesc" text="충분히 커졌을 때 도적 민병대가 매일 분열할 확률입니다."/>
+                <string id="BMDisperse" text="이 병력 미만 시 해산"/>
+                <string id="BMDisperseDesc" text="패배 후 남은 병력이 이 수치보다 적은 민병대는 해산됩니다."/>
+
+                <string id="BMTrain" text="민병대 훈련 활성화"/>
+                <string id="BMTrainDesc" text="도적 영웅이 자신의 민병대를 훈련합니다."/>
+                <string id="BMDailyTrain" text="일일 훈련 확률"/>
+                <string id="BMDailyTrainDesc" text="매일 추가 훈련을 할 수 있습니다."/>
+                <string id="BMTraining" text="훈련 &amp; 성장"/>
+                <string id="BMXpBoost" text="민병대 XP 보너스"/>
+                <string id="BMXpBoostDesc" text="매우 어려움은 병력을 크게 강화할 만큼의 XP를 부여합니다. 끔은 추가 XP를 주지 않습니다."/>
+                <string id="BMUpgrade" text="훈련당 병력 업그레이드 비율 %"/>
+                <string id="BMUpgradeDesc" text="훈련이 발생할 때마다 최대 이 비율만큼의 병력이 업그레이드됩니다. 루터도 포함됩니다."/>
+                <string id="BMGrowChance" text="성장 확률 퍼센트"/>
+                <string id="BMGrowChanceDesc" text="민병대가 매일 병력을 추가로 얻을 확률입니다(0이면 끔)."/>
+                <string id="BMGrowPercent" text="성장 비율"/>
+                <string id="BMGrowPercentDesc" text="각 병종을 이 비율만큼 성장시킵니다."/>
+                <string id="BMTier" text="훈련으로 도달 가능한 최대 병종 티어"/>
+                <string id="BMTierDesc" text="훈련은 이 티어를 넘어서 병력을 업그레이드하지 않습니다."/>
+
+                <string id="BMIgnore" text="마을 주민/대상단 무시"/>
+                <string id="BMIgnoreDesc" text="BM이 이들을 공격하지 않습니다."/>
+                <string id="BMStronger" text="더 강한 대상 최대 %"/>
+                <string id="BMStrongerDesc" text="BM은 자신보다 이 비율 이상 강한 파티와 교전하지 않습니다. 100은 대상이 아무리 강해도 공격함을 의미합니다."/>
+                <string id="BMWeaker" text="더 약한 파티 무시"/>
+                <string id="BMWeakerDesc" text="10은 자신보다 10% 약한 파티를 무시함을 의미합니다.\n100은 제한 없이 공격합니다."/>
+                <string id="BMPillage" text="약탈 허용"/>
+                <string id="BMPillageDesc" text="약탈을 허용합니다."/>
+                <string id="BMPillageChance" text="약탈 확률"/>
+                <string id="BMPillageChanceDesc" text="도적 민병대 AI가 마을 약탈을 고려할 확률입니다. 각 도적 민병대 파티마다 게임 내 매시간 1회 트리거되므로, 더 작은 값을 권장합니다."/>
+                <string id="BMRaidCapScale" text="습격 상한 배율 %"/>
+                <string id="BMRaidCapScaleDesc" text="동시 진행 가능한 마을 습격 최대 수를 조정합니다. 기준값은 (전체 마을 수 ÷ 10)으로 자동 계산됩니다. 100% = 기본값. 낮을수록 동시 습격 감소, 높을수록 동시 습격 증가."/>
+
+                <string id="BMStringSetting" text="도적 민병대"/>
+                <string id="BMStringSettingDesc" text="도적 민병대의 이름입니다."/>
+                <string id="BMLeaderlessStringSetting" text="지도자 없는 도적 민병대"/>
+                <string id="BMLeaderlessStringSettingDesc" text="지도자가 없는 도적 민병대의 이름입니다."/>
+                <string id="BMStringSettingDefault" text="도적 민병대"/>
+                <string id="BMLeaderlessStringSettingDefault" text="지도자 없는 도적 민병대"/>
+                <string id="BMPartyName" text="{LEADER_NAME}의 {PARTY_NAME}"/>
+                <string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
+
+                <string id="BMMarkers" text="민병대 지도 표식"/>
+                <string id="BMMarkersDesc" text="지도에 모든 도적 민병대를 표시합니다."/>
+                <string id="BMTrackSize" text="추적할 BM 최소 규모"/>
+                <string id="BMTrackSizeDesc" text="이보다 작은 BM은 추적되지 않습니다."/>
+                <string id="BMBanners" text="무작위 깃발"/>
+                <string id="BMBannersDesc" text="도적 민병대는 고유 깃발 또는 기본 도적 클랜 깃발을 사용합니다."/>
+                <string id="BMRaidNotices" text="마을 습격 알림"/>
+                <string id="BMRaidNoticesDesc" text="당신의 영지가 습격당하면 배너 메시지가 표시됩니다."/>
+                <string id="BMRemovePrisonerMessages" text="포로 메시지 제거"/>
+                <string id="BMRemovePrisonerMessagesDesc" text="도적 민병대 영웅이 포로로 잡히거나 풀려나는 메시지를 제거합니다."/>
+                <string id="BMCheckVoiceGender" text="음성 성별 확인"/>
+                <string id="BMCheckVoiceGenderDesc" text="도적 음성 대사가 지도자의 성별과 일치하는지 다시 확인합니다. 일부 공식 음성은 남성 음성을 사용하지만 성별을 지정하지 않으므로, 이 옵션을 비활성화하면 여성 도적 지도자가 남성 음성으로 말할 수 있습니다."/>
+                <string id="BMLoggingLevel" text="로그 레벨"/>
+                <string id="BMLoggingLevelDesc" text="로그 파일 위치: &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
+                <string id="BMTesting" text="테스트 모드"/>
+                <string id="BMTestingDesc" text="BM을 당신 위치로 순간이동시킵니다."/>
+                <string id="BMMaxPerClan" text="클랜당 최대 민병대 수"/>
+
+                <string id="BMREncBase" text="{LEADER.FIRSTNAME}은(는) {CLAN_NAME}의 이름으로 약탈하는 무법자 무리를 이끄는 도적 두목입니다."/>
+                <string id="BMREncNoClan" text="주인 없는 무법자"/>
+                <string id="BMREncEpithet1" text="온 땅에서 {?LEADER.GENDER}그녀는{?}그는{\\?} {LEADER.FIRSTNAME} {EPITHET}로 불리며, {WINS}번의 {?MANY}전투{?}전투{\\?}에서 승리한 자로 알려져 있습니다."/>
+                <string id="BMREncEpithet2" text="온 땅에서 {?LEADER.GENDER}그녀는{?}그는{\\?} {LEADER.FIRSTNAME} {EPITHET}로 불립니다."/>
+                <string id="BMREncDefeats" text="{?LEADER.GENDER}그녀는{?}그는{\\?} 전투에서 {DEFEATS} {?MANY}번{?}번{\\?} 패배했습니다."/>
+                <string id="BMREncFear" text="무엇보다도 {?LEADER.GENDER}그녀는{?}그는{\\?} {HUNTER}를 두려워합니다."/>
+
+                <string id="BMRWho" text="너는 누구고, 누구를 위해 달리지?" />
+                <string id="BMRWhoAnswer" text="사람들은 날 {LEADER_NAME}라고 부르지. 우린 영주도 왕도 섬기지 않아 — 오직 돈과 열린 길만 따를 뿐이다." />
+                <string id="BMRContinue" text="알겠다. 이제 본론으로 돌아가자." />
+                <string id="BMRThreaten" text="지금 항복하면 목숨은 살려줄지도 모른다."/>
+                <string id="BMRThreatenAnswer" text="하! 우리 목부터 따고 말해라. 덤벼라, 얘들아!"/>
+
+                <string id="BMGoldReward" text="도적 영웅 금 보상"/>
+                <string id="BMRBounty" text="{LEADER}에 대한 현상금으로 {GOLD} 데나르와 {RENOWN} 명성을 획득했습니다."/>
+                <string id="BMChatLogging" text="채팅 로그 활성화"/>
+                <string id="BMChatLoggingDesc" text="진단 메시지를 게임 내 채팅에 기록합니다. 기본값은 꺼짐이며, 문제 해결 시에만 활성화하세요."/>
+                <string id="BMFileLogging" text="파일 로그 활성화"/>
+                <string id="BMFileLoggingDesc" text="진단 메시지를 Modules\BanditMilitiasRedux\Logs\BMR_*.log에 기록합니다. 기본값은 꺼짐이며, 문제 해결 시에만 활성화하세요."/>
+                <string id="BMSkipConversations" text="조우 대화 건너뛰기"/>
+                <string id="BMSkipConversationsDesc" text="도적 민병대와 조우 시 대화를 건너뜁니다. 활성화하면 매수는 사용할 수 없습니다."/>
+                <string id="BMMaxValue" text="아이템 최대 가치"/>
+                <string id="BMMaxValueDesc" text="영웅에게 지급되는 장비의 개별 가치 상한을 제한합니다.\n주로 다른 모드가 영웅 전리품을 제공할 때를 위한 옵션입니다."/>
+                <string id="BMMinSize" text="최소 규모"/>
+                <string id="BMMinSizeDesc" text="이보다 작은 BM은 생성되지 않습니다."/>
+                <string id="BMLooter" text="루터 전환"/>
+                <string id="BMLooterDesc" text="훈련 시 더 나은 유닛으로 전환되는 루터 수입니다."/>
+                <string id="BMPower" text="전역 전투력"/>
+                <string id="BMPowerDesc" text="모든 도적 민병대의 총 전투력을 세계의 다른 모든 파티 총합 대비 백분율로 제한합니다. 값이 높을수록 더 많고 강한 BM이 가능하지만, 세계 밸런스에 눈에 띄는 영향을 줄 수 있습니다."/>
+        </strings>
+</base>

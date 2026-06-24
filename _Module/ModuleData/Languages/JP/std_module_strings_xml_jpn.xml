@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+	<tags>
+		<tag language="日本語" />
+	</tags>
+        <strings>
+                <string id="BMPrimary" text="基本設定"/>
+                <string id="BMSizeAdjustments" text="規模調整"/>
+                <string id="BMAdjustments" text="民兵調整"/>
+                <string id="BMXpOff" text="オフ"/>
+                <string id="BMXpNormal" text="通常"/>
+                <string id="BMXpHard" text="ハード"/>
+                <string id="BMXpHardest" text="最高難易度"/>
+                <string id="BMGoldLow" text="低"/>
+                <string id="BMGoldNormal" text="通常"/>
+                <string id="BMGoldRich" text="裕福"/>
+                <string id="BMGoldRichest" text="非常に裕福"/>
+
+                <string id="BMHeroPoolCap" text="盗賊英雄プール上限（クランごと）"/>
+                <string id="BMHeroPoolCapDesc" text="再利用プールで生存状態を維持する盗賊民兵英雄の、盗賊クランごとの最大数。解放・脱走・収監された BM 英雄はこの上限まで再利用されます。戦死・処刑された英雄は永久に除外され、新しい英雄が作成されます。"/>
+                <string id="BMSpawning" text="出現 &amp; 編成"/>
+                <string id="BMMergeSize" text="合流の最小規模"/>
+                <string id="BMMergeSizeDesc" text="これ未満の規模の盗賊部隊は盗賊民兵に合流しません。"/>
+                <string id="BMSplit" text="日次分裂確率 %"/>
+                <string id="BMSplitDesc" text="十分な規模のとき、盗賊民兵が毎日分裂する確率。"/>
+                <string id="BMDisperse" text="この兵数未満で解散"/>
+                <string id="BMDisperseDesc" text="敗北後の残存兵数がこの値未満の民兵は解散されます。"/>
+
+                <string id="BMTrain" text="民兵訓練を有効化"/>
+                <string id="BMTrainDesc" text="盗賊英雄が民兵を訓練します。"/>
+                <string id="BMDailyTrain" text="日次訓練確率"/>
+                <string id="BMDailyTrainDesc" text="毎日さらに訓練を行う可能性があります。"/>
+                <string id="BMTraining" text="訓練 &amp; 成長"/>
+                <string id="BMXpBoost" text="民兵XPブースト"/>
+                <string id="BMXpBoostDesc" text="最高難易度では部隊を大きく強化できる十分な XP を獲得します。オフではボーナス XP はありません。"/>
+                <string id="BMUpgrade" text="訓練1回あたりの部隊昇格率 %"/>
+                <string id="BMUpgradeDesc" text="訓練時に昇格する部隊は最大でこの割合までです。略奪者も含まれます。"/>
+                <string id="BMGrowChance" text="成長確率（%）"/>
+                <string id="BMGrowChanceDesc" text="民兵が1日ごとに兵を増やす確率（0でオフ）。"/>
+                <string id="BMGrowPercent" text="成長率"/>
+                <string id="BMGrowPercentDesc" text="各兵種をこの割合で増加させます。"/>
+                <string id="BMTier" text="訓練で到達可能な最大兵種ティア"/>
+                <string id="BMTierDesc" text="訓練でこのティアを超えて昇格することはありません。"/>
+
+                <string id="BMIgnore" text="村人/隊商を無視"/>
+                <string id="BMIgnoreDesc" text="BM は彼らを攻撃しません。"/>
+                <string id="BMStronger" text="より強い目標の上限 %"/>
+                <string id="BMStrongerDesc" text="BM は自身よりこの割合以上に強い部隊とは交戦しません。100 は相手の強さに関係なく攻撃を意味します。"/>
+                <string id="BMWeaker" text="弱い部隊を無視"/>
+                <string id="BMWeakerDesc" text="10 は、自身より 10% 弱い部隊を無視することを意味します。\n100 は制限なく攻撃します。"/>
+                <string id="BMPillage" text="略奪を許可"/>
+                <string id="BMPillageDesc" text="略奪を許可します。"/>
+                <string id="BMPillageChance" text="略奪確率"/>
+                <string id="BMPillageChanceDesc" text="盗賊民兵 AI が村の襲撃を検討する確率。各盗賊民兵部隊ごとにゲーム内1時間に1回判定されるため、低めの値を推奨します。"/>
+                <string id="BMRaidCapScale" text="襲撃上限スケール %"/>
+                <string id="BMRaidCapScaleDesc" text="同時に実行される村襲撃の最大数を調整します。基準値は（村の総数 ÷ 10）で自動計算されます。100% = 既定。低いほど同時襲撃が減り、高いほど増えます。"/>
+
+                <string id="BMStringSetting" text="盗賊民兵"/>
+                <string id="BMStringSettingDesc" text="盗賊民兵の名称。"/>
+                <string id="BMLeaderlessStringSetting" text="指導者なき盗賊民兵"/>
+                <string id="BMLeaderlessStringSettingDesc" text="指導者不在の盗賊民兵の名称。"/>
+                <string id="BMStringSettingDefault" text="盗賊民兵"/>
+                <string id="BMLeaderlessStringSettingDefault" text="指導者なき盗賊民兵"/>
+                <string id="BMPartyName" text="{LEADER_NAME}の{PARTY_NAME}"/>
+                <string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
+
+                <string id="BMMarkers" text="民兵マップマーカー"/>
+                <string id="BMMarkersDesc" text="マップ上にすべての盗賊民兵を表示します。"/>
+                <string id="BMTrackSize" text="追跡するBMの最小規模"/>
+                <string id="BMTrackSizeDesc" text="これより小さい BM は追跡されません。"/>
+                <string id="BMBanners" text="ランダム旗"/>
+                <string id="BMBannersDesc" text="盗賊民兵は固有の旗、または既定の盗賊クラン旗を使用します。"/>
+                <string id="BMRaidNotices" text="村襲撃通知"/>
+                <string id="BMRaidNoticesDesc" text="あなたの領地が襲撃されるとバナーメッセージが表示されます。"/>
+                <string id="BMRemovePrisonerMessages" text="捕虜メッセージを削除"/>
+                <string id="BMRemovePrisonerMessagesDesc" text="盗賊民兵英雄の捕縛・解放に関するメッセージを削除します。"/>
+                <string id="BMCheckVoiceGender" text="音声の性別を確認"/>
+                <string id="BMCheckVoiceGenderDesc" text="盗賊のボイス台詞がリーダーの性別に一致するか再確認します。公式ボイスには男性声を使うが性別指定のないものがあるため、このオプションを無効にすると女性の盗賊リーダーが男性声で話す場合があります。"/>
+                <string id="BMLoggingLevel" text="ログレベル"/>
+                <string id="BMLoggingLevelDesc" text="ログファイルの場所: &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
+                <string id="BMTesting" text="テストモード"/>
+                <string id="BMTestingDesc" text="BM をあなたの位置へテレポートさせます。"/>
+                <string id="BMMaxPerClan" text="クランごとの最大民兵数"/>
+
+                <string id="BMREncBase" text="{LEADER.FIRSTNAME}は、{CLAN_NAME}の名の下に略奪を行う無法者集団を率いる盗賊の頭目です。"/>
+                <string id="BMREncNoClan" text="主なき盗賊"/>
+                <string id="BMREncEpithet1" text="各地で {?LEADER.GENDER}彼女{?}彼{\\?} は {LEADER.FIRSTNAME} {EPITHET} として知られ、{WINS} 回の {?MANY}戦い{?}戦い{\\?} に勝利したと言われています。"/>
+                <string id="BMREncEpithet2" text="各地で {?LEADER.GENDER}彼女{?}彼{\\?} は {LEADER.FIRSTNAME} {EPITHET} として知られています。"/>
+                <string id="BMREncDefeats" text="{?LEADER.GENDER}彼女{?}彼{\\?} は戦いで {DEFEATS} {?MANY}回{?}回{\\?} 敗北しています。"/>
+                <string id="BMREncFear" text="何よりも、{?LEADER.GENDER}彼女{?}彼{\\?} が恐れるのは {HUNTER} です。"/>
+
+                <string id="BMRWho" text="お前は何者だ。誰のために戦っている？" />
+                <string id="BMRWhoAnswer" text="俺の名は {LEADER_NAME}。領主にも王にも仕えない——従うのは金と果てなき道だけだ。" />
+                <string id="BMRContinue" text="なるほど。では本題に戻ろう。" />
+                <string id="BMRThreaten" text="今すぐ降伏しろ。命だけは助けてやるかもしれない。"/>
+                <string id="BMRThreatenAnswer" text="ハッ！まずは俺たちの首を取ってみな！ かかれ、野郎ども！"/>
+
+                <string id="BMGoldReward" text="盗賊英雄の金報酬"/>
+                <string id="BMRBounty" text="{LEADER} に対する賞金として {GOLD} デナールと名声 {RENOWN} を獲得しました。"/>
+                <string id="BMChatLogging" text="チャットログを有効化"/>
+                <string id="BMChatLoggingDesc" text="診断メッセージをゲーム内チャットに出力します。既定ではオフ。トラブルシューティング時のみ有効化してください。"/>
+                <string id="BMFileLogging" text="ファイルログを有効化"/>
+                <string id="BMFileLoggingDesc" text="診断メッセージを Modules\BanditMilitiasRedux\Logs\BMR_*.log に出力します。既定ではオフ。トラブルシューティング時のみ有効化してください。"/>
+                <string id="BMSkipConversations" text="遭遇会話をスキップ"/>
+                <string id="BMSkipConversationsDesc" text="盗賊民兵との遭遇時の会話をスキップします。有効時は賄賂が利用できません。"/>
+                <string id="BMMaxValue" text="アイテム最大価値"/>
+                <string id="BMMaxValueDesc" text="英雄に与える装備の1点あたり価値を制限します。\n主に他MODで英雄戦利品が増える場合向け。"/>
+                <string id="BMMinSize" text="最小規模"/>
+                <string id="BMMinSizeDesc" text="これより小さい BM は編成されません。"/>
+                <string id="BMLooter" text="略奪者の転換"/>
+                <string id="BMLooterDesc" text="訓練時に上位ユニットへ転換される略奪者の数。"/>
+                <string id="BMPower" text="全体戦力"/>
+                <string id="BMPowerDesc" text="全盗賊民兵の合計戦闘力を、世界中の他勢力全体に対する割合で上限設定します。値を上げるほど BM の数と強さが増えますが、世界バランスに目に見える影響を与える可能性があります。"/>
+        </strings>
+</base>

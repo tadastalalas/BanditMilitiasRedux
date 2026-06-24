@@ -4,16 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using HarmonyLib;
-using Microsoft.Extensions.Logging;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.LinQuick;
 using TaleWorlds.ModuleManager;
-using static BanditMilitias.Globals;
+using static BanditMilitiasRedux.Globals;
 
-namespace BanditMilitias.Helpers
+namespace BanditMilitiasRedux.Helpers
 {
     internal static class EquipmentPool
     {
@@ -90,7 +90,7 @@ namespace BanditMilitias.Helpers
 
         internal static void Populate()
         {
-            var maxValue = Globals.Settings.MaxItemValue;
+            var maxValue = Settings!.MaxItemValue;
             var allItems = Items.All.ToListQ();
 
             Mounts = [.. allItems
@@ -121,12 +121,12 @@ namespace BanditMilitias.Helpers
                     && !i.StringId.Contains("sparring")
                     && i.Value <= maxValue)
                 .ToList();
-
+            /*
             var runningCivilizedMod = AppDomain.CurrentDomain.GetAssemblies()
                 .AnyQ(a => a.FullName.Contains("Civilized"));
             if (runningCivilizedMod)
                 weapons.RemoveAll(i => !i.IsCivilian);
-
+            */
             weapons.RemoveAll(item => VerbotenItemStringIds.Contains(item.StringId));
 
             Arrows = [.. weapons.WhereQ(i => i.ItemType == ItemObject.ItemTypeEnum.Arrows)];
@@ -166,57 +166,52 @@ namespace BanditMilitias.Helpers
         internal static Equipment GetRandomEquipmentSet()
             => BanditEquipment.GetRandomElement();
 
+        
+
         internal static void AdjustCavalryCount(TroopRoster troopRoster)
         {
-            try
+            int safety = 0;
+            while (safety++ < 200)
             {
-                var safety = 0;
+                var mountedTroops = troopRoster.GetTroopRoster()
+                    .WhereQ(c => IsMounted(c.Character)
+                        && !c.Character.IsHero
+                        && c.Character.OriginalCharacter is null)
+                    .ToListQ();
+                
+                if (mountedTroops.Count == 0)
+                    break;
+                
+                int mountedCount = mountedTroops.SumQ(e => e.Number);
 
-                while (safety++ < 200)
-                {
-                    var mountedTroops = troopRoster.GetTroopRoster()
-                        .WhereQ(c => !c.Character.Equipment[10].IsEmpty
-                            && !c.Character.IsHero
-                            && c.Character.OriginalCharacter is null)
-                        .ToListQ();
-                    int mountedCount = mountedTroops.SumQ(e => e.Number);
+                int mountedExcessCount = mountedCount - Convert.ToInt32(troopRoster.TotalManCount / 2);
+                
+                if (mountedExcessCount <= 0)
+                    break;
 
-                    int delta = mountedCount - Convert.ToInt32(troopRoster.TotalManCount / 2);
-                    if (delta <= 0) break;
-                    if (mountedTroops.Count == 0) break;
-
-                    var element = mountedTroops.GetRandomElement();
-                    var count = Math.Min(element.Number, MBRandom.RandomInt(1, delta + 1));
-                    troopRoster.AddToCounts(element.Character, -count);
-                }
-
-                if (safety >= 200)
-                {
-                    InformationManager.DisplayMessage(new InformationMessage(
-                        "Bandit Militias error.  Please open a bug report and include the file cavalry.txt from the mod folder.",
-                        new Color(1, 0, 0)));
-                    var output = new StringBuilder();
-                    var finalMounted = troopRoster.GetTroopRoster()
-                        .WhereQ(c => !c.Character.Equipment[10].IsEmpty && !c.Character.IsHero)
-                        .ToListQ();
-                    output.AppendLine($"Mounted: {finalMounted.SumQ(e => e.Number)}, Total: {troopRoster.TotalManCount}");
-                    finalMounted.Do(t => output.AppendLine($"{t.Character}: {t.Number} ({t.WoundedNumber})"));
-                    File.WriteAllText(
-                        ModuleHelper.GetModuleFullPath("BanditMilitias") + "cavalry.txt",
-                        output.ToString());
-                }
-            }
-            catch (Exception)
-            {
-                InformationManager.DisplayMessage(new InformationMessage(
-                    "Problem adjusting cavalry count, please open a bug report."));
+                var element = mountedTroops.GetRandomElement();
+                var mountedTroopsToRemoveCount = Math.Min(element.Number, MBRandom.RandomInt(1, mountedExcessCount + 1));
+                troopRoster.AddToCounts(element.Character, -mountedTroopsToRemoveCount);
             }
         }
 
         internal static int NumMountedTroops(TroopRoster troopRoster)
-            => troopRoster.GetTroopRoster()
-                .WhereQ(e => e.Character.Equipment[10].Item is not null)
-                .SumQ(e => e.Number);
+        {
+            var roster = troopRoster.GetTroopRoster();
+            int total = 0;
+            for (int i = 0, n = roster.Count; i < n; i++)
+            {
+                var e = roster[i];
+                if (e.Character is null)
+                    continue;
+
+                if (IsMounted(e.Character))
+                    total += e.Number;
+            }
+            return total;
+        }
+        
+        private static bool IsMounted(CharacterObject character) => !character.Equipment[10].IsEmpty;
 
         private static Equipment BuildViableEquipmentSet()
         {

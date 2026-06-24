@@ -1,15 +1,14 @@
 ﻿using System;
 using HarmonyLib;
-using Microsoft.Extensions.Logging;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
-namespace BanditMilitias.Helpers
+namespace BanditMilitiasRedux.Helpers
 {
-    internal sealed class HeroAppearanceService
+    internal static class HeroAppearanceService
     {
-        public interface IAppearanceStrategy
+        private interface IAppearanceStrategy
         {
             BodyProperties GenerateBodyProperties(Hero hero);
         }
@@ -18,9 +17,6 @@ namespace BanditMilitias.Helpers
         {
             public BodyProperties GenerateBodyProperties(Hero hero)
             {
-                if (hero?.CharacterObject == null)
-                    return default;
-
                 var bodyProperties = hero.CharacterObject.GetBodyProperties(hero.BattleEquipment);
 
                 var faceParams = FaceGenerationParams.Create();
@@ -52,50 +48,30 @@ namespace BanditMilitias.Helpers
 
         private sealed class BodyPropertyApplicator
         {
-            private static readonly Lazy<Action<Hero, StaticBodyProperties>> _setStaticBodyProps = new(() =>
+            private static readonly Lazy<Action<Hero, StaticBodyProperties>> SetStaticBodyProps = new(() =>
             {
-                var property = AccessTools.Property(typeof(Hero), "StaticBodyProperties");
-                return (hero, props) =>
-                {
-                    try
-                    {
-                        property?.SetValue(hero, props);
-                    }
-                    catch (Exception) { }
-                };
+                var property = AccessTools.Property("TaleWorlds.CampaignSystem.Hero:StaticBodyProperties");
+                return (hero, props) => property?.SetValue(hero, props);
             });
 
-            public void Apply(Hero hero, StaticBodyProperties staticProperties)
+            internal void Apply(Hero hero, StaticBodyProperties staticProperties)
             {
-                if (hero == null)
-                    return;
-
-                _setStaticBodyProps.Value(hero, staticProperties);
+                SetStaticBodyProps.Value(hero, staticProperties);
             }
         }
 
-        private static readonly Lazy<RandomAppearanceStrategy> _randomStrategy = new();
-        private static readonly Lazy<BodyPropertyApplicator> _applicator = new();
+        private static readonly Lazy<RandomAppearanceStrategy> RandomStrategy = new();
+        private static readonly Lazy<BodyPropertyApplicator> Applicator = new();
 
         public static void RandomizeAppearance(Hero hero)
         {
-            RandomizeAppearance(hero, _randomStrategy.Value);
+            RandomizeAppearance(hero, RandomStrategy.Value);
         }
 
-        public static void RandomizeAppearance(Hero hero, IAppearanceStrategy strategy)
+        private static void RandomizeAppearance(Hero hero, IAppearanceStrategy strategy)
         {
-            if (hero == null)
-                return;
-
-            if (strategy == null)
-                return;
-
-            try
-            {
-                var bodyProperties = strategy.GenerateBodyProperties(hero);
-                _applicator.Value.Apply(hero, bodyProperties.StaticProperties);
-            }
-            catch (Exception) { }
+            var bodyProperties = strategy.GenerateBodyProperties(hero);
+            Applicator.Value.Apply(hero, bodyProperties.StaticProperties);
         }
     }
 }

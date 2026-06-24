@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+	<tags>
+		<tag language="Polski" />
+	</tags>
+        <strings>
+                <string id="BMPrimary" text="Ustawienia główne"/>
+                <string id="BMSizeAdjustments" text="Dostosowanie rozmiaru"/>
+                <string id="BMAdjustments" text="Dostosowanie milicji"/>
+                <string id="BMXpOff" text="Wyłączone"/>
+                <string id="BMXpNormal" text="Normalny"/>
+                <string id="BMXpHard" text="Trudny"/>
+                <string id="BMXpHardest" text="Najtrudniejszy"/>
+                <string id="BMGoldLow" text="Niski"/>
+                <string id="BMGoldNormal" text="Normalny"/>
+                <string id="BMGoldRich" text="Bogaty"/>
+                <string id="BMGoldRichest" text="Najbogatszy"/>
+
+                <string id="BMHeroPoolCap" text="Limit puli bohaterów bandytów (na klan)"/>
+                <string id="BMHeroPoolCapDesc" text="Maksymalna liczba bohaterów bandyckiej milicji na klan bandytów utrzymywanych przy życiu w puli recyklingu. Zwolnieni, zbiegli i uwięzieni bohaterowie BM są wykorzystywani ponownie do tego limitu; zabici/straceni bohaterowie są usuwani na stałe i tworzeni są nowi bohaterowie."/>
+                <string id="BMSpawning" text="Tworzenie &amp; Formowanie"/>
+                <string id="BMMergeSize" text="Minimalny rozmiar do połączenia"/>
+                <string id="BMMergeSizeDesc" text="Grupy bandytów mniejsze niż ta wartość nie połączą się w Bandycką Milicję."/>
+                <string id="BMSplit" text="Dzienna szansa podziału %"/>
+                <string id="BMSplitDesc" text="Jak duża jest codzienna szansa, że Bandyckie Milicje podzielą się, gdy są wystarczająco duże."/>
+                <string id="BMDisperse" text="Rozwiąż poniżej liczby żołnierzy"/>
+                <string id="BMDisperseDesc" text="Pokonane milicje z mniejszą niż ta liczbą pozostałych żołnierzy zostaną rozwiązane."/>
+
+                <string id="BMTrain" text="Włącz szkolenie milicji"/>
+                <string id="BMTrainDesc" text="Bohaterowie bandytów będą szkolić swoje milicje."/>
+                <string id="BMDailyTrain" text="Dzienna szansa szkolenia"/>
+                <string id="BMDailyTrainDesc" text="Każdego dnia mogą szkolić się dalej."/>
+                <string id="BMTraining" text="Szkolenie &amp; Rozwój"/>
+                <string id="BMXpBoost" text="Premia PD milicji"/>
+                <string id="BMXpBoostDesc" text="Najtrudniejszy daje dość PD, by znacząco ulepszyć oddziały. Wyłączone nie daje premii do PD."/>
+                <string id="BMUpgrade" text="% żołnierzy ulepszanych na szkolenie"/>
+                <string id="BMUpgradeDesc" text="Maksymalnie ten procent żołnierzy zostanie ulepszony za każdym razem, gdy nastąpi szkolenie. Wlicza się rabusiów."/>
+                <string id="BMGrowChance" text="Procent szansy wzrostu"/>
+                <string id="BMGrowChanceDesc" text="Szansa dziennie, że milicja zyska więcej żołnierzy (0 = wyłączone)."/>
+                <string id="BMGrowPercent" text="Procent wzrostu"/>
+                <string id="BMGrowPercentDesc" text="Zwiększa każdy typ oddziału o ten procent."/>
+                <string id="BMTier" text="Maksymalny poziom oddziału ze szkolenia"/>
+                <string id="BMTierDesc" text="Szkolenie nigdy nie ulepszy oddziałów ponad ten poziom."/>
+
+                <string id="BMIgnore" text="Ignoruj wieśniaków/karawany"/>
+                <string id="BMIgnoreDesc" text="Nie będą atakowani przez BM."/>
+                <string id="BMStronger" text="Maks. % silniejszego celu"/>
+                <string id="BMStrongerDesc" text="BM nie zaatakują grup silniejszych od siebie o więcej niż ten %. 100 oznacza atak niezależnie od siły celu."/>
+                <string id="BMWeaker" text="Ignoruj słabsze grupy"/>
+                <string id="BMWeakerDesc" text="10 oznacza, że każda grupa słabsza o 10% zostanie zignorowana.\n100 atakuje bez ograniczeń."/>
+                <string id="BMPillage" text="Zezwól na plądrowanie"/>
+                <string id="BMPillageDesc" text="Zezwól na plądrowanie."/>
+                <string id="BMPillageChance" text="Szansa plądrowania"/>
+                <string id="BMPillageChanceDesc" text="Szansa, że SI Bandyckich Milicji rozważy napad na wioskę. Sprawdzenie uruchamia się raz na godzinę gry dla każdej bandyckiej milicji, więc zalecana jest mniejsza wartość."/>
+                <string id="BMRaidCapScale" text="Skala limitu najazdów %"/>
+                <string id="BMRaidCapScaleDesc" text="Skaluje maksymalną liczbę jednoczesnych najazdów na wioski. Wartość bazowa jest obliczana automatycznie jako (łączna liczba wiosek ÷ 10). 100% = domyślnie. Niżej = mniej jednoczesnych najazdów, wyżej = więcej jednoczesnych najazdów."/>
+
+                <string id="BMStringSetting" text="Bandycka Milicja"/>
+                <string id="BMStringSettingDesc" text="Jak nazwać Bandycką Milicję."/>
+                <string id="BMLeaderlessStringSetting" text="Bandycka Milicja bez dowódcy"/>
+                <string id="BMLeaderlessStringSettingDesc" text="Jak nazwać Bandycką Milicję bez dowódcy."/>
+                <string id="BMStringSettingDefault" text="Bandycka Milicja"/>
+                <string id="BMLeaderlessStringSettingDefault" text="Bandycka Milicja bez dowódcy"/>
+                <string id="BMPartyName" text="{PARTY_NAME} {LEADER_NAME}"/>
+                <string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
+
+                <string id="BMMarkers" text="Znaczniki milicji na mapie"/>
+                <string id="BMMarkersDesc" text="Pokazuje wszystkie Bandyckie Milicje na mapie."/>
+                <string id="BMTrackSize" text="Minimalny rozmiar BM do śledzenia"/>
+                <string id="BMTrackSizeDesc" text="Mniejsze BM nie będą śledzone."/>
+                <string id="BMBanners" text="Losowe sztandary"/>
+                <string id="BMBannersDesc" text="Bandyckie Milicje będą miały unikalne sztandary albo domyślne sztandary klanów bandytów."/>
+                <string id="BMRaidNotices" text="Powiadomienia o najazdach na wioski"/>
+                <string id="BMRaidNoticesDesc" text="Gdy twoje lenna będą najeżdżane, zobaczysz wiadomość na banerze."/>
+                <string id="BMRemovePrisonerMessages" text="Usuń komunikaty o więźniach"/>
+                <string id="BMRemovePrisonerMessagesDesc" text="Usuwa komunikaty o bohaterach Bandyckiej Milicji branych do niewoli lub wypuszczanych z niewoli."/>
+                <string id="BMCheckVoiceGender" text="Sprawdzaj płeć głosu"/>
+                <string id="BMCheckVoiceGenderDesc" text="Dodatkowo sprawdza, czy kwestie głosowe bandytów pasują do płci przywódcy. Niektóre oficjalne kwestie używają męskich głosów bez określenia płci, więc kobiety-przywódczynie bandytów będą mówić męskim głosem, jeśli ta opcja jest wyłączona."/>
+                <string id="BMLoggingLevel" text="Poziom logowania"/>
+                <string id="BMLoggingLevelDesc" text="Plik logu znajduje się w &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
+                <string id="BMTesting" text="Tryb testowy"/>
+                <string id="BMTestingDesc" text="Teleportuje BM do ciebie."/>
+                <string id="BMMaxPerClan" text="Maks. milicji na klan"/>
+
+                <string id="BMREncBase" text="{LEADER.FIRSTNAME} to herszt rzezimieszków, dowodzący bandą opryszków, którzy łupią pod nazwą {CLAN_NAME}."/>
+                <string id="BMREncNoClan" text="bezpańscy rzezimieszkowie"/>
+                <string id="BMREncEpithet1" text="W całej krainie {?LEADER.GENDER}ona{?}on{\\?} znana{?LEADER.GENDER} jest{?}y jest{\\?} jako {LEADER.FIRSTNAME} {EPITHET}, zwycięzca {WINS} {?MANY}bitew{?}bitwy{\\?}."/>
+                <string id="BMREncEpithet2" text="W całej krainie {?LEADER.GENDER}ona{?}on{\\?} znana{?LEADER.GENDER} jest{?}y jest{\\?} jako {LEADER.FIRSTNAME} {EPITHET}."/>
+                <string id="BMREncDefeats" text="{?LEADER.GENDER}Ona{?}On{\\?} przegrał{?LEADER.GENDER}a{?}{\\?} w bitwie {DEFEATS} {?MANY}razy{?}raz{\\?}."/>
+                <string id="BMREncFear" text="Ponad wszystko {?LEADER.GENDER}ona{?}on{\\?} boi się {HUNTER}."/>
+
+                <string id="BMRWho" text="Kim jesteś i dla kogo jeździsz?" />
+                <string id="BMRWhoAnswer" text="Mówią na mnie {LEADER_NAME}. Nie służymy żadnemu lordowi ani królowi — tylko monecie i otwartej drodze." />
+                <string id="BMRContinue" text="Rozumiem. Wracajmy do interesów." />
+                <string id="BMRThreaten" text="Poddaj się teraz, a może daruję ci życie."/>
+                <string id="BMRThreatenAnswer" text="Ha! Najpierw musisz urwać nam głowy. Na nich, chłopaki!"/>
+
+                <string id="BMGoldReward" text="Złota nagroda za bohatera bandytów"/>
+                <string id="BMRBounty" text="Otrzymano nagrodę: {GOLD} denarów i {RENOWN} renomy za {LEADER}."/>
+                <string id="BMChatLogging" text="Włącz logowanie czatu"/>
+                <string id="BMChatLoggingDesc" text="Zapisuje komunikaty diagnostyczne do czatu w grze. Domyślnie wyłączone; włączaj tylko przy rozwiązywaniu problemów."/>
+                <string id="BMFileLogging" text="Włącz logowanie do pliku"/>
+                <string id="BMFileLoggingDesc" text="Zapisuje komunikaty diagnostyczne do Modules\BanditMilitiasRedux\Logs\BMR_*.log. Domyślnie wyłączone; włączaj tylko przy rozwiązywaniu problemów."/>
+                <string id="BMSkipConversations" text="Pomijaj rozmowy przy spotkaniu"/>
+                <string id="BMSkipConversationsDesc" text="Pomija rozmowy przy spotkaniu z Bandyckimi Milicjami. Przekupstwo będzie niedostępne, jeśli włączone."/>
+                <string id="BMMaxValue" text="Maksymalna wartość przedmiotu"/>
+                <string id="BMMaxValueDesc" text="Ogranicza wartość pojedynczego elementu wyposażenia dawanego Bohaterom.\nGłównie na wypadek, gdy inne mody dają ci łupy bohaterów."/>
+                <string id="BMMinSize" text="Minimalny rozmiar"/>
+                <string id="BMMinSizeDesc" text="Nie utworzą się BM mniejsze niż ta wartość."/>
+                <string id="BMLooter" text="Konwersje rabusiów"/>
+                <string id="BMLooterDesc" text="Ilu rabusiów zostaje zamienionych na lepsze jednostki podczas szkolenia."/>
+                <string id="BMPower" text="Globalna siła"/>
+                <string id="BMPowerDesc" text="Ogranicza łączną siłę bojową wszystkich Bandyckich Milicji jako procent wszystkich pozostałych grup na świecie. Wyższe wartości pozwalają na więcej i silniejsze BM, ale mogą wyraźnie wpłynąć na balans świata."/>
+        </strings>
+</base>

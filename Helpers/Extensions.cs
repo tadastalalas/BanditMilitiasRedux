@@ -1,22 +1,23 @@
+using BanditMilitiasRedux.Constructors;
 using HarmonyLib;
-using Microsoft.Extensions.Logging;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.Core;
 
-namespace BanditMilitias.Helpers
+namespace BanditMilitiasRedux.Helpers
 {
     internal static class Extensions
     {
         private static readonly AccessTools.FieldRef<MobileParty, bool> IsCurrentlyUsedByAQuest =
             AccessTools.FieldRefAccess<MobileParty, bool>("_isCurrentlyUsedByAQuest");
 
-        internal static bool IsUsedByAQuest(this MobileParty mobileParty)
-        {
-            return IsCurrentlyUsedByAQuest(mobileParty);
-        }
+        internal static bool IsUsedByAQuest(this MobileParty mobileParty) => IsCurrentlyUsedByAQuest(mobileParty);
 
         internal static bool IsTooBusyToMerge(this MobileParty mobileParty)
+        {
+            return mobileParty.ShortTermBehavior is AiBehavior.FleeToPoint or AiBehavior.RaidSettlement;
+        }
+
+        internal static bool IsTooBusyToGrowOrSplit(this MobileParty mobileParty)
         {
             return mobileParty.TargetParty is not null
                    || mobileParty.ShortTermTargetParty is not null
@@ -25,27 +26,15 @@ namespace BanditMilitias.Helpers
                        or AiBehavior.RaidSettlement;
         }
 
-        internal static bool IsBM(this MobileParty mobileParty) => mobileParty?.PartyComponent is ModBanditMilitiaPartyComponent;
-        internal static bool IsBM(this CharacterObject characterObject)
-            => characterObject.Occupation is Occupation.Bandit && characterObject.OriginalCharacter is not null
-            && (characterObject.OriginalCharacter.StringId.StartsWith("bm_hero_") || characterObject.OriginalCharacter.StringId.StartsWith("lord_"));
-        internal static bool IsBM(this Hero hero) => hero.CharacterObject?.IsBM() == true;
-        internal static ModBanditMilitiaPartyComponent GetBM(this MobileParty mobileParty)
-        {
-            if (mobileParty.PartyComponent is ModBanditMilitiaPartyComponent bm)
-                return bm;
+        internal static bool IsBanditMilitiaParty(this MobileParty mobileParty) => mobileParty?.PartyComponent is BanditMilitiaPartyComponent;
+        internal static bool IsBanditMilitiaHero(this Hero hero) => Globals.AllAliveBanditMilitiaHeroes.Contains(hero);
+        internal static bool IsBanditMilitiaCharacterObject(this CharacterObject characterObject) => characterObject?.HeroObject?.IsBanditMilitiaHero() == true;
 
+        internal static BanditMilitiaPartyComponent GetBanditMilitiaParty(this MobileParty mobileParty)
+        {
+            if (mobileParty.PartyComponent is BanditMilitiaPartyComponent partyComponent)
+                return partyComponent;
             return null;
-        }
-
-        internal static bool Contains(this Equipment equipment, EquipmentElement element)
-        {
-            for (var index = 0; index < Equipment.EquipmentSlotLength; index++)
-            {
-                if (equipment[index].Item?.StringId == element.Item?.StringId)
-                    return true;
-            }
-            return false;
         }
     }
 }

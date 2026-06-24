@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+	<tags>
+		<tag language="Türkçe" />
+	</tags>
+        <strings>
+                <string id="BMPrimary" text="Ana Ayarlar"/>
+                <string id="BMSizeAdjustments" text="Boyut Ayarları"/>
+                <string id="BMAdjustments" text="Milis Ayarları"/>
+                <string id="BMXpOff" text="Kapalı"/>
+                <string id="BMXpNormal" text="Normal"/>
+                <string id="BMXpHard" text="Zor"/>
+                <string id="BMXpHardest" text="En Zor"/>
+                <string id="BMGoldLow" text="Düşük"/>
+                <string id="BMGoldNormal" text="Normal"/>
+                <string id="BMGoldRich" text="Zengin"/>
+                <string id="BMGoldRichest" text="En Zengin"/>
+
+                <string id="BMHeroPoolCap" text="Haydut Kahraman Havuzu Sınırı (klan başına)"/>
+                <string id="BMHeroPoolCapDesc" text="Geri dönüşüm havuzunda hayatta tutulan haydut milis kahramanlarının haydut klanı başına azami sayısı. Serbest bırakılan, kaçan ve hapsedilen BM kahramanları bu sınıra kadar yeniden kullanılır; öldürülen/idam edilen kahramanlar kalıcı olarak kaldırılır ve yeni kahramanlar oluşturulur."/>
+                <string id="BMSpawning" text="Doğma &amp; Oluşum"/>
+                <string id="BMMergeSize" text="Birleşmek için Asgari Boyut"/>
+                <string id="BMMergeSizeDesc" text="Bu değerden küçük haydut grupları bir Haydut Milisi içinde birleşmez."/>
+                <string id="BMSplit" text="Günlük Bölünme Şansı %"/>
+                <string id="BMSplitDesc" text="Yeterince büyük olduklarında Haydut Milislerinin her gün bölünme olasılığı."/>
+                <string id="BMDisperse" text="Birlik Sayısı Altında Dağıt"/>
+                <string id="BMDisperseDesc" text="Yenildiğinde bu sayıdan daha az birliği kalan milisler dağıtılır."/>
+
+                <string id="BMTrain" text="Milis Eğitimini Etkinleştir"/>
+                <string id="BMTrainDesc" text="Haydut kahramanlar milislerini eğitir."/>
+                <string id="BMDailyTrain" text="Günlük Eğitim Şansı"/>
+                <string id="BMDailyTrainDesc" text="Her gün daha fazla eğitim yapabilirler."/>
+                <string id="BMTraining" text="Eğitim &amp; Büyüme"/>
+                <string id="BMXpBoost" text="Milis XP Desteği"/>
+                <string id="BMXpBoostDesc" text="En Zor, birlikleri belirgin biçimde geliştirmeye yetecek XP verir. Kapalı, bonus XP vermez."/>
+                <string id="BMUpgrade" text="Eğitim Başına Yükseltilecek Birlik %"/>
+                <string id="BMUpgradeDesc" text="Eğitim gerçekleştiğinde birliklerin en fazla bu yüzdesi yükseltilir. Yağmacılar dahildir."/>
+                <string id="BMGrowChance" text="Büyüme Şansı Yüzdesi"/>
+                <string id="BMGrowChanceDesc" text="Milisin her gün daha fazla birlik kazanma şansı (kapalı için 0)."/>
+                <string id="BMGrowPercent" text="Büyüme Yüzdesi"/>
+                <string id="BMGrowPercentDesc" text="Her birlik türünü bu yüzde kadar büyütür."/>
+                <string id="BMTier" text="Eğitimden Azami Birlik Kademesi"/>
+                <string id="BMTierDesc" text="Eğitim birlikleri asla bu kademenin üstüne yükseltmez."/>
+
+                <string id="BMIgnore" text="Köylüleri/Kervanları Yoksay"/>
+                <string id="BMIgnoreDesc" text="BM'ler tarafından saldırıya uğramazlar."/>
+                <string id="BMStronger" text="Azami Daha Güçlü Hedef %"/>
+                <string id="BMStrongerDesc" text="BM'ler, kendilerinden bu yüzdeden daha fazla güçlü gruplara saldırmaz. 100, hedef ne kadar güçlü olursa olsun saldırmak demektir."/>
+                <string id="BMWeaker" text="Daha Zayıf Grupları Yoksay"/>
+                <string id="BMWeakerDesc" text="10, %10 daha zayıf herhangi bir grubun yoksayılacağı anlamına gelir.\n100, kısıtlama olmadan saldırır."/>
+                <string id="BMPillage" text="Yağmaya İzin Ver"/>
+                <string id="BMPillageDesc" text="Yağmaya izin ver."/>
+                <string id="BMPillageChance" text="Yağma Şansı"/>
+                <string id="BMPillageChanceDesc" text="Haydut Milisleri yapay zekâsının bir köye baskın yapmayı değerlendirme olasılığı. Oyun içi her saatte, her haydut milis grubu için bir kez tetiklenir; bu yüzden daha düşük bir değer önerilir."/>
+                <string id="BMRaidCapScale" text="Baskın Üst Sınırı Ölçeği %"/>
+                <string id="BMRaidCapScaleDesc" text="Eşzamanlı köy baskınlarının azami sayısını ölçekler. Temel değer otomatik olarak (toplam köy sayısı ÷ 10) şeklinde hesaplanır. 100% = varsayılan. Daha düşük = aynı anda daha az baskın, daha yüksek = aynı anda daha fazla baskın."/>
+
+                <string id="BMStringSetting" text="Haydut Milisi"/>
+                <string id="BMStringSettingDesc" text="Haydut Milisine verilecek ad."/>
+                <string id="BMLeaderlessStringSetting" text="Lidersiz Haydut Milisi"/>
+                <string id="BMLeaderlessStringSettingDesc" text="Lideri olmayan bir Haydut Milisine verilecek ad."/>
+                <string id="BMStringSettingDefault" text="Haydut Milisi"/>
+                <string id="BMLeaderlessStringSettingDefault" text="Lidersiz Haydut Milisi"/>
+                <string id="BMPartyName" text="{LEADER_NAME}'ın {PARTY_NAME}'ı"/>
+                <string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
+
+                <string id="BMMarkers" text="Milis Harita İşaretleri"/>
+                <string id="BMMarkersDesc" text="Haritadaki tüm Haydut Milislerini gösterir."/>
+                <string id="BMTrackSize" text="Takip için Asgari BM Boyutu"/>
+                <string id="BMTrackSizeDesc" text="Daha küçük BM'ler takip edilmez."/>
+                <string id="BMBanners" text="Rastgele Sancaklar"/>
+                <string id="BMBannersDesc" text="Haydut Milisleri benzersiz sancaklara veya varsayılan haydut klanı sancaklarına sahip olur."/>
+                <string id="BMRaidNotices" text="Köy Baskını Bildirimleri"/>
+                <string id="BMRaidNoticesDesc" text="Tımarlarınız yağmalandığında bir afiş mesajı görürsünüz."/>
+                <string id="BMRemovePrisonerMessages" text="Esir mesajlarını kaldır"/>
+                <string id="BMRemovePrisonerMessagesDesc" text="Haydut Milisi Kahramanlarının esir alınması ya da salınması mesajlarını kaldırır."/>
+                <string id="BMCheckVoiceGender" text="Ses Cinsiyetini Kontrol Et"/>
+                <string id="BMCheckVoiceGenderDesc" text="Haydut ses satırlarının liderin cinsiyetiyle eşleşip eşleşmediğini tekrar kontrol eder. Bazı resmi ses satırları erkek ses kullanır ancak cinsiyet belirtmez; bu seçenek devre dışıysa kadın haydut liderler erkek sesleriyle konuşur."/>
+                <string id="BMLoggingLevel" text="Günlük Seviyesi"/>
+                <string id="BMLoggingLevelDesc" text="Günlük dosyası şurada: &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
+                <string id="BMTesting" text="Test Modu"/>
+                <string id="BMTestingDesc" text="BM'leri size ışınlar."/>
+                <string id="BMMaxPerClan" text="Klan Başına Azami Milis"/>
+
+                <string id="BMREncBase" text="{LEADER.FIRSTNAME}, {CLAN_NAME} adı altında yağma yapan bir eşkıya grubuna liderlik eden bir haydut reisidir."/>
+                <string id="BMREncNoClan" text="efendisiz eşkıyalar"/>
+                <string id="BMREncEpithet1" text="Diyarın dört bir yanında {?LEADER.GENDER}onun{?}onun{\\?} {LEADER.FIRSTNAME} {EPITHET} olarak, {WINS} {?MANY}savaşın{?}savaşın{\\?} galibi diye anıldığı söylenir."/>
+                <string id="BMREncEpithet2" text="Diyarın dört bir yanında {?LEADER.GENDER}onun{?}onun{\\?} {LEADER.FIRSTNAME} {EPITHET} olarak anıldığı söylenir."/>
+                <string id="BMREncDefeats" text="{?LEADER.GENDER}O{?}O{\\?}, savaşta {DEFEATS} {?MANY}kez{?}kez{\\?} yenilmiştir."/>
+                <string id="BMREncFear" text="Her şeyden çok, {?LEADER.GENDER}o{?}o{\\?} {HUNTER}'dan korkar."/>
+
+                <string id="BMRWho" text="Kimsin sen, kimin için savaşıyorsun?" />
+                <string id="BMRWhoAnswer" text="Bana {LEADER_NAME} derler. Ne bir lorda ne de bir krala hizmet ederiz — sadece paraya ve açık yola." />
+                <string id="BMRContinue" text="Anlıyorum. Şimdi işimize dönelim." />
+                <string id="BMRThreaten" text="Şimdi teslim ol, belki yaşamana izin veririm."/>
+                <string id="BMRThreatenAnswer" text="Ha! Önce kafalarımızı alman gerek. Üstlerine, çocuklar!"/>
+
+                <string id="BMGoldReward" text="Haydut Kahraman Altın Ödülü"/>
+                <string id="BMRBounty" text="{LEADER} için {GOLD} dinar ve {RENOWN} nam ödülü topladınız."/>
+                <string id="BMChatLogging" text="Sohbet Günlüğünü Etkinleştir"/>
+                <string id="BMChatLoggingDesc" text="Tanılama mesajlarını oyun içi sohbete yazar. Varsayılan olarak kapalıdır; yalnızca sorun giderirken etkinleştirin."/>
+                <string id="BMFileLogging" text="Dosya Günlüğünü Etkinleştir"/>
+                <string id="BMFileLoggingDesc" text="Tanılama mesajlarını Modules\BanditMilitiasRedux\Logs\BMR_*.log dosyasına yazar. Varsayılan olarak kapalıdır; yalnızca sorun giderirken etkinleştirin."/>
+                <string id="BMSkipConversations" text="Karşılaşma Konuşmalarını Atla"/>
+                <string id="BMSkipConversationsDesc" text="Haydut Milisleriyle karşılaşınca konuşmaları atlar. Etkinleştirilirse rüşvet kullanılamaz."/>
+                <string id="BMMaxValue" text="Azami Eşya Değeri"/>
+                <string id="BMMaxValueDesc" text="Kahramanlara verilen ekipmanın parça başı değerini sınırlar.\nÇoğunlukla diğer modlar Kahraman ganimeti verdiğinde kullanılır."/>
+                <string id="BMMinSize" text="Asgari Boyut"/>
+                <string id="BMMinSizeDesc" text="Bu değerden küçük BM'ler oluşmaz."/>
+                <string id="BMLooter" text="Yağmacı Dönüşümleri"/>
+                <string id="BMLooterDesc" text="Eğitim sırasında kaç yağmacının daha iyi birliklere dönüştürüleceği."/>
+                <string id="BMPower" text="Küresel Güç"/>
+                <string id="BMPowerDesc" text="Tüm Haydut Milislerinin toplam savaş gücünü, dünyadaki diğer tüm grupların yüzdesi olarak sınırlar. Daha yüksek değerler daha fazla ve daha güçlü BM'ye izin verir ancak dünya dengesini belirgin şekilde etkileyebilir."/>
+        </strings>
+</base>

@@ -2,42 +2,54 @@ using MCM.Abstractions.Attributes;
 using MCM.Abstractions.Attributes.v2;
 using MCM.Abstractions.Base.Global;
 using MCM.Common;
-using Microsoft.Extensions.Logging;
 using TaleWorlds.Localization;
 
-namespace BanditMilitias
+namespace BanditMilitiasRedux
 {
     public class MCMSettings : AttributeGlobalSettings<MCMSettings>
     {
         public delegate void OnSettingsChangedDelegate();
-        public static event OnSettingsChangedDelegate OnSettingsChanged;
-        public override string FormatType => "json";
-        public override string FolderName => "BanditMilitias";
+        public static event OnSettingsChangedDelegate? OnSettingsChanged;
+        public override string Id => "BanditMilitiasRedux";
+        public override string DisplayName => $"Bandit Militias Redux";
+        public override string FolderName => "BanditMilitiasRedux";
+        public override string FormatType => "json2";
+        public override void OnPropertyChanged(string? propertyName = null)
+        {
+            base.OnPropertyChanged(propertyName);
+            VerifyProperties();
+
+            OnSettingsChanged?.Invoke();
+        }
+        private void VerifyProperties()
+        {
+            if (string.IsNullOrWhiteSpace(BanditMilitiaString))
+            {
+                BanditMilitiaString = new TextObject("{=BMStringSettingDefault}Bandit Militia").ToString();
+            }
+
+            if (string.IsNullOrWhiteSpace(LeaderlessBanditMilitiaString))
+            {
+                LeaderlessBanditMilitiaString = new TextObject("{=BMLeaderlessStringSettingDefault}Leaderless Bandit Militia").ToString();
+            }
+        }
 
         // ==================== SPAWNING & FORMATION ====================
 
-        [SettingPropertyBool("{=BMSpawn}Enable Spontaneous Spawning", Order = 0, RequireRestart = false, HintText = "{=BMSpawnDesc}New Bandit Militias will form spontaneously as well as by merging together normally.")]
-        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation", GroupOrder = 0)]
-        public bool SpontaneousMilitiaSpawn { get; private set; } = false;
-
-        [SettingPropertyInteger("{=BMSpawnChance}Hourly Spawn Chance %", 1, 100, Order = 1, RequireRestart = false, HintText = "{=BMSpawnChanceDesc}Bandit Militias will spawn hourly at this likelihood.")]
+        [SettingPropertyInteger("{=BMHeroPoolCap}Bandit Hero Pool Cap (per clan)", 1, 20, Order = 0, RequireRestart = false, HintText = "{=BMHeroPoolCapDesc}Maximum number of bandit militia heroes per bandit clan kept alive in the recycle pool. Released, escaped, and imprisoned BM heroes are reused up to this cap; killed/executed heroes are removed permanently and new heroes are being created.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
-        public int HourlySpawnChance { get; private set; } = 1;
+        public int HeroPoolCap { get; private set; } = 4;
 
-        [SettingPropertyInteger("{=BMMaxPerClan}Max Militias Per Clan", 0, 50, Order = 2, RequireRestart = false, HintText = "{=BMMaxPerClanDesc}Maximum Bandit Militia parties per bandit clan. Set to 0 for no limit.")]
-        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
-        public int MaxLandPartiesPerClan { get; private set; } = 10;
-
-        [SettingPropertyInteger("{=BMMergeSize}Minimum Size to Merge", 1, 100, Order = 3, RequireRestart = false, HintText = "{=BMMergeSizeDesc}Bandit parties smaller than this will not merge into a Bandit Militia.")]
+        [SettingPropertyInteger("{=BMMergeSize}Minimum Size to Merge", 1, 100, Order = 1, RequireRestart = false, HintText = "{=BMMergeSizeDesc}Bandit parties smaller than this will not merge into a Bandit Militia.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int MergeableSize { get; private set; } = 15;
         public int MinPartySize => MergeableSize * 2;
 
-        [SettingPropertyInteger("{=BMSplit}Daily Split Chance %", 0, 100, Order = 4, RequireRestart = false, HintText = "{=BMSplitDesc}How likely every day Bandit Militias is to split when large enough.")]
+        [SettingPropertyInteger("{=BMSplit}Daily Split Chance %", 0, 100, Order = 2, RequireRestart = false, HintText = "{=BMSplitDesc}How likely every day Bandit Militias is to split when large enough.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int RandomSplitChance { get; private set; } = 5;
 
-        [SettingPropertyInteger("{=BMDisperse}Disband Below Troop Count", 10, 100, Order = 5, RequireRestart = false, HintText = "{=BMDisperseDesc}Militias defeated with fewer than this many remaining troops will be disbanded.")]
+        [SettingPropertyInteger("{=BMDisperse}Disband Below Troop Count", 10, 100, Order = 3, RequireRestart = false, HintText = "{=BMDisperseDesc}Militias defeated with fewer than this many remaining troops will be disbanded.")]
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int DisperseSize { get; private set; } = 20;
 
@@ -49,7 +61,7 @@ namespace BanditMilitias
 
         [SettingPropertyInteger("{=BMDailyTrain}Daily Training Chance %", 0, 100, Order = 1, RequireRestart = false, HintText = "{=BMDailyTrainDesc}Each day there is this % chance the militia will be trained.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
-        public float TrainingChance { get; private set; } = 10;
+        public int TrainingChance { get; private set; } = 10;
 
         [SettingPropertyDropdown("{=BMXpBoost}Bonus XP on Training", Order = 2, RequireRestart = false, HintText = "{=BMXpBoostDesc}Extra XP granted when training occurs. Hardest grants enough to significantly upgrade troops. Off grants no bonus XP.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
@@ -67,7 +79,7 @@ namespace BanditMilitias
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public int GrowthChance { get; private set; } = 50;
 
-        [SettingPropertyInteger("{=BMGrowPercent}Troop Growth Amount %", 0, 100, Order = 6, RequireRestart = false, HintText = "{=BMGrowPercentDesc}When growth occurs, each troop type grows by this percentage of its current count.")]
+        [SettingPropertyInteger("{=BMGrowPercent}Troop Growth Amount %", 0, 100, Order = 6, RequireRestart = false, HintText = "{=BMGrowPercentDesc}When growth occurs, total party size grows by this percentage of its current count.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public int GrowthPercent { get; private set; } = 1;
 
@@ -85,7 +97,7 @@ namespace BanditMilitias
 
         [SettingPropertyInteger("{=BMStronger}Max Stronger Target %", 0, 100, Order = 0, RequireRestart = false, HintText = "{=BMStrongerDesc}BMs will not engage parties stronger than themselves by more than this %. 100 means attack regardless of how strong the target is.")]
         [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI", GroupOrder = 3)]
-        public int MaxStrongerTargetPercent { get; private set; } = 50;
+        public int MaxStrongerTargetPercent { get; private set; } = 0;
 
         [SettingPropertyInteger("{=BMWeaker}Max Weaker Target %", 0, 100, Order = 1, RequireRestart = false, HintText = "{=BMWeakerDesc}BMs will not engage parties weaker than themselves by more than this %. 100 means attack regardless of how weak the target is.")]
         [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
@@ -102,6 +114,10 @@ namespace BanditMilitias
         [SettingPropertyFloatingInteger("{=BMPillageChance}Hourly Raid Chance %", 0, 100, Order = 4, RequireRestart = false, HintText = "{=BMPillageChanceDesc}Each hour every Bandit Militia has this % chance to consider raiding a nearby village. Keep this low.")]
         [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
         public float PillagingChance { get; private set; } = 1;
+
+        [SettingPropertyInteger("{=BMRaidCapScale}Raid Cap Scale %", 10, 500, Order = 5, RequireRestart = false, HintText = "{=BMRaidCapScaleDesc}Scales the maximum number of simultaneous village raids. The baseline is auto-calculated as (total villages ÷ 10). 100% = default. Lower = fewer raids at once, Higher = more raids at once.")]
+        [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
+        public int RaidCapPercent { get; private set; } = 100;
 
         // ==================== APPEARANCE & CUSTOMIZATION ====================
 
@@ -153,43 +169,12 @@ namespace BanditMilitias
         [SettingPropertyGroup("{=BMAdvanced}Advanced")]
         public bool IgnoreSizePenalty { get; private set; } = true;
 
-        [SettingPropertyDropdown("{=BMLoggingLevel}Log Level", Order = 3, RequireRestart = true, HintText = "{=BMDebugDesc}Change the log level. Requires restart.")]
+        [SettingPropertyBool("{=BMChatLogging}Enable Chat Logging", Order = 4, RequireRestart = false, HintText = "{=BMChatLoggingDesc}Write diagnostic messages to the in-game chat. Off by default; enable only when troubleshooting.")]
         [SettingPropertyGroup("{=BMAdvanced}Advanced")]
-        public Dropdown<LogLevel> MinLogLevel { get; private set; } = new([LogLevel.Trace, LogLevel.Debug, LogLevel.Information, LogLevel.Warning, LogLevel.Error, LogLevel.Critical, LogLevel.None], 2);
+        public bool EnableChatLogging { get; private set; } = false;
 
-        [SettingPropertyBool("{=BMTesting}Testing Mode", Order = 4, RequireRestart = false, HintText = "{=BMTestingDesc}Teleports all Bandit Militias near the player.")]
+        [SettingPropertyBool("{=BMFileLogging}Enable File Logging", Order = 4, RequireRestart = false, HintText = "{=BMFileLoggingDesc}Write diagnostic messages to Modules\\BanditMilitiasRedux\\Logs\\BMR_*.log. Off by default; enable only when troubleshooting.")]
         [SettingPropertyGroup("{=BMAdvanced}Advanced")]
-        public bool TestingMode { get; internal set; }
-
-        // ==================== PRIVATE FIELDS ====================
-
-        private const string id = "BanditMilitiasRedux";
-        private readonly string displayName = $"Bandit Militias Redux";
-
-        // ==================== OVERRIDES ====================
-
-        public override string Id => id;
-        public override string DisplayName => displayName;
-
-        public override void OnPropertyChanged(string propertyName = null)
-        {
-            base.OnPropertyChanged(propertyName);
-            VerifyProperties();
-
-            OnSettingsChanged?.Invoke();
-        }
-
-        private void VerifyProperties()
-        {
-            if (string.IsNullOrWhiteSpace(BanditMilitiaString))
-            {
-                BanditMilitiaString = new TextObject("{=BMStringSettingDefault}Bandit Militia").ToString();
-            }
-
-            if (string.IsNullOrWhiteSpace(LeaderlessBanditMilitiaString))
-            {
-                LeaderlessBanditMilitiaString = new TextObject("{=BMLeaderlessStringSettingDefault}Leaderless Bandit Militia").ToString();
-            }
-        }
+        public bool EnableFileLogging { get; private set; } = false;
     }
 }

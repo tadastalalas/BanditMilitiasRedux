@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+	<tags>
+		<tag language="Español (LA)" />
+	</tags>
+        <strings>
+                <string id="BMPrimary" text="Configuración principal"/>
+                <string id="BMSizeAdjustments" text="Ajustes de tamaño"/>
+                <string id="BMAdjustments" text="Ajustes de milicia"/>
+                <string id="BMXpOff" text="Desactivado"/>
+                <string id="BMXpNormal" text="Normal"/>
+                <string id="BMXpHard" text="Difícil"/>
+                <string id="BMXpHardest" text="Muy difícil"/>
+                <string id="BMGoldLow" text="Bajo"/>
+                <string id="BMGoldNormal" text="Normal"/>
+                <string id="BMGoldRich" text="Rico"/>
+                <string id="BMGoldRichest" text="Muy rico"/>
+
+                <string id="BMHeroPoolCap" text="Límite de reserva de héroes bandidos (por clan)"/>
+                <string id="BMHeroPoolCapDesc" text="Número máximo de héroes de milicia bandida por clan bandido que se mantienen con vida en la reserva de reciclaje. Los héroes BM liberados, fugados y encarcelados se reutilizan hasta este límite; los héroes muertos/ejecutados se eliminan permanentemente y se crean héroes nuevos."/>
+                <string id="BMSpawning" text="Aparición &amp; Formación"/>
+                <string id="BMMergeSize" text="Tamaño mínimo para fusionar"/>
+                <string id="BMMergeSizeDesc" text="Las partidas de bandidos más pequeñas que este valor no se fusionarán en una Milicia Bandida."/>
+                <string id="BMSplit" text="Probabilidad diaria de división %"/>
+                <string id="BMSplitDesc" text="Qué tan probable es que cada día las Milicias Bandidas se dividan cuando sean lo suficientemente grandes."/>
+                <string id="BMDisperse" text="Disolver por debajo de cantidad de tropas"/>
+                <string id="BMDisperseDesc" text="Las milicias derrotadas con menos de esta cantidad de tropas restantes se disolverán."/>
+
+                <string id="BMTrain" text="Habilitar entrenamiento de milicia"/>
+                <string id="BMTrainDesc" text="Los héroes bandidos entrenarán a sus milicias."/>
+                <string id="BMDailyTrain" text="Probabilidad diaria de entrenamiento"/>
+                <string id="BMDailyTrainDesc" text="Cada día podrían entrenar más."/>
+                <string id="BMTraining" text="Entrenamiento &amp; Crecimiento"/>
+                <string id="BMXpBoost" text="Impulso de XP de milicia"/>
+                <string id="BMXpBoostDesc" text="Muy difícil otorga suficiente XP para mejorar significativamente las tropas. Desactivado no otorga XP adicional."/>
+                <string id="BMUpgrade" text="% de tropas a mejorar por entrenamiento"/>
+                <string id="BMUpgradeDesc" text="Como máximo, este porcentaje de tropas se mejorará cada vez que ocurra el entrenamiento. Los saqueadores están incluidos."/>
+                <string id="BMGrowChance" text="Porcentaje de probabilidad de crecimiento"/>
+                <string id="BMGrowChanceDesc" text="Probabilidad diaria de que la milicia gane más tropas (0 para desactivado)."/>
+                <string id="BMGrowPercent" text="Porcentaje de crecimiento"/>
+                <string id="BMGrowPercentDesc" text="Aumenta cada tipo de tropa en este porcentaje."/>
+                <string id="BMTier" text="Nivel máximo de tropa por entrenamiento"/>
+                <string id="BMTierDesc" text="El entrenamiento nunca mejorará tropas por encima de este nivel."/>
+
+                <string id="BMIgnore" text="Ignorar aldeanos/caravanas"/>
+                <string id="BMIgnoreDesc" text="No serán atacados por las MB."/>
+                <string id="BMStronger" text="% máx. de objetivo más fuerte"/>
+                <string id="BMStrongerDesc" text="Las MB no atacarán partidas más fuertes que ellas por más de este %. 100 significa atacar sin importar qué tan fuerte sea el objetivo."/>
+                <string id="BMWeaker" text="Ignorar partidas más débiles"/>
+                <string id="BMWeakerDesc" text="10 significa que se ignorará cualquier partida 10% más débil.\n100 ataca sin restricción."/>
+                <string id="BMPillage" text="Permitir saqueo"/>
+                <string id="BMPillageDesc" text="Permitir saqueo."/>
+                <string id="BMPillageChance" text="Probabilidad de saqueo"/>
+                <string id="BMPillageChanceDesc" text="La probabilidad de que la IA de Milicias Bandidas considere saquear una aldea. Se activa una vez por hora de juego para cada partida de milicia bandida, por lo que se recomienda un valor menor."/>
+                <string id="BMRaidCapScale" text="Escala de límite de incursiones %"/>
+                <string id="BMRaidCapScaleDesc" text="Escala la cantidad máxima de incursiones simultáneas a aldeas. La base se calcula automáticamente como (aldeas totales ÷ 10). 100% = predeterminado. Menor = menos incursiones al mismo tiempo, Mayor = más incursiones al mismo tiempo."/>
+
+                <string id="BMStringSetting" text="Milicia Bandida"/>
+                <string id="BMStringSettingDesc" text="Cómo nombrar una Milicia Bandida."/>
+                <string id="BMLeaderlessStringSetting" text="Milicia Bandida sin líder"/>
+                <string id="BMLeaderlessStringSettingDesc" text="Cómo nombrar una Milicia Bandida sin líder."/>
+                <string id="BMStringSettingDefault" text="Milicia Bandida"/>
+                <string id="BMLeaderlessStringSettingDefault" text="Milicia Bandida sin líder"/>
+                <string id="BMPartyName" text="{PARTY_NAME} de {LEADER_NAME}"/>
+                <string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
+
+                <string id="BMMarkers" text="Marcadores de milicia en el mapa"/>
+                <string id="BMMarkersDesc" text="Muestra todas las Milicias Bandidas en el mapa."/>
+                <string id="BMTrackSize" text="Tamaño mínimo de MB para rastrear"/>
+                <string id="BMTrackSizeDesc" text="Las MB más pequeñas no se rastrearán."/>
+                <string id="BMBanners" text="Estandartes aleatorios"/>
+                <string id="BMBannersDesc" text="Las Milicias Bandidas tendrán estandartes únicos o los estandartes predeterminados de clanes bandidos."/>
+                <string id="BMRaidNotices" text="Avisos de incursión a aldeas"/>
+                <string id="BMRaidNoticesDesc" text="Cuando ataquen tus feudos, verás un mensaje en banner."/>
+                <string id="BMRemovePrisonerMessages" text="Quitar mensajes de prisioneros"/>
+                <string id="BMRemovePrisonerMessagesDesc" text="Quita los mensajes de Héroes de Milicia Bandida capturados o liberados como prisioneros."/>
+                <string id="BMCheckVoiceGender" text="Verificar género de voz"/>
+                <string id="BMCheckVoiceGenderDesc" text="Vuelve a comprobar si las líneas de voz de bandidos coinciden con el género del líder. Algunas líneas oficiales usan voces masculinas pero no especifican género, por lo que las líderes bandidas hablarán con voces masculinas si esta opción está desactivada."/>
+                <string id="BMLoggingLevel" text="Nivel de registro"/>
+                <string id="BMLoggingLevelDesc" text="El archivo de registro está en &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
+                <string id="BMTesting" text="Modo de prueba"/>
+                <string id="BMTestingDesc" text="Teletransporta MB hacia ti."/>
+                <string id="BMMaxPerClan" text="Máx. de milicias por clan"/>
+
+                <string id="BMREncBase" text="{LEADER.FIRSTNAME} es un cabecilla bandido que lidera una banda de maleantes que saquea bajo el nombre de {CLAN_NAME}."/>
+                <string id="BMREncNoClan" text="bandidos sin amo"/>
+                <string id="BMREncEpithet1" text="En toda la tierra, a {?LEADER.GENDER}ella{?}él{\\?} se le conoce como {LEADER.FIRSTNAME} {EPITHET}, vencedor de {WINS} {?MANY}batallas{?}batalla{\\?}."/>
+                <string id="BMREncEpithet2" text="En toda la tierra, a {?LEADER.GENDER}ella{?}él{\\?} se le conoce como {LEADER.FIRSTNAME} {EPITHET}."/>
+                <string id="BMREncDefeats" text="{?LEADER.GENDER}Ella{?}Él{\\?} ha sido derrotad{?LEADER.GENDER}a{?}o{\\?} en batalla {DEFEATS} {?MANY}veces{?}vez{\\?}."/>
+                <string id="BMREncFear" text="Por encima de todo, {?LEADER.GENDER}ella{?}él{\\?} teme a {HUNTER}."/>
+
+                <string id="BMRWho" text="¿Quién eres y para quién cabalgas?" />
+                <string id="BMRWhoAnswer" text="Me llaman {LEADER_NAME}. No respondemos a ningún señor ni rey — solo a la moneda y al camino abierto." />
+                <string id="BMRContinue" text="Ya veo. Ahora, volvamos a los asuntos." />
+                <string id="BMRThreaten" text="Ríndete ahora y puede que te deje vivir."/>
+                <string id="BMRThreatenAnswer" text="¡Ja! Primero tendrás que arrancarnos la cabeza. ¡A por ellos, muchachos!"/>
+
+                <string id="BMGoldReward" text="Recompensa de oro por héroe bandido"/>
+                <string id="BMRBounty" text="Cobraste una recompensa de {GOLD} denares y {RENOWN} de renombre por {LEADER}."/>
+                <string id="BMChatLogging" text="Habilitar registro en chat"/>
+                <string id="BMChatLoggingDesc" text="Escribe mensajes de diagnóstico en el chat del juego. Desactivado por defecto; actívalo solo al solucionar problemas."/>
+                <string id="BMFileLogging" text="Habilitar registro en archivo"/>
+                <string id="BMFileLoggingDesc" text="Escribe mensajes de diagnóstico en Modules\BanditMilitiasRedux\Logs\BMR_*.log. Desactivado por defecto; actívalo solo al solucionar problemas."/>
+                <string id="BMSkipConversations" text="Omitir conversaciones de encuentro"/>
+                <string id="BMSkipConversationsDesc" text="Omite conversaciones al encontrarte con Milicias Bandidas. El soborno no estará disponible si está activado."/>
+                <string id="BMMaxValue" text="Valor máximo de objeto"/>
+                <string id="BMMaxValueDesc" text="Limita el valor por pieza del equipo dado a los Héroes.\nPrincipalmente para cuando otros mods te dan botín de Héroe."/>
+                <string id="BMMinSize" text="Tamaño mínimo"/>
+                <string id="BMMinSizeDesc" text="No se formarán MB más pequeñas que este valor."/>
+                <string id="BMLooter" text="Conversiones de saqueadores"/>
+                <string id="BMLooterDesc" text="Cuántos saqueadores se convierten en unidades mejores durante el entrenamiento."/>
+                <string id="BMPower" text="Poder global"/>
+                <string id="BMPowerDesc" text="Limita la fuerza total de combate de todas las Milicias Bandidas combinadas como porcentaje de todas las demás partidas del mundo. Valores más altos permiten más MB y MB más fuertes, pero pueden afectar notablemente el equilibrio del mundo."/>
+        </strings>
+</base>

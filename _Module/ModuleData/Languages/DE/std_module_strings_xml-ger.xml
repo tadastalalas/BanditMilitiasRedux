@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+	<tags>
+		<tag language="Deutsch" />
+	</tags>
+        <strings>
+                <string id="BMPrimary" text="Haupteinstellungen"/>
+                <string id="BMSizeAdjustments" text="Größenanpassungen"/>
+                <string id="BMAdjustments" text="Miliz-Anpassungen"/>
+                <string id="BMXpOff" text="Aus"/>
+                <string id="BMXpNormal" text="Normal"/>
+                <string id="BMXpHard" text="Schwer"/>
+                <string id="BMXpHardest" text="Am schwersten"/>
+                <string id="BMGoldLow" text="Niedrig"/>
+                <string id="BMGoldNormal" text="Normal"/>
+                <string id="BMGoldRich" text="Reich"/>
+                <string id="BMGoldRichest" text="Am reichsten"/>
+
+                <string id="BMHeroPoolCap" text="Banditen-Heldenpool-Limit (pro Clan)"/>
+                <string id="BMHeroPoolCapDesc" text="Maximale Anzahl an Banditenmiliz-Helden pro Banditenclan, die im Recycling-Pool am Leben gehalten werden. Freigelassene, entkommene und inhaftierte BM-Helden werden bis zu diesem Limit wiederverwendet; getötete/hingerichtete Helden werden dauerhaft entfernt und neue Helden erstellt."/>
+                <string id="BMSpawning" text="Spawn &amp; Formation"/>
+                <string id="BMMergeSize" text="Mindestgröße zum Zusammenführen"/>
+                <string id="BMMergeSizeDesc" text="Banditenparteien, die kleiner als dieser Wert sind, werden nicht zu einer Banditenmiliz zusammengeführt."/>
+                <string id="BMSplit" text="Tägliche Aufspaltungschance %"/>
+                <string id="BMSplitDesc" text="Wie wahrscheinlich es ist, dass sich Banditenmilizen täglich aufspalten, wenn sie groß genug sind."/>
+                <string id="BMDisperse" text="Auflösen unter Truppenzahl"/>
+                <string id="BMDisperseDesc" text="Besiegte Milizen mit weniger als dieser verbleibenden Truppenzahl werden aufgelöst."/>
+
+                <string id="BMTrain" text="Miliz-Training aktivieren"/>
+                <string id="BMTrainDesc" text="Banditenhelden trainieren ihre Milizen."/>
+                <string id="BMDailyTrain" text="Tägliche Trainingschance"/>
+                <string id="BMDailyTrainDesc" text="Jeden Tag könnten sie weiter trainieren."/>
+                <string id="BMTraining" text="Training &amp; Wachstum"/>
+                <string id="BMXpBoost" text="Miliz-XP-Boost"/>
+                <string id="BMXpBoostDesc" text="„Am schwersten“ gewährt genug XP, um Truppen deutlich aufzuwerten. „Aus“ gewährt keinen Bonus-XP."/>
+                <string id="BMUpgrade" text="Aufwertungs-% der Truppen pro Training"/>
+                <string id="BMUpgradeDesc" text="Maximal dieser Prozentsatz der Truppen wird bei jedem Training aufgewertet. Plünderer sind eingeschlossen."/>
+                <string id="BMGrowChance" text="Wachstumschance in Prozent"/>
+                <string id="BMGrowChanceDesc" text="Tägliche Chance, dass die Miliz mehr Truppen erhält (0 für aus)."/>
+                <string id="BMGrowPercent" text="Wachstumsprozentsatz"/>
+                <string id="BMGrowPercentDesc" text="Erhöht jeden Truppentyp um diesen Prozentsatz."/>
+                <string id="BMTier" text="Maximale Truppenstufe durch Training"/>
+                <string id="BMTierDesc" text="Training wird Truppen niemals über diese Stufe hinaus aufwerten."/>
+
+                <string id="BMIgnore" text="Dorfbewohner/Karawanen ignorieren"/>
+                <string id="BMIgnoreDesc" text="Sie werden nicht von BMs angegriffen."/>
+                <string id="BMStronger" text="Max. stärkeres Ziel %"/>
+                <string id="BMStrongerDesc" text="BMs greifen keine Parteien an, die um mehr als diesen Prozentsatz stärker sind als sie selbst. 100 bedeutet Angriff unabhängig von der Stärke des Ziels."/>
+                <string id="BMWeaker" text="Schwächere Parteien ignorieren"/>
+                <string id="BMWeakerDesc" text="10 bedeutet, dass jede um 10 % schwächere Partei ignoriert wird.\n100 greift ohne Einschränkung an."/>
+                <string id="BMPillage" text="Plündern erlauben"/>
+                <string id="BMPillageDesc" text="Plündern erlauben."/>
+                <string id="BMPillageChance" text="Plünderungs-Chance"/>
+                <string id="BMPillageChanceDesc" text="Die Chance, dass die KI der Banditenmilizen erwägt, ein Dorf zu überfallen. Sie wird einmal pro Spielstunde für jede Banditenmiliz-Partei ausgelöst, daher ist ein kleinerer Wert ratsam."/>
+                <string id="BMRaidCapScale" text="Überfall-Limit-Skalierung %"/>
+                <string id="BMRaidCapScaleDesc" text="Skaliert die maximale Anzahl gleichzeitiger Dorfüberfälle. Der Basiswert wird automatisch als (Gesamtzahl Dörfer ÷ 10) berechnet. 100 % = Standard. Niedriger = weniger gleichzeitige Überfälle, höher = mehr gleichzeitige Überfälle."/>
+
+                <string id="BMStringSetting" text="Banditenmiliz"/>
+                <string id="BMStringSettingDesc" text="Wie eine Banditenmiliz benannt werden soll."/>
+                <string id="BMLeaderlessStringSetting" text="Anführerlose Banditenmiliz"/>
+                <string id="BMLeaderlessStringSettingDesc" text="Wie eine Banditenmiliz ohne Anführer benannt werden soll."/>
+                <string id="BMStringSettingDefault" text="Banditenmiliz"/>
+                <string id="BMLeaderlessStringSettingDefault" text="Anführerlose Banditenmiliz"/>
+                <string id="BMPartyName" text="{LEADER_NAME}s {PARTY_NAME}"/>
+                <string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
+
+                <string id="BMMarkers" text="Miliz-Kartenmarker"/>
+                <string id="BMMarkersDesc" text="Zeigt alle Banditenmilizen auf der Karte an."/>
+                <string id="BMTrackSize" text="Mindestgröße für BM-Tracking"/>
+                <string id="BMTrackSizeDesc" text="Kleinere BMs werden nicht verfolgt."/>
+                <string id="BMBanners" text="Zufällige Banner"/>
+                <string id="BMBannersDesc" text="Banditenmilizen erhalten einzigartige Banner oder die Standard-Banditenclan-Banner."/>
+                <string id="BMRaidNotices" text="Dorfüberfall-Hinweise"/>
+                <string id="BMRaidNoticesDesc" text="Wenn deine Lehen überfallen werden, siehst du eine Banner-Nachricht."/>
+                <string id="BMRemovePrisonerMessages" text="Gefangenenmeldungen entfernen"/>
+                <string id="BMRemovePrisonerMessagesDesc" text="Entfernt die Meldungen darüber, dass Banditenmiliz-Helden als Gefangene genommen oder freigelassen werden."/>
+                <string id="BMCheckVoiceGender" text="Stimmgeschlecht prüfen"/>
+                <string id="BMCheckVoiceGenderDesc" text="Prüft zusätzlich, ob die Banditen-Sprachzeilen zum Geschlecht des Anführers passen. Einige offizielle Sprachzeilen nutzen männliche Stimmen, geben aber kein Geschlecht an; daher sprechen weibliche Banditenanführer mit männlicher Stimme, wenn diese Option deaktiviert ist."/>
+                <string id="BMLoggingLevel" text="Log-Level"/>
+                <string id="BMLoggingLevelDesc" text="Die Log-Datei befindet sich unter &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
+                <string id="BMTesting" text="Testmodus"/>
+                <string id="BMTestingDesc" text="Teleportiert BMs zu dir."/>
+                <string id="BMMaxPerClan" text="Max. Milizen pro Clan"/>
+
+                <string id="BMREncBase" text="{LEADER.FIRSTNAME} ist ein Brigantenhauptmann, der eine Bande Halsabschneider anführt, die unter dem Namen {CLAN_NAME} raubt."/>
+                <string id="BMREncNoClan" text="herrenlose Briganten"/>
+                <string id="BMREncEpithet1" text="Im ganzen Land ist {?LEADER.GENDER}sie{?}er{\\?} als {LEADER.FIRSTNAME} {EPITHET} bekannt, Sieger von {WINS} {?MANY}Schlachten{?}Schlacht{\\?}."/>
+                <string id="BMREncEpithet2" text="Im ganzen Land ist {?LEADER.GENDER}sie{?}er{\\?} als {LEADER.FIRSTNAME} {EPITHET} bekannt."/>
+                <string id="BMREncDefeats" text="{?LEADER.GENDER}Sie{?}Er{\\?} wurde in {DEFEATS} {?MANY}Schlachten{?}Schlacht{\\?} besiegt."/>
+                <string id="BMREncFear" text="Mehr als alles andere fürchtet {?LEADER.GENDER}sie{?}er{\\?} {HUNTER}."/>
+
+                <string id="BMRWho" text="Wer bist du, und für wen reitest du?" />
+                <string id="BMRWhoAnswer" text="Man nennt mich {LEADER_NAME}. Wir dienen keinem Lord und keinem König — nur der Münze und der offenen Straße." />
+                <string id="BMRContinue" text="Verstehe. Nun zurück zum Geschäft." />
+                <string id="BMRThreaten" text="Ergib dich jetzt, und ich lasse dich vielleicht leben."/>
+                <string id="BMRThreatenAnswer" text="Ha! Dafür musst du uns erst die Köpfe abschlagen. Auf sie, Jungs!"/>
+
+                <string id="BMGoldReward" text="Goldbelohnung für Banditenheld"/>
+                <string id="BMRBounty" text="Du hast ein Kopfgeld von {GOLD} Denaren und {RENOWN} Ruhm für {LEADER} erhalten."/>
+                <string id="BMChatLogging" text="Chat-Logging aktivieren"/>
+                <string id="BMChatLoggingDesc" text="Schreibt Diagnosemeldungen in den In-Game-Chat. Standardmäßig aus; nur zur Fehlersuche aktivieren."/>
+                <string id="BMFileLogging" text="Datei-Logging aktivieren"/>
+                <string id="BMFileLoggingDesc" text="Schreibt Diagnosemeldungen in Modules\BanditMilitiasRedux\Logs\BMR_*.log. Standardmäßig aus; nur zur Fehlersuche aktivieren."/>
+                <string id="BMSkipConversations" text="Begegnungsdialoge überspringen"/>
+                <string id="BMSkipConversationsDesc" text="Überspringt Gespräche bei Begegnungen mit Banditenmilizen. Bestechung ist bei Aktivierung nicht verfügbar."/>
+                <string id="BMMaxValue" text="Maximaler Gegenstandswert"/>
+                <string id="BMMaxValueDesc" text="Begrenzt den Wert pro Ausrüstungsstück, das den Helden gegeben wird.\nHauptsächlich für den Fall, dass andere Mods Heldenbeute geben."/>
+                <string id="BMMinSize" text="Mindestgröße"/>
+                <string id="BMMinSizeDesc" text="Es werden keine BMs kleiner als dieser Wert gebildet."/>
+                <string id="BMLooter" text="Plünderer-Umwandlungen"/>
+                <string id="BMLooterDesc" text="Wie viele Plünderer beim Training in bessere Einheiten umgewandelt werden."/>
+                <string id="BMPower" text="Globale Stärke"/>
+                <string id="BMPowerDesc" text="Begrenzt die gesamte Kampfstärke aller Banditenmilizen zusammen als Prozentsatz aller anderen Parteien in der Welt. Höhere Werte erlauben mehr und stärkere BMs, können aber die Weltbalance spürbar beeinflussen."/>
+        </strings>
+</base>

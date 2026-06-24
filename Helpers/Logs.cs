@@ -6,14 +6,14 @@ using TaleWorlds.Library;
 
 namespace BanditMilitiasRedux.Helpers
 {
-    internal static class BMRLog
+    internal static class Logs
     {
         private static readonly object _gate = new();
         private static string _path;
         private static bool _initialized;
 
-        internal static bool EnabledChatLogging => Globals.Settings?.EnableChatLogging == true;
-        internal static bool EnabledFileLogging => Globals.Settings?.EnableFileLogging == true;
+        private static bool EnabledChatLogging => Globals.Settings?.EnableChatLogging == true;
+        private static bool EnabledFileLogging => Globals.Settings?.EnableFileLogging == true;
 
         internal static void WriteToChat(string message)
         {

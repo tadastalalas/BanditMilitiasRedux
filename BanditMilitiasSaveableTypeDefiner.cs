@@ -1,26 +1,27 @@
 using System.Collections.Generic;
+using BanditMilitiasRedux.Constructors;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.Core;
 using TaleWorlds.SaveSystem;
 
-namespace BanditMilitias
+namespace BanditMilitiasRedux
 {
-    public class BanditMilitiasSaveableTypeDefiner : SaveableTypeDefiner
+    public class BanditMilitiasSaveableTypeDefiner() : SaveableTypeDefiner(4320639)
     {
-        public BanditMilitiasSaveableTypeDefiner() : base(42069)
-        {
-        }
-
         protected override void DefineClassTypes()
         {
             base.DefineClassTypes();
-            AddClassDefinition(typeof(ModBanditMilitiaPartyComponent), 42069);
+            AddClassDefinition(typeof(BanditMilitiaPartyComponent), 4320639);
         }
 
         protected override void DefineContainerDefinitions()
         {
             base.DefineContainerDefinitions();
             ConstructContainerDefinition(typeof(Dictionary<Hero, float>));
+            ConstructContainerDefinition(typeof(List<Hero>));
+            ConstructContainerDefinition(typeof(Dictionary<Clan, List<Hero>>));
+            ConstructContainerDefinition(typeof(Dictionary<Hero, int>));
+            ConstructContainerDefinition(typeof(Dictionary<Hero, CampaignTime>));
+            ConstructContainerDefinition(typeof(Dictionary<Hero, Dictionary<Hero, int>>));
         }
     }
 }

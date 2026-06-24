@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+	<tags>
+		<tag language="Русский" />
+	</tags>
+        <strings>
+                <string id="BMPrimary" text="Основные настройки"/>
+                <string id="BMSizeAdjustments" text="Настройки размера"/>
+                <string id="BMAdjustments" text="Настройки ополчения"/>
+                <string id="BMXpOff" text="Выкл."/>
+                <string id="BMXpNormal" text="Обычный"/>
+                <string id="BMXpHard" text="Сложный"/>
+                <string id="BMXpHardest" text="Максимальный"/>
+                <string id="BMGoldLow" text="Низкий"/>
+                <string id="BMGoldNormal" text="Обычный"/>
+                <string id="BMGoldRich" text="Богатый"/>
+                <string id="BMGoldRichest" text="Очень богатый"/>
+
+                <string id="BMHeroPoolCap" text="Лимит пула героев-бандитов (на клан)"/>
+                <string id="BMHeroPoolCapDesc" text="Максимальное число героев бандитского ополчения на один бандитский клан, сохраняемых живыми в пуле переработки. Освобождённые, сбежавшие и заключённые герои BM повторно используются до этого лимита; убитые/казнённые герои удаляются навсегда, и создаются новые."/>
+                <string id="BMSpawning" text="Появление и формирование"/>
+                <string id="BMMergeSize" text="Мин. размер для объединения"/>
+                <string id="BMMergeSizeDesc" text="Бандитские отряды меньше этого значения не будут объединяться в Бандитское ополчение."/>
+                <string id="BMSplit" text="Ежедневный шанс разделения %"/>
+                <string id="BMSplitDesc" text="Насколько вероятно, что Бандитские ополчения будут ежедневно разделяться, если они достаточно велики."/>
+                <string id="BMDisperse" text="Распустить при численности ниже"/>
+                <string id="BMDisperseDesc" text="Побеждённые ополчения с численностью ниже этого порога будут распущены."/>
+
+                <string id="BMTrain" text="Включить обучение ополчения"/>
+                <string id="BMTrainDesc" text="Герои-бандиты будут обучать свои ополчения."/>
+                <string id="BMDailyTrain" text="Ежедневный шанс обучения"/>
+                <string id="BMDailyTrainDesc" text="Каждый день они могут продолжать обучение."/>
+                <string id="BMTraining" text="Обучение и рост"/>
+                <string id="BMXpBoost" text="Бонус опыта ополчения"/>
+                <string id="BMXpBoostDesc" text="«Максимальный» даёт достаточно опыта для значительного улучшения войск. «Выкл.» не даёт бонусного опыта."/>
+                <string id="BMUpgrade" text="% войск для улучшения за тренировку"/>
+                <string id="BMUpgradeDesc" text="За каждую тренировку будет улучшено не более этого процента войск. Грабители включены."/>
+                <string id="BMGrowChance" text="Шанс роста в процентах"/>
+                <string id="BMGrowChanceDesc" text="Ежедневный шанс, что ополчение получит больше войск (0 — выключено)."/>
+                <string id="BMGrowPercent" text="Процент роста"/>
+                <string id="BMGrowPercentDesc" text="Увеличивает каждый тип войск на этот процент."/>
+                <string id="BMTier" text="Макс. уровень войск от обучения"/>
+                <string id="BMTierDesc" text="Обучение никогда не улучшит войска выше этого уровня."/>
+
+                <string id="BMIgnore" text="Игнорировать крестьян/караваны"/>
+                <string id="BMIgnoreDesc" text="Они не будут атаковаться BM."/>
+                <string id="BMStronger" text="Макс. % более сильной цели"/>
+                <string id="BMStrongerDesc" text="BM не вступают в бой с отрядами, которые сильнее их более чем на этот %. 100 означает атаку независимо от силы цели."/>
+                <string id="BMWeaker" text="Игнорировать более слабые отряды"/>
+                <string id="BMWeakerDesc" text="10 означает, что любой отряд на 10% слабее будет проигнорирован.\n100 — атака без ограничений."/>
+                <string id="BMPillage" text="Разрешить грабёж"/>
+                <string id="BMPillageDesc" text="Разрешить грабёж."/>
+                <string id="BMPillageChance" text="Шанс грабежа"/>
+                <string id="BMPillageChanceDesc" text="Шанс того, что ИИ Бандитских ополчений решит совершить налёт на деревню. Проверка срабатывает раз в игровой час для каждого отряда бандитского ополчения, поэтому рекомендуется меньшее значение."/>
+                <string id="BMRaidCapScale" text="Масштаб лимита налётов %"/>
+                <string id="BMRaidCapScaleDesc" text="Масштабирует максимальное число одновременных налётов на деревни. Базовое значение рассчитывается автоматически как (общее число деревень ÷ 10). 100% = по умолчанию. Ниже = меньше налётов одновременно, выше = больше налётов одновременно."/>
+
+                <string id="BMStringSetting" text="Бандитское ополчение"/>
+                <string id="BMStringSettingDesc" text="Как называть Бандитское ополчение."/>
+                <string id="BMLeaderlessStringSetting" text="Бандитское ополчение без лидера"/>
+                <string id="BMLeaderlessStringSettingDesc" text="Как называть Бандитское ополчение без лидера."/>
+                <string id="BMStringSettingDefault" text="Бандитское ополчение"/>
+                <string id="BMLeaderlessStringSettingDefault" text="Бандитское ополчение без лидера"/>
+                <string id="BMPartyName" text="{PARTY_NAME} {LEADER_NAME}"/>
+                <string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
+
+                <string id="BMMarkers" text="Маркеры ополчения на карте"/>
+                <string id="BMMarkersDesc" text="Показывает все Бандитские ополчения на карте."/>
+                <string id="BMTrackSize" text="Мин. размер BM для отслеживания"/>
+                <string id="BMTrackSizeDesc" text="BM меньшего размера не будут отслеживаться."/>
+                <string id="BMBanners" text="Случайные знамёна"/>
+                <string id="BMBannersDesc" text="У Бандитских ополчений будут уникальные знамёна или стандартные знамёна бандитских кланов."/>
+                <string id="BMRaidNotices" text="Уведомления о налётах на деревни"/>
+                <string id="BMRaidNoticesDesc" text="Когда ваши владения грабят, вы увидите баннер-сообщение."/>
+                <string id="BMRemovePrisonerMessages" text="Убрать сообщения о пленниках"/>
+                <string id="BMRemovePrisonerMessagesDesc" text="Убирает сообщения о взятии в плен и освобождении героев Бандитского ополчения."/>
+                <string id="BMCheckVoiceGender" text="Проверять пол озвучки"/>
+                <string id="BMCheckVoiceGenderDesc" text="Дополнительно проверяет, совпадают ли бандитские реплики с полом лидера. Некоторые официальные реплики используют мужские голоса, но не указывают пол, поэтому при отключении этой опции женщины-лидеры бандитов будут говорить мужскими голосами."/>
+                <string id="BMLoggingLevel" text="Уровень логирования"/>
+                <string id="BMLoggingLevelDesc" text="Файл лога находится в &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
+                <string id="BMTesting" text="Режим тестирования"/>
+                <string id="BMTestingDesc" text="Телепортирует BM к вам."/>
+                <string id="BMMaxPerClan" text="Макс. ополчений на клан"/>
+
+                <string id="BMREncBase" text="{LEADER.FIRSTNAME} — главарь разбойников, ведущий шайку головорезов, что грабит под именем {CLAN_NAME}."/>
+                <string id="BMREncNoClan" text="бесхозные разбойники"/>
+                <string id="BMREncEpithet1" text="По всей земле {?LEADER.GENDER}о ней{?}о нём{\\?} говорят как о {LEADER.FIRSTNAME} {EPITHET}, победителе {WINS} {?MANY}битв{?}битвы{\\?}."/>
+                <string id="BMREncEpithet2" text="По всей земле {?LEADER.GENDER}о ней{?}о нём{\\?} говорят как о {LEADER.FIRSTNAME} {EPITHET}."/>
+                <string id="BMREncDefeats" text="{?LEADER.GENDER}Она{?}Он{\\?} была{?LEADER.GENDER}{?}л{\\?} побеждена{?LEADER.GENDER}{?}н{\\?} в бою {DEFEATS} {?MANY}раз{?}раз{\\?}."/>
+                <string id="BMREncFear" text="Больше всего {?LEADER.GENDER}она{?}он{\\?} боится {HUNTER}."/>
+
+                <string id="BMRWho" text="Кто ты, и за кого скачешь?" />
+                <string id="BMRWhoAnswer" text="Меня зовут {LEADER_NAME}. Мы не служим ни лорду, ни королю — только монете и открытой дороге." />
+                <string id="BMRContinue" text="Понятно. Теперь к делу." />
+                <string id="BMRThreaten" text="Сдавайся сейчас, и, возможно, я оставлю тебя в живых."/>
+                <string id="BMRThreatenAnswer" text="Ха! Сначала попробуй снести нам головы. Вперёд, парни!"/>
+
+                <string id="BMGoldReward" text="Золотая награда за героя-бандита"/>
+                <string id="BMRBounty" text="Вы получили награду: {GOLD} динаров и {RENOWN} известности за {LEADER}."/>
+                <string id="BMChatLogging" text="Включить лог в чате"/>
+                <string id="BMChatLoggingDesc" text="Записывает диагностические сообщения в игровой чат. По умолчанию выключено; включайте только при устранении неполадок."/>
+                <string id="BMFileLogging" text="Включить лог в файл"/>
+                <string id="BMFileLoggingDesc" text="Записывает диагностические сообщения в Modules\BanditMilitiasRedux\Logs\BMR_*.log. По умолчанию выключено; включайте только при устранении неполадок."/>
+                <string id="BMSkipConversations" text="Пропускать диалоги при встрече"/>
+                <string id="BMSkipConversationsDesc" text="Пропускает разговоры при встрече с Бандитскими ополчениями. Подкуп будет недоступен, если включено."/>
+                <string id="BMMaxValue" text="Макс. стоимость предмета"/>
+                <string id="BMMaxValueDesc" text="Ограничивает стоимость за единицу снаряжения, выдаваемого героям.\nВ основном для случаев, когда другие моды дают добычу с героев."/>
+                <string id="BMMinSize" text="Минимальный размер"/>
+                <string id="BMMinSizeDesc" text="BM меньше этого значения не будут формироваться."/>
+                <string id="BMLooter" text="Преобразование грабителей"/>
+                <string id="BMLooterDesc" text="Сколько грабителей превращается в лучшие отряды при обучении."/>
+                <string id="BMPower" text="Глобальная сила"/>
+                <string id="BMPowerDesc" text="Ограничивает суммарную боевую мощь всех Бандитских ополчений как процент от всех остальных отрядов в мире. Более высокие значения позволяют больше и сильнее BM, но могут заметно влиять на баланс мира."/>
+        </strings>
+</base>

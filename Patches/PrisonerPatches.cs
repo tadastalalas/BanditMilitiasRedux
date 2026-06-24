@@ -1,22 +1,26 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using BanditMilitias.Helpers;
+using System.Reflection.Emit;
+using BanditMilitiasRedux.Behaviours;
+using BanditMilitiasRedux.Helpers;
+using BanditMilitiasRedux.Managers;
 using HarmonyLib;
-using Microsoft.Extensions.Logging;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.CampaignSystem.BarterSystem.Barterables;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
-using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.LinQuick;
-using static BanditMilitias.Helpers.Helper;
+using static BanditMilitiasRedux.Helpers.Helper;
 
-namespace BanditMilitias.Patches
+namespace BanditMilitiasRedux.Patches
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    [SuppressMessage("ReSharper", "UnusedType.Global")]
     public sealed class PrisonerPatches
     {
         [HarmonyPatch(typeof(MapEvent), "FinishBattle")]
@@ -24,89 +28,106 @@ namespace BanditMilitias.Patches
         {
             public static void Prefix(MapEvent __instance)
             {
-                if (!__instance.HasWinner) return;
-                var loserBMs = __instance.PartiesOnSide(__instance.DefeatedSide)
-                    .WhereQ(p => p.Party?.MobileParty?.PartyComponent is ModBanditMilitiaPartyComponent);
-                foreach (var party in loserBMs)
+                if (!__instance.HasWinner)
+                    return;
+
+                if (!__instance.InvolvedParties.AnyQ(partyBase => partyBase?.IsMobile == true && partyBase.MobileParty?.IsBanditMilitiaParty() == true))
+                    return;
+
+                foreach (var mobileParty in __instance.PartiesOnSide(__instance.WinningSide).Select(winnerParty => winnerParty?.Party?.MobileParty))
                 {
-                    MobileParty mobileParty = party.Party.MobileParty;
-                    if (mobileParty.LeaderHero?.IsDead != false && mobileParty.MemberRoster.TotalHealthyCount >= Globals.Settings.DisperseSize)
-                        RemoveMilitiaLeader(mobileParty);
+                    if (mobileParty?.IsBanditMilitiaParty() == true && mobileParty.LeaderHero is { IsAlive: true } leader)
+                        NotorietyBehavior.Instance?.RecordWin(leader);
                 }
-                PowerCalculationService.DoPowerCalculations();
             }
         }
 
         [HarmonyPatch(typeof(MapEvent), "CalculateAndCommitMapEventResults")]
-        public static class MapEventLootDefeatedPartiesPatch
+        public static class MapEventCalculateAndCommitMapEventResultsPatch
         {
-            public static void Prefix(MapEvent __instance)
-            {
-                if (!__instance.HasWinner)
-                    return;
-
-                if (__instance.InvolvedParties.AnyQ(p => p?.IsMobile == true && p.MobileParty?.IsBM() == true))
-                    PowerCalculationService.DoPowerCalculations();
-            }
-
             public static void Postfix(MapEvent __instance)
             {
-                if (!__instance.HasWinner)
+                if (__instance.IsNavalMapEvent || !__instance.HasWinner)
+                    return;
+                
+                if (!__instance.InvolvedParties.AnyQ(partyBase => partyBase.MobileParty?.IsBanditMilitiaParty() == true))
                     return;
 
-                var loserBMs = __instance.PartiesOnSide(__instance.DefeatedSide)
-                    .WhereQ(p => p.Party?.MobileParty?.PartyComponent is ModBanditMilitiaPartyComponent
-                    && p.Party.MobileParty.IsActive)
+                List<MapEventParty> loserBanditMilitias = __instance.PartiesOnSide(__instance.DefeatedSide)
+                    .WhereQ(party => party.Party?.MobileParty is { IsActive: true } && party.Party.MobileParty.IsBanditMilitiaParty())
                     .ToListQ();
+                
+                Hero? victorHero = __instance.PartiesOnSide(__instance.WinningSide)
+                    .FirstOrDefaultQ(party => party?.Party?.LeaderHero is { IsAlive: true })?.Party?.LeaderHero;
 
-                foreach (var party in loserBMs)
+                foreach (var party in loserBanditMilitias)
                 {
-                    if (party?.Party?.MobileParty?.IsActive != true)
+                    MobileParty? BanditMilitiaParty = party?.Party?.MobileParty;
+                    if (BanditMilitiaParty?.IsActive != true)
                         continue;
 
-                    if (party.Party.MobileParty.MemberRoster.TotalHealthyCount < Globals.Settings.DisperseSize)
-                    {
-                        if (Hero.MainHero.PartyBelongedToAsPrisoner == party.Party)
-                            continue;
+                    if (BanditMilitiaParty.LeaderHero is { IsAlive: true } defeatedLeader)
+                        NotorietyBehavior.Instance?.RecordDefeat(defeatedLeader, victorHero);
 
-                        Trash(party.Party.MobileParty);
+                    bool playerInvolved = __instance.InvolvedParties.AnyQ(partyBase => partyBase == PartyBase.MainParty);
+                    bool leaderCapturable = BanditMilitiaParty.LeaderHero is { IsAlive: true, IsPrisoner: false };
+                    
+                    switch (playerInvolved)
+                    {
+                        case true when leaderCapturable:
+                        {
+                            Hero? capturedMilitiaLeader = BanditMilitiaParty.LeaderHero;
+                            TakePrisonerAction.Apply(PartyBase.MainParty, capturedMilitiaLeader);
+                            capturedMilitiaLeader.IsKnownToPlayer = true;
+                            Helper.GrantDefeatBounty(capturedMilitiaLeader, BanditMilitiaParty.Party.EstimatedStrength);
+
+                            if (Hero.MainHero?.PartyBelongedToAsPrisoner?.MobileParty != BanditMilitiaParty)
+                                TryTrashMobilePartySafelyReservingBanditLeader(BanditMilitiaParty);
+                            continue;
+                        }
+                        case false when leaderCapturable:
+                        {
+                            var winnerLeaderParty = __instance.PartiesOnSide(__instance.WinningSide)
+                                .FirstOrDefaultQ(p => p?.Party?.LeaderHero is { IsAlive: true })?.Party;
+
+                            if (winnerLeaderParty is not null)
+                            {
+                                TakePrisonerAction.Apply(winnerLeaderParty, BanditMilitiaParty.LeaderHero);
+                                if (Hero.MainHero?.PartyBelongedToAsPrisoner?.MobileParty != BanditMilitiaParty)
+                                    TryTrashMobilePartySafelyReservingBanditLeader(BanditMilitiaParty);
+                                continue;
+                            }
+                            break;
+                        }
                     }
+
+                    if (Hero.MainHero is not null && Hero.MainHero.PartyBelongedToAsPrisoner == party.Party)
+                        continue;
+                    
+                    TryTrashMobilePartySafelyReservingBanditLeader(BanditMilitiaParty);
                 }
 
-                var winnerBMs = __instance.PartiesOnSide(__instance.WinningSide)
-                    .WhereQ(p => p?.Party?.MobileParty?.PartyComponent is ModBanditMilitiaPartyComponent
-                        && p.Party.MobileParty.IsActive)
+                List<MapEventParty>? winnerBanditMilitias = __instance.PartiesOnSide(__instance.WinningSide)
+                    .WhereQ(party => party?.Party?.MobileParty is { IsActive: true } && party.Party.MobileParty.IsBanditMilitiaParty())
                     .ToListQ();
 
-                if (!winnerBMs.Any())
+                if (!winnerBanditMilitias.Any())
                     return;
 
-                var loserHeroes = __instance.PartiesOnSide(__instance.DefeatedSide)
-                    .SelectQ(mep => mep?.Party?.Owner)
-                    .WhereQ(h => h != null && h.IsAlive)
+                List<Hero?> loserHeroes = __instance.PartiesOnSide(__instance.DefeatedSide)
+                    .SelectQ(party => party?.Party?.Owner)
+                    .WhereQ(hero => hero is { IsAlive: true })
                     .ToListQ();
 
-                foreach (var bm in winnerBMs)
+                foreach (var party in winnerBanditMilitias.Where(party => party?.Party?.MobileParty?.IsActive == true))
                 {
-                    if (bm?.Party?.MobileParty?.IsActive != true)
-                        continue;
-
-                    PartyBase party = bm.Party;
-
-                    if (party.LeaderHero?.IsDead == true)
-                    {
-                        if (party.MemberRoster.Contains(party.LeaderHero.CharacterObject))
-                            party.MemberRoster.RemoveTroop(party.LeaderHero.CharacterObject);
-                        RemoveMilitiaLeader(party.MobileParty);
-                    }
-
-                    DecreaseAvoidance(loserHeroes, bm);
+                    AvoidanceManager.DecreaseAvoidance(loserHeroes, party);
                 }
             }
         }
 
         [HarmonyPatch(typeof(BanditInteractionsCampaignBehavior), "OpenRosterScreenAfterBanditEncounter")]
-        public static class BanditsCampaignBehaviorOpenRosterScreenAfterBanditEncounterPatch
+        public static class BanditInteractionsCampaignBehaviorOpenRosterScreenAfterBanditEncounterPatch
         {
             public static void Prefix(MobileParty conversationParty, bool doBanditsJoinPlayerSide)
             {
@@ -116,48 +137,135 @@ namespace BanditMilitias.Patches
                 if (PlayerEncounter.Current != null)
                 {
                     PlayerEncounter.Current.FindAllNpcPartiesWhoWillJoinEvent(partiesToJoinPlayerSide, partiesToJoinEnemySide);
-                    partiesToJoinEnemySide = partiesToJoinEnemySide.WhereQ(p => p.IsBM()).ToListQ();
+                    partiesToJoinEnemySide = partiesToJoinEnemySide.WhereQ(p => p.IsBanditMilitiaParty()).ToListQ();
                 }
                 else
                 {
                     partiesToJoinEnemySide.Add(conversationParty);
                 }
 
-
                 foreach (TroopRoster roster in partiesToJoinEnemySide.SelectMany(m => new[]{ m.MemberRoster, m.PrisonRoster }))
                 {
-                    foreach (TroopRosterElement troop in roster.RemoveIf(t => t.Character.IsBM()))
+                    foreach (TroopRosterElement troop in roster.RemoveIf(t => t.Character.IsBanditMilitiaCharacterObject()))
                     {
-                        TakePrisonerAction.Apply(PartyBase.MainParty, troop.Character.HeroObject);
-                        troop.Character.HeroObject.IsKnownToPlayer = true;
+                        var hero = troop.Character.HeroObject;
+                        if (hero is null)
+                            continue;
+                        TakePrisonerAction.Apply(PartyBase.MainParty, hero);
+                        hero.IsKnownToPlayer = true;
                     }
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(MakeHeroFugitiveAction), "ApplyInternal")]
+        public static class MakeHeroFugitiveActionApplyInternalPatch
+        {
+            public static bool Prefix(Hero fugitive) => !fugitive.IsBanditMilitiaHero();
+        }
+        
+        [HarmonyPatch(typeof(Hero), nameof(Hero.ChangeState))]
+        public static class HeroChangeStateReserveBanditLeaderPatch
+        {
+            public static bool Prefix(Hero __instance, Hero.CharacterStates newState)
+            {
+                if (newState != Hero.CharacterStates.Fugitive)
+                    return true;
+
+                if (__instance is not { IsAlive: true, IsPrisoner: false }
+                    || !__instance.IsBanditMilitiaHero()
+                    || __instance.PartyBelongedTo?.IsBanditMilitiaParty() != true)
+                    return true;
+
+                ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(__instance);
+                return false;
+            }
+        }
+        
+        [HarmonyPatch(typeof(MobileParty), nameof(MobileParty.RemovePartyLeader))]
+        public static class MobilePartyRemovePartyLeaderReserveBanditLeaderPatch
+        {
+            public static void Prefix(MobileParty __instance)
+            {
+                if (__instance?.IsBanditMilitiaParty() != true)
+                    return;
+
+                if (__instance.LeaderHero is { IsAlive: true, IsPrisoner: false } leader && leader.IsBanditMilitiaHero())
+                    ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(leader);
             }
         }
 
         [HarmonyPatch(typeof(RansomOfferCampaignBehavior), "ConsiderRansomPrisoner")]
         public static class RansomOfferCampaignBehaviorConsiderRansomPrisonerPatch
         {
-            public static bool Prefix(Hero hero)
-            {
-                if (hero.IsBM())
-                    return false;
+            public static bool Prefix(Hero hero) => !hero.IsBanditMilitiaHero();
+        }
 
-                return true;
+        [HarmonyPatch(typeof(PlayerEncounter), "DoFreeOrCapturePrisonerHeroes")]
+        public static class PlayerEncounterDoFreeOrCapturePrisonerHeroesPatch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var codeMatcher = new CodeMatcher(instructions);
+
+                CodeMatcher target = codeMatcher
+                    .MatchStartForward(
+                        new CodeMatch(OpCodes.Ldarg_0),
+                        CodeMatch.LoadsField(AccessTools.Field("TaleWorlds.CampaignSystem.Encounters.PlayerEncounter:_capturedAlreadyPrisonerHeroes")),
+                        new CodeMatch(OpCodes.Ldsfld),
+                        new CodeMatch(OpCodes.Dup),
+                        CodeMatch.Branches()
+                    ).ThrowIfInvalid("Could not find the target at DoFreeOrCapturePrisonerHeroes");
+
+                CodeInstruction[] insertion =
+                [
+                    CodeInstruction.LoadArgument(0),
+                    CodeInstruction.LoadField(typeof(PlayerEncounter), "_capturedAlreadyPrisonerHeroes"),
+                    CodeInstruction.LoadArgument(0),
+                    CodeInstruction.LoadField(typeof(PlayerEncounter), "_mapEvent"),
+                    CodeInstruction.Call(typeof(PlayerEncounterDoFreeOrCapturePrisonerHeroesPatch), nameof(UnFreeBMHeroes))
+                ];
+
+                target.Instruction.MoveLabelsTo(insertion[0]);
+                target.Insert(insertion);
+
+                return codeMatcher.Instructions();
+            }
+
+            private static void UnFreeBMHeroes(List<TroopRosterElement> freedHeroes, MapEvent mapEvent)
+            {
+                var bmHeroes = freedHeroes.WhereQ(t => t.Character.IsBanditMilitiaCharacterObject()).ToArrayQ();
+                if (bmHeroes.Length == 0)
+                    return;
+
+                var playerMapEventParty = mapEvent.PartiesOnSide(mapEvent.PlayerSide).FirstOrDefault(p => p.Party == PartyBase.MainParty);
+                var receivingLootShare = playerMapEventParty?.RosterToReceiveLootPrisoners;
+
+                foreach (TroopRosterElement element in bmHeroes)
+                {
+                    if (element.Character.HeroObject.MapFaction?.IsAtWarWith(Hero.MainHero.MapFaction) == true)
+                    {
+                        var prisonParty = element.Character.HeroObject.PartyBelongedToAsPrisoner;
+                        if (prisonParty is not null)
+                        {
+                            prisonParty.PrisonRoster.RemoveTroop(element.Character);
+                            receivingLootShare?.AddToCounts(element.Character, 1, true, element.WoundedNumber, element.Xp, false);
+                        }
+                    }
+                    freedHeroes.Remove(element);
+                }
             }
         }
 
-        [HarmonyPatch(typeof(TeleportHeroAction), nameof(TeleportHeroAction.ApplyImmediateTeleportToSettlement))]
-        public static class TeleportHeroActionApplyImmediateTeleportToSettlementPatch
+        [HarmonyPatch(typeof(PartyBase), nameof(PartyBase.AddPrisoner))]
+        public static class PartyBaseAddPrisonerPatch
         {
-            public static bool Prefix(Hero heroToBeMoved, Settlement targetSettlement)
+            public static bool Prefix(PartyBase __instance, CharacterObject element)
             {
-                if (heroToBeMoved.IsBM() && targetSettlement is not null)
-                {
-                    KillCharacterAction.ApplyByRemove(heroToBeMoved);
-                    return false;
-                }
-                return true;
+                if (!element.IsBanditMilitiaCharacterObject())
+                    return true;
+
+                return !__instance.PrisonerHeroes.Contains(element);
             }
         }
     }
