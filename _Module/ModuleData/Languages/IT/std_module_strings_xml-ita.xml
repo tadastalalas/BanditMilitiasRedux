@@ -23,8 +23,6 @@
                 <string id="BMMergeSizeDesc" text="I gruppi di banditi più piccoli di questo valore non si uniranno in una Milizia Bandita."/>
                 <string id="BMSplit" text="Probabilità giornaliera di divisione %"/>
                 <string id="BMSplitDesc" text="Quanto è probabile ogni giorno che le Milizie Bandite si dividano quando sono abbastanza grandi."/>
-                <string id="BMDisperse" text="Sciogli sotto numero truppe"/>
-                <string id="BMDisperseDesc" text="Le milizie sconfitte con meno di questo numero di truppe rimanenti verranno sciolte."/>
 
                 <string id="BMTrain" text="Abilita addestramento milizia"/>
                 <string id="BMTrainDesc" text="Gli eroi banditi addestreranno le loro milizie."/>
@@ -111,5 +109,20 @@
                 <string id="BMLooterDesc" text="Quanti predoni vengono trasformati in unità migliori durante l’addestramento."/>
                 <string id="BMPower" text="Potere globale"/>
                 <string id="BMPowerDesc" text="Limita la forza di combattimento totale di tutte le Milizie Bandite combinate come percentuale di tutti gli altri gruppi nel mondo. Valori più alti consentono più MB e MB più forti, ma possono incidere sensibilmente sull’equilibrio del mondo."/>
+
+                <string id="BMModName" text="Milizie Bandite Redux"/>
+                <string id="BMAIBehavior" text="Comportamento &amp; IA"/>
+                <string id="BMAppearance" text="Aspetto &amp; Personalizzazione"/>
+                <string id="BMUI" text="Interfaccia &amp; Notifiche"/>
+                <string id="BMAdvanced" text="Avanzato"/>
+                <string id="BMCooldown" text="Tempo di recupero fusione/scissione (ore)"/>
+                <string id="BMCooldownDesc" text="Una Milizia Bandita non può fondersi o dividersi di nuovo finché non sono trascorse queste ore di gioco."/>
+                <string id="BMIgnoreSizePenalty" text="Ignora penalità velocità per dimensione del gruppo"/>
+                <string id="BMIgnoreSizePenaltyDesc" text="Le Milizie Bandite si muovono alla massima velocità indipendentemente dalla dimensione del gruppo."/>
+                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} è sotto razzia da parte di {party.Name}!"/>
+                <string id="BMVillageRaided" text="{raidedSettlement?.Name} razziato! {party.Name} è carico di bottino vicino a {townName}!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} sta razziando il tuo villaggio {nearestVillage.Name} vicino a {nearestVillage.Town?.Name}!"/>
+                <string id="BMGenderSlider" text="Probabilità capo femminile %"/>
+                <string id="BMGenderSliderDesc" text="Probabilità che il capo di una Milizia Bandita sia femmina. 0 = tutti maschi, 100 = tutte femmine."/>
         </strings>
 </base>

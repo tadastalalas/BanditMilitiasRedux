@@ -154,29 +154,39 @@ namespace BanditMilitiasRedux.Helpers
                 CampaignTime firstSeen = NotorietyBehavior.Instance?.GetFirstSeen(hero) ?? CampaignTime.Now;
                 int daysAlive = (int)(CampaignTime.Now - firstSeen).ToDays;
                 string aliveText = daysAlive == 1 ? "Alive for 1 day." : $"Alive for {daysAlive} days.";
+                string waitingText = ReusableHeroesBehavior.IsWaitingForReuse(hero) ? "Yes" : "No";
 
-                rows.Add([name, state, location, clanName, aliveText]);
+                rows.Add([name, state, waitingText, location, clanName, aliveText]);
             }
+            
+            rows.Sort((a, b) =>
+            {
+                int clanCompare = string.Compare(a[4], b[4], System.StringComparison.OrdinalIgnoreCase);
+                return clanCompare != 0 ? clanCompare : string.Compare(a[0], b[0], System.StringComparison.OrdinalIgnoreCase);
+            });
 
-            int nameWidth = 0;
-            int stateWidth = 0;
-            int locationWidth = 0;
-            int clanWidth = 0;
+            int nameWidth = "Name".Length;
+            int stateWidth = "State".Length;
+            int waitingWidth = "Waiting List".Length;
+            int locationWidth = "Current Party".Length;
+            int clanWidth = "Clan".Length;
             for (int i = 0; i < rows.Count; i++)
             {
                 string[] row = rows[i];
                 if (row[0].Length > nameWidth) nameWidth = row[0].Length;
                 if (row[1].Length > stateWidth) stateWidth = row[1].Length;
-                if (row[2].Length > locationWidth) locationWidth = row[2].Length;
-                if (row[3].Length > clanWidth) clanWidth = row[3].Length;
+                if (row[2].Length > waitingWidth) waitingWidth = row[2].Length;
+                if (row[3].Length > locationWidth) locationWidth = row[3].Length;
+                if (row[4].Length > clanWidth) clanWidth = row[4].Length;
             }
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Heroes : {rows.Count}");
+            sb.AppendLine($"{"Name".PadRight(nameWidth)} | {"State".PadRight(stateWidth)} | {"Waiting List".PadRight(waitingWidth)} | {"Current Party".PadRight(locationWidth)} | {"Clan".PadRight(clanWidth)} | Alive In Days");
             for (int i = 0; i < rows.Count; i++)
             {
                 string[] row = rows[i];
-                sb.AppendLine($"{row[0].PadRight(nameWidth)} | {row[1].PadRight(stateWidth)} | {row[2].PadRight(locationWidth)} | {row[3].PadRight(clanWidth)} | {row[4]}");
+                sb.AppendLine($"{row[0].PadRight(nameWidth)} | {row[1].PadRight(stateWidth)} | {row[2].PadRight(waitingWidth)} | {row[3].PadRight(locationWidth)} | {row[4].PadRight(clanWidth)} | {row[5]}");
             }
 
             return sb.ToString();

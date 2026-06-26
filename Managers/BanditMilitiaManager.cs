@@ -278,6 +278,11 @@ namespace BanditMilitiasRedux.Managers
             if (partyLeaderOne is null || partyLeaderTwo is null)
                 return;
             
+            
+            if (ReusableHeroesBehavior.IsWaitingForReuse(partyLeaderOne))
+                Logs.WriteToFile("BMR-REATTACH-VIOLATION",
+                    $"partyLeaderOne {partyLeaderOne.Name} is ALREADY in waiting list at split start, party={mobilePartyToSplit.Name}\n{Environment.StackTrace}");
+            
             var troopRosterOne = TroopRoster.CreateDummyTroopRoster();
             var troopRosterTwo = TroopRoster.CreateDummyTroopRoster();
             
@@ -297,6 +302,12 @@ namespace BanditMilitiasRedux.Managers
             
             for (int i = otherHeroes.Count - 1; i >= 0; i--)
             {
+                Hero otherHero = otherHeroes[i];
+
+                if (ReusableHeroesBehavior.IsWaitingForReuse(otherHero))
+                    Logs.WriteToFile("BMR-REATTACH-VIOLATION",
+                        $"{otherHero.Name} is in waiting list but being distributed as a MEMBER during split of {mobilePartyToSplit.Name}\n{Environment.StackTrace}");
+
                 TroopRoster targetParty = i % 2 == 0 ? troopRosterOne : troopRosterTwo;
                 targetParty.AddToCounts(otherHeroes[i].CharacterObject, 1, true);
             }
@@ -529,7 +540,7 @@ namespace BanditMilitiasRedux.Managers
 
                     if (Hero.MainHero?.Clan is not null && nearestVillage.OwnerClan == Hero.MainHero.Clan)
                         InformationManager.DisplayMessage(new InformationMessage(
-                            $"{banditMilitiaParty.Name} is raiding your village {nearestVillage.Name} near {nearestVillage.Town?.Name}!"));
+                            new TextObject("{=BMPlayerVillageBeingRaided}{banditMilitiaParty.Name} is raiding your village {nearestVillage.Name} near {nearestVillage.Town?.Name}!").SetTextVariable("banditMilitiaParty.Name", banditMilitiaParty.Name).SetTextVariable("nearestVillage.Name", nearestVillage.Name).SetTextVariable("nearestVillage.Town?.Name", nearestVillage.Town?.Name).ToString()));
                 }
                 break;
             }

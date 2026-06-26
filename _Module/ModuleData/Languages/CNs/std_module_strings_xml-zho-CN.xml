@@ -23,8 +23,6 @@
                 <string id="BMMergeSizeDesc" text="小于此规模的强盗队伍不会合并为强盗民兵。"/>
                 <string id="BMSplit" text="每日分裂几率 %"/>
                 <string id="BMSplitDesc" text="强盗民兵在规模足够大时每天分裂的概率。"/>
-                <string id="BMDisperse" text="低于此兵力即解散"/>
-                <string id="BMDisperseDesc" text="被击败后剩余兵力少于该值的民兵将被解散。"/>
 
                 <string id="BMTrain" text="启用民兵训练"/>
                 <string id="BMTrainDesc" text="强盗英雄会训练他们的民兵。"/>
@@ -111,5 +109,20 @@
                 <string id="BMLooterDesc" text="训练时有多少劫匪会被转化为更好的单位。"/>
                 <string id="BMPower" text="全局强度"/>
                 <string id="BMPowerDesc" text="将所有强盗民兵合计的总战斗力限制为世界中其他所有队伍总战斗力的百分比。更高数值允许更多且更强的 BM，但可能明显影响世界平衡。"/>
+
+                <string id="BMModName" text="强盗民兵 Redux"/>
+                <string id="BMAIBehavior" text="行为与 AI"/>
+                <string id="BMAppearance" text="外观与自定义"/>
+                <string id="BMUI" text="界面与通知"/>
+                <string id="BMAdvanced" text="高级"/>
+                <string id="BMCooldown" text="合并/分裂冷却（小时）"/>
+                <string id="BMCooldownDesc" text="强盗民兵在经过这么多游戏内小时之前，无法再次合并或分裂。"/>
+                <string id="BMIgnoreSizePenalty" text="忽略队伍规模速度惩罚"/>
+                <string id="BMIgnoreSizePenaltyDesc" text="无论队伍规模大小，强盗民兵都以最高速度移动。"/>
+                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} 正在被 {party.Name} 劫掠！"/>
+                <string id="BMVillageRaided" text="{raidedSettlement?.Name} 被劫掠了！{party.Name} 满载战利品，出现在 {townName} 附近！"/>
+                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} 正在劫掠你位于 {nearestVillage.Town?.Name} 附近的村庄 {nearestVillage.Name}！"/>
+                <string id="BMGenderSlider" text="女性首领概率 %"/>
+                <string id="BMGenderSliderDesc" text="强盗民兵首领为女性的概率。0 = 全部男性，100 = 全部女性。"/>
         </strings>
 </base>

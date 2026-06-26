@@ -9,6 +9,7 @@ using static BanditMilitiasRedux.Globals;
 using BanditMilitiasRedux.Helpers;
 using BanditMilitiasRedux.Managers;
 using TaleWorlds.CampaignSystem.MapEvents;
+using TaleWorlds.Localization;
 
 namespace BanditMilitiasRedux.Behaviours
 {
@@ -35,7 +36,7 @@ namespace BanditMilitiasRedux.Behaviours
                 return;
             
             if (Settings.ShowRaids && villageBeingRaided.Owner?.LeaderHero == Hero.MainHero)
-                InformationManager.DisplayMessage(new InformationMessage($"{villageBeingRaided.Name} is being raided by {party.Name}!"));
+                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=BMVillageBeingRaided}{villageBeingRaided.Name} is being raided by {party.Name}!").SetTextVariable("villageBeingRaided.Name", villageBeingRaided.Name).SetTextVariable("party.Name", party.Name).ToString()));
         }
 
         private static void OnRaidCompletedEvent(BattleSideEnum winnerSide, RaidEventComponent eventComponent)
@@ -59,7 +60,7 @@ namespace BanditMilitiasRedux.Behaviours
             var raidedSettlement = eventComponent.MapEventSettlement;
             Vec2 anchorPos = raidedSettlement?.GatePosition.ToVec2() ?? party.Position.ToVec2();
             string townName = FindNearestTown(anchorPos).Name?.ToString() ?? "(Unknown Town)";
-            InformationManager.DisplayMessage(new InformationMessage($"{raidedSettlement?.Name} raided! " + $"{party.Name} is fat with loot near {townName}!"));
+            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=BMVillageRaided}{raidedSettlement?.Name} raided! {party.Name} is fat with loot near {townName}!").SetTextVariable("raidedSettlement?.Name", raidedSettlement?.Name).SetTextVariable("party.Name", party.Name).SetTextVariable("townName", townName).ToString()));
         }
 
         private static void OnMobilePartyDestroyed(MobileParty destroyedMobileParty, PartyBase? destroyer)
@@ -90,7 +91,7 @@ namespace BanditMilitiasRedux.Behaviours
 
             BanditMilitiaManager.TryGrowMilitiaParty(mobileParty);
             
-            if (MBRandom.RandomFloat <= Settings.TrainingChance * 0.01f)
+            if (MBRandom.RandomFloat <= Settings.DailyTrainingChance * 0.01f)
                 BanditMilitiaManager.TrainBanditMilitiaParty(mobileParty);
 
             BanditMilitiaManager.TrySplitBanditMilitiaParty(mobileParty);

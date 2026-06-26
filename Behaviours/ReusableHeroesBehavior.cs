@@ -36,6 +36,7 @@ namespace BanditMilitiasRedux.Behaviours
                 return null;
             
             RemoveHeroFromTheWaitingDictionary(reusableHero);
+            
             return reusableHero;
         }
 
@@ -86,5 +87,10 @@ namespace BanditMilitiasRedux.Behaviours
         }
         
         public bool HasReusableBanditHero(Clan clan) => _waitingToBeReusedHeroes.TryGetValue(clan, out List<Hero> heroes) && heroes.Count > 0;
+        
+        internal static bool IsWaitingForReuse(Hero? hero) =>
+            hero?.Clan is not null
+            && _waitingToBeReusedHeroes.TryGetValue(hero.Clan, out List<Hero> heroes)
+            && heroes.Contains(hero);
     }
 }

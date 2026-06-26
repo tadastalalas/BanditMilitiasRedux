@@ -23,8 +23,6 @@
                 <string id="BMMergeSizeDesc" text="Grupy bandytów mniejsze niż ta wartość nie połączą się w Bandycką Milicję."/>
                 <string id="BMSplit" text="Dzienna szansa podziału %"/>
                 <string id="BMSplitDesc" text="Jak duża jest codzienna szansa, że Bandyckie Milicje podzielą się, gdy są wystarczająco duże."/>
-                <string id="BMDisperse" text="Rozwiąż poniżej liczby żołnierzy"/>
-                <string id="BMDisperseDesc" text="Pokonane milicje z mniejszą niż ta liczbą pozostałych żołnierzy zostaną rozwiązane."/>
 
                 <string id="BMTrain" text="Włącz szkolenie milicji"/>
                 <string id="BMTrainDesc" text="Bohaterowie bandytów będą szkolić swoje milicje."/>
@@ -111,5 +109,20 @@
                 <string id="BMLooterDesc" text="Ilu rabusiów zostaje zamienionych na lepsze jednostki podczas szkolenia."/>
                 <string id="BMPower" text="Globalna siła"/>
                 <string id="BMPowerDesc" text="Ogranicza łączną siłę bojową wszystkich Bandyckich Milicji jako procent wszystkich pozostałych grup na świecie. Wyższe wartości pozwalają na więcej i silniejsze BM, ale mogą wyraźnie wpłynąć na balans świata."/>
+
+                <string id="BMModName" text="Milicje Bandyckie Redux"/>
+                <string id="BMAIBehavior" text="Zachowanie i SI"/>
+                <string id="BMAppearance" text="Wygląd i personalizacja"/>
+                <string id="BMUI" text="Interfejs i powiadomienia"/>
+                <string id="BMAdvanced" text="Zaawansowane"/>
+                <string id="BMCooldown" text="Czas odnowienia łączenia/rozdzielania (godziny)"/>
+                <string id="BMCooldownDesc" text="Milicja Bandycka nie może ponownie się połączyć ani rozdzielić, dopóki nie minie tyle godzin w grze."/>
+                <string id="BMIgnoreSizePenalty" text="Ignoruj karę do prędkości za rozmiar oddziału"/>
+                <string id="BMIgnoreSizePenaltyDesc" text="Milicje Bandyckie poruszają się z pełną prędkością niezależnie od rozmiaru oddziału."/>
+                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} jest najeżdżana przez {party.Name}!"/>
+                <string id="BMVillageRaided" text="{raidedSettlement?.Name} splądrowana! {party.Name} jest obładowana łupami w pobliżu {townName}!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} najeżdża twoją wioskę {nearestVillage.Name} w pobliżu {nearestVillage.Town?.Name}!"/>
+                <string id="BMGenderSlider" text="Szansa na kobietę dowódcę %"/>
+                <string id="BMGenderSliderDesc" text="Szansa, że dowódca Milicji Bandyckiej będzie kobietą. 0 = wszyscy mężczyźni, 100 = wszystkie kobiety."/>
         </strings>
 </base>

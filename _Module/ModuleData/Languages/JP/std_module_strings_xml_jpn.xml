@@ -23,8 +23,6 @@
                 <string id="BMMergeSizeDesc" text="これ未満の規模の盗賊部隊は盗賊民兵に合流しません。"/>
                 <string id="BMSplit" text="日次分裂確率 %"/>
                 <string id="BMSplitDesc" text="十分な規模のとき、盗賊民兵が毎日分裂する確率。"/>
-                <string id="BMDisperse" text="この兵数未満で解散"/>
-                <string id="BMDisperseDesc" text="敗北後の残存兵数がこの値未満の民兵は解散されます。"/>
 
                 <string id="BMTrain" text="民兵訓練を有効化"/>
                 <string id="BMTrainDesc" text="盗賊英雄が民兵を訓練します。"/>
@@ -111,5 +109,20 @@
                 <string id="BMLooterDesc" text="訓練時に上位ユニットへ転換される略奪者の数。"/>
                 <string id="BMPower" text="全体戦力"/>
                 <string id="BMPowerDesc" text="全盗賊民兵の合計戦闘力を、世界中の他勢力全体に対する割合で上限設定します。値を上げるほど BM の数と強さが増えますが、世界バランスに目に見える影響を与える可能性があります。"/>
+
+                <string id="BMModName" text="盗賊民兵リダックス"/>
+                <string id="BMAIBehavior" text="行動とAI"/>
+                <string id="BMAppearance" text="外見とカスタマイズ"/>
+                <string id="BMUI" text="UIと通知"/>
+                <string id="BMAdvanced" text="詳細設定"/>
+                <string id="BMCooldown" text="合流/分割クールダウン（時間）"/>
+                <string id="BMCooldownDesc" text="盗賊民兵は、ゲーム内でこの時間が経過するまで再び合流または分割できません。"/>
+                <string id="BMIgnoreSizePenalty" text="部隊規模による速度ペナルティを無視"/>
+                <string id="BMIgnoreSizePenaltyDesc" text="盗賊民兵は部隊規模に関係なく最大速度で移動します。"/>
+                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} が {party.Name} に略奪されています！"/>
+                <string id="BMVillageRaided" text="{raidedSettlement?.Name} が略奪された！{party.Name} は {townName} 付近で戦利品を満載している！"/>
+                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} が {nearestVillage.Town?.Name} 付近のあなたの村 {nearestVillage.Name} を略奪しています！"/>
+                <string id="BMGenderSlider" text="女性リーダー出現率 %"/>
+                <string id="BMGenderSliderDesc" text="盗賊民兵のリーダーが女性になる確率。0 = 全員男性、100 = 全員女性。"/>
         </strings>
 </base>

@@ -72,3 +72,4 @@ Be mindful of code that runs frequently. The following contexts are performance-
 - Never guess, I can always provide decompiled code using dnSpy.
 - I'm editing code manually, so behave accordingly.
 - Don't explain everything in prolonged texts. Explain in short, precise, concrete explanations. Without telling me stories.
+- Do not assume things that are not clarified 100% be the code or by me.

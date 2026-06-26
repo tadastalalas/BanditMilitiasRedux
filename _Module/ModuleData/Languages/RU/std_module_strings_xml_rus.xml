@@ -23,8 +23,6 @@
                 <string id="BMMergeSizeDesc" text="Бандитские отряды меньше этого значения не будут объединяться в Бандитское ополчение."/>
                 <string id="BMSplit" text="Ежедневный шанс разделения %"/>
                 <string id="BMSplitDesc" text="Насколько вероятно, что Бандитские ополчения будут ежедневно разделяться, если они достаточно велики."/>
-                <string id="BMDisperse" text="Распустить при численности ниже"/>
-                <string id="BMDisperseDesc" text="Побеждённые ополчения с численностью ниже этого порога будут распущены."/>
 
                 <string id="BMTrain" text="Включить обучение ополчения"/>
                 <string id="BMTrainDesc" text="Герои-бандиты будут обучать свои ополчения."/>
@@ -111,5 +109,20 @@
                 <string id="BMLooterDesc" text="Сколько грабителей превращается в лучшие отряды при обучении."/>
                 <string id="BMPower" text="Глобальная сила"/>
                 <string id="BMPowerDesc" text="Ограничивает суммарную боевую мощь всех Бандитских ополчений как процент от всех остальных отрядов в мире. Более высокие значения позволяют больше и сильнее BM, но могут заметно влиять на баланс мира."/>
+
+                <string id="BMModName" text="Бандитские ополчения Redux"/>
+                <string id="BMAIBehavior" text="Поведение и ИИ"/>
+                <string id="BMAppearance" text="Внешний вид и настройка"/>
+                <string id="BMUI" text="Интерфейс и уведомления"/>
+                <string id="BMAdvanced" text="Дополнительно"/>
+                <string id="BMCooldown" text="Перезарядка объединения/разделения (часы)"/>
+                <string id="BMCooldownDesc" text="Бандитское ополчение не сможет снова объединиться или разделиться, пока не пройдёт столько игровых часов."/>
+                <string id="BMIgnoreSizePenalty" text="Игнорировать штраф скорости за размер отряда"/>
+                <string id="BMIgnoreSizePenaltyDesc" text="Бандитские ополчения передвигаются с полной скоростью независимо от размера отряда."/>
+                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} подвергается набегу со стороны {party.Name}!"/>
+                <string id="BMVillageRaided" text="{raidedSettlement?.Name} разграблено! {party.Name} с богатой добычей у {townName}!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} грабит вашу деревню {nearestVillage.Name} рядом с {nearestVillage.Town?.Name}!"/>
+                <string id="BMGenderSlider" text="Шанс женщины-лидера (%)"/>
+                <string id="BMGenderSliderDesc" text="Шанс того, что лидер бандитского ополчения будет женщиной. 0 = все мужчины, 100 = все женщины."/>
         </strings>
 </base>

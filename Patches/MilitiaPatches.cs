@@ -495,10 +495,7 @@ namespace BanditMilitiasRedux.Patches
         {
             public static bool Prefix(PartyBase party, Hero hero)
             {
-                if (Globals.Settings.RemovePrisonerMessages && party != PartyBase.MainParty && hero?.IsBanditMilitiaHero() == true)
-                    return false;
-
-                return true;
+                return !Settings.RemovePrisonerMessages || party == PartyBase.MainParty || hero?.IsBanditMilitiaHero() != true;
             }
         }
 
@@ -507,10 +504,7 @@ namespace BanditMilitiasRedux.Patches
         {
             public static bool Prefix(PartyBase party, Hero hero)
             {
-                if (Globals.Settings.RemovePrisonerMessages && party != PartyBase.MainParty && hero?.IsBanditMilitiaHero() == true)
-                    return false;
-
-                return true;
+                return !Settings.RemovePrisonerMessages || party == PartyBase.MainParty || hero?.IsBanditMilitiaHero() != true;
             }
         }
 

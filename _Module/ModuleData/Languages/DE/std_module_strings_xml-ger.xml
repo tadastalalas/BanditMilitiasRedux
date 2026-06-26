@@ -23,8 +23,6 @@
                 <string id="BMMergeSizeDesc" text="Banditenparteien, die kleiner als dieser Wert sind, werden nicht zu einer Banditenmiliz zusammengeführt."/>
                 <string id="BMSplit" text="Tägliche Aufspaltungschance %"/>
                 <string id="BMSplitDesc" text="Wie wahrscheinlich es ist, dass sich Banditenmilizen täglich aufspalten, wenn sie groß genug sind."/>
-                <string id="BMDisperse" text="Auflösen unter Truppenzahl"/>
-                <string id="BMDisperseDesc" text="Besiegte Milizen mit weniger als dieser verbleibenden Truppenzahl werden aufgelöst."/>
 
                 <string id="BMTrain" text="Miliz-Training aktivieren"/>
                 <string id="BMTrainDesc" text="Banditenhelden trainieren ihre Milizen."/>
@@ -111,5 +109,20 @@
                 <string id="BMLooterDesc" text="Wie viele Plünderer beim Training in bessere Einheiten umgewandelt werden."/>
                 <string id="BMPower" text="Globale Stärke"/>
                 <string id="BMPowerDesc" text="Begrenzt die gesamte Kampfstärke aller Banditenmilizen zusammen als Prozentsatz aller anderen Parteien in der Welt. Höhere Werte erlauben mehr und stärkere BMs, können aber die Weltbalance spürbar beeinflussen."/>
+
+                <string id="BMModName" text="Banditenmilizen Redux"/>
+                <string id="BMAIBehavior" text="Verhalten &amp; KI"/>
+                <string id="BMAppearance" text="Erscheinungsbild &amp; Anpassung"/>
+                <string id="BMUI" text="UI &amp; Benachrichtigungen"/>
+                <string id="BMAdvanced" text="Erweitert"/>
+                <string id="BMCooldown" text="Zusammenführen-/Aufteilen-Abklingzeit (Stunden)"/>
+                <string id="BMCooldownDesc" text="Eine Banditenmiliz kann sich erst erneut zusammenführen oder aufteilen, wenn so viele Spielstunden vergangen sind."/>
+                <string id="BMIgnoreSizePenalty" text="Geschwindigkeitsmalus durch Gruppengröße ignorieren"/>
+                <string id="BMIgnoreSizePenaltyDesc" text="Banditenmilizen bewegen sich unabhängig von der Gruppengröße mit voller Geschwindigkeit."/>
+                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} wird von {party.Name} geplündert!"/>
+                <string id="BMVillageRaided" text="{raidedSettlement?.Name} geplündert! {party.Name} ist nahe {townName} mit Beute schwer beladen!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} plündert dein Dorf {nearestVillage.Name} nahe {nearestVillage.Town?.Name}!"/>
+                <string id="BMGenderSlider" text="Chance auf weibliche Anführerin %"/>
+                <string id="BMGenderSliderDesc" text="Chance, dass die Anführerin einer Banditenmiliz weiblich ist. 0 = alle männlich, 100 = alle weiblich."/>
         </strings>
 </base>

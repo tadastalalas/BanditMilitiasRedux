@@ -23,8 +23,6 @@
                 <string id="BMMergeSizeDesc" text="Bu değerden küçük haydut grupları bir Haydut Milisi içinde birleşmez."/>
                 <string id="BMSplit" text="Günlük Bölünme Şansı %"/>
                 <string id="BMSplitDesc" text="Yeterince büyük olduklarında Haydut Milislerinin her gün bölünme olasılığı."/>
-                <string id="BMDisperse" text="Birlik Sayısı Altında Dağıt"/>
-                <string id="BMDisperseDesc" text="Yenildiğinde bu sayıdan daha az birliği kalan milisler dağıtılır."/>
 
                 <string id="BMTrain" text="Milis Eğitimini Etkinleştir"/>
                 <string id="BMTrainDesc" text="Haydut kahramanlar milislerini eğitir."/>
@@ -111,5 +109,20 @@
                 <string id="BMLooterDesc" text="Eğitim sırasında kaç yağmacının daha iyi birliklere dönüştürüleceği."/>
                 <string id="BMPower" text="Küresel Güç"/>
                 <string id="BMPowerDesc" text="Tüm Haydut Milislerinin toplam savaş gücünü, dünyadaki diğer tüm grupların yüzdesi olarak sınırlar. Daha yüksek değerler daha fazla ve daha güçlü BM'ye izin verir ancak dünya dengesini belirgin şekilde etkileyebilir."/>
+
+                <string id="BMModName" text="Haydut Milisleri Redux"/>
+                <string id="BMAIBehavior" text="Davranış &amp; Yapay Zekâ"/>
+                <string id="BMAppearance" text="Görünüm &amp; Özelleştirme"/>
+                <string id="BMUI" text="Arayüz &amp; Bildirimler"/>
+                <string id="BMAdvanced" text="Gelişmiş"/>
+                <string id="BMCooldown" text="Birleştirme/Bölme Bekleme Süresi (Saat)"/>
+                <string id="BMCooldownDesc" text="Bir Haydut Milisi, oyunda bu kadar saat geçmeden tekrar birleşemez veya bölünemez."/>
+                <string id="BMIgnoreSizePenalty" text="Parti Boyutu Hız Cezasını Yoksay"/>
+                <string id="BMIgnoreSizePenaltyDesc" text="Haydut Milisleri, parti boyutundan bağımsız olarak tam hızda hareket eder."/>
+                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name}, {party.Name} tarafından yağmalanıyor!"/>
+                <string id="BMVillageRaided" text="{raidedSettlement?.Name} yağmalandı! {party.Name}, {townName} yakınlarında ganimetle dolu!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name}, {nearestVillage.Town?.Name} yakınındaki {nearestVillage.Name} köyünü yağmalıyor!"/>
+                <string id="BMGenderSlider" text="Kadın Lider Şansı %"/>
+                <string id="BMGenderSliderDesc" text="Bir Haydut Milisi liderinin kadın olma ihtimali. 0 = hepsi erkek, 100 = hepsi kadın."/>
         </strings>
 </base>

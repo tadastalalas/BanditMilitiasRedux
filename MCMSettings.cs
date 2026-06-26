@@ -11,7 +11,7 @@ namespace BanditMilitiasRedux
         public delegate void OnSettingsChangedDelegate();
         public static event OnSettingsChangedDelegate? OnSettingsChanged;
         public override string Id => "BanditMilitiasRedux";
-        public override string DisplayName => $"Bandit Militias Redux";
+        public override string DisplayName => new TextObject("{=BMModName}Bandit Militias Redux").ToString();
         public override string FolderName => "BanditMilitiasRedux";
         public override string FormatType => "json2";
         public override void OnPropertyChanged(string? propertyName = null)
@@ -24,14 +24,10 @@ namespace BanditMilitiasRedux
         private void VerifyProperties()
         {
             if (string.IsNullOrWhiteSpace(BanditMilitiaString))
-            {
                 BanditMilitiaString = new TextObject("{=BMStringSettingDefault}Bandit Militia").ToString();
-            }
 
             if (string.IsNullOrWhiteSpace(LeaderlessBanditMilitiaString))
-            {
                 LeaderlessBanditMilitiaString = new TextObject("{=BMLeaderlessStringSettingDefault}Leaderless Bandit Militia").ToString();
-            }
         }
 
         // ==================== SPAWNING & FORMATION ====================
@@ -49,9 +45,6 @@ namespace BanditMilitiasRedux
         [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
         public int RandomSplitChance { get; private set; } = 5;
 
-        [SettingPropertyInteger("{=BMDisperse}Disband Below Troop Count", 10, 100, Order = 3, RequireRestart = false, HintText = "{=BMDisperseDesc}Militias defeated with fewer than this many remaining troops will be disbanded.")]
-        [SettingPropertyGroup("{=BMSpawning}Spawning & Formation")]
-        public int DisperseSize { get; private set; } = 20;
 
         // ==================== TRAINING & GROWTH ====================
 
@@ -61,7 +54,7 @@ namespace BanditMilitiasRedux
 
         [SettingPropertyInteger("{=BMDailyTrain}Daily Training Chance %", 0, 100, Order = 1, RequireRestart = false, HintText = "{=BMDailyTrainDesc}Each day there is this % chance the militia will be trained.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
-        public int TrainingChance { get; private set; } = 10;
+        public int DailyTrainingChance { get; private set; } = 10;
 
         [SettingPropertyDropdown("{=BMXpBoost}Bonus XP on Training", Order = 2, RequireRestart = false, HintText = "{=BMXpBoostDesc}Extra XP granted when training occurs. Hardest grants enough to significantly upgrade troops. Off grants no bonus XP.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]

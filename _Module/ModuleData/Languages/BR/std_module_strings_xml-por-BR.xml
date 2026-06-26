@@ -23,8 +23,6 @@
                 <string id="BMMergeSizeDesc" text="Grupos de bandidos menores que isso não se unirão em uma Milícia Bandida."/>
                 <string id="BMSplit" text="Chance Diária de Divisão %"/>
                 <string id="BMSplitDesc" text="Qual a chance diária de Milícias Bandidas se dividirem quando estiverem grandes o bastante."/>
-                <string id="BMDisperse" text="Dissolver Abaixo de X Tropas"/>
-                <string id="BMDisperseDesc" text="Milícias derrotadas com menos de X tropas restantes serão dissolvidas."/>
 
                 <string id="BMTrain" text="Ativar Treinamento da Milícia"/>
                 <string id="BMTrainDesc" text="Heróis bandidos treinarão suas milícias."/>
@@ -111,5 +109,20 @@
                 <string id="BMLooterDesc" text="Quantos saqueadores viram unidades melhores durante o treinamento."/>
                 <string id="BMPower" text="Poder Global"/>
                 <string id="BMPowerDesc" text="Limita a força total de combate de todas as Milícias Bandidas combinadas como uma porcentagem de todos os outros grupos do mundo. Valores maiores permitem mais MBs e MBs mais fortes, mas podem impactar visivelmente o equilíbrio do mundo."/>
+
+                <string id="BMModName" text="Milícias de Bandidos Redux"/>
+                <string id="BMAIBehavior" text="Comportamento e IA"/>
+                <string id="BMAppearance" text="Aparência e Personalização"/>
+                <string id="BMUI" text="Interface e Notificações"/>
+                <string id="BMAdvanced" text="Avançado"/>
+                <string id="BMCooldown" text="Tempo de Recarga de Mesclar/Dividir (Horas)"/>
+                <string id="BMCooldownDesc" text="Uma Milícia de Bandidos não pode mesclar ou dividir novamente até que esta quantidade de horas no jogo tenha passado."/>
+                <string id="BMIgnoreSizePenalty" text="Ignorar Penalidade de Velocidade por Tamanho do Grupo"/>
+                <string id="BMIgnoreSizePenaltyDesc" text="Milícias de Bandidos se movem em velocidade máxima independentemente do tamanho do grupo."/>
+                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} está sendo saqueada por {party.Name}!"/>
+                <string id="BMVillageRaided" text="{raidedSettlement?.Name} saqueada! {party.Name} está carregada de saque perto de {townName}!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} está saqueando sua vila {nearestVillage.Name} perto de {nearestVillage.Town?.Name}!"/>
+                <string id="BMGenderSlider" text="Chance de Líder Feminina %"/>
+                <string id="BMGenderSliderDesc" text="Chance de uma líder de Milícia de Bandidos ser mulher. 0 = todos homens, 100 = todas mulheres."/>
         </strings>
 </base>

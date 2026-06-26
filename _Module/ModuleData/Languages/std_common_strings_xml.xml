@@ -23,8 +23,6 @@
         <string id="BMMergeSizeDesc" text="Bandit parties smaller than this will not merge into a Bandit Militia."/>
         <string id="BMSplit" text="Daily Split Chance %"/>
         <string id="BMSplitDesc" text="How likely every day Bandit Militias is to split when large enough."/>
-        <string id="BMDisperse" text="Disband Below Troop Count"/>
-        <string id="BMDisperseDesc" text="Militias defeated with fewer than this many remaining troops will be disbanded."/>
 
         <string id="BMTrain" text="Enable Militia Training"/>
         <string id="BMTrainDesc" text="Bandit heroes will train their militias."/>
@@ -111,5 +109,20 @@
         <string id="BMLooterDesc" text="How many looters get made into better units when training."/>
         <string id="BMPower" text="Global Power"/>
         <string id="BMPowerDesc" text="Caps the total combat strength of all Bandit Militias combined as a percentage of all other parties in the world. Higher values allow more and stronger BMs but can noticeably impact world balance."/>
+        
+        <string id="BMModName" text="Bandit Militias Redux"/>
+        <string id="BMAIBehavior" text="Behavior &amp; AI"/>
+        <string id="BMAppearance" text="Appearance &amp; Customization"/>
+        <string id="BMUI" text="UI &amp; Notifications"/>
+        <string id="BMAdvanced" text="Advanced"/>
+        <string id="BMCooldown" text="Merge/Split Cooldown (Hours)"/>
+        <string id="BMCooldownDesc" text="A Bandit Militia cannot merge or split again until this many in-game hours have passed."/>
+        <string id="BMIgnoreSizePenalty" text="Ignore Party Size Speed Penalty"/>
+        <string id="BMIgnoreSizePenaltyDesc" text="Bandit Militias move at full speed regardless of party size."/>
+        <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} is being raided by {party.Name}!"/>
+        <string id="BMVillageRaided" text="{raidedSettlement?.Name} raided! {party.Name} is fat with loot near {townName}!"/>
+        <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} is raiding your village {nearestVillage.Name} near {nearestVillage.Town?.Name}!"/>
+        <string id="BMGenderSlider" text="Female Leader Chance %"/>
+        <string id="BMGenderSliderDesc" text="Chance for a Bandit Militia leader to be female. 0 = all male, 100 = all female."/>
     </strings>
 </base>

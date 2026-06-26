@@ -23,8 +23,6 @@
                 <string id="BMMergeSizeDesc" text="이 값보다 작은 도적 파티는 도적 민병대로 합쳐지지 않습니다."/>
                 <string id="BMSplit" text="일일 분열 확률 %"/>
                 <string id="BMSplitDesc" text="충분히 커졌을 때 도적 민병대가 매일 분열할 확률입니다."/>
-                <string id="BMDisperse" text="이 병력 미만 시 해산"/>
-                <string id="BMDisperseDesc" text="패배 후 남은 병력이 이 수치보다 적은 민병대는 해산됩니다."/>
 
                 <string id="BMTrain" text="민병대 훈련 활성화"/>
                 <string id="BMTrainDesc" text="도적 영웅이 자신의 민병대를 훈련합니다."/>
@@ -111,5 +109,20 @@
                 <string id="BMLooterDesc" text="훈련 시 더 나은 유닛으로 전환되는 루터 수입니다."/>
                 <string id="BMPower" text="전역 전투력"/>
                 <string id="BMPowerDesc" text="모든 도적 민병대의 총 전투력을 세계의 다른 모든 파티 총합 대비 백분율로 제한합니다. 값이 높을수록 더 많고 강한 BM이 가능하지만, 세계 밸런스에 눈에 띄는 영향을 줄 수 있습니다."/>
+
+                <string id="BMModName" text="도적 민병대 리덕스"/>
+                <string id="BMAIBehavior" text="행동 및 AI"/>
+                <string id="BMAppearance" text="외형 및 커스터마이징"/>
+                <string id="BMUI" text="UI 및 알림"/>
+                <string id="BMAdvanced" text="고급"/>
+                <string id="BMCooldown" text="합치기/분리 쿨다운(시간)"/>
+                <string id="BMCooldownDesc" text="도적 민병대는 게임 내 이 시간이 지나기 전까지 다시 합치거나 분리할 수 없습니다."/>
+                <string id="BMIgnoreSizePenalty" text="파티 규모 속도 페널티 무시"/>
+                <string id="BMIgnoreSizePenaltyDesc" text="도적 민병대는 파티 규모와 관계없이 최고 속도로 이동합니다."/>
+                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} 이(가) {party.Name} 에게 약탈당하고 있습니다!"/>
+                <string id="BMVillageRaided" text="{raidedSettlement?.Name} 약탈당함! {party.Name} 이(가) {townName} 근처에서 전리품을 가득 싣고 있습니다!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} 이(가) {nearestVillage.Town?.Name} 근처의 당신의 마을 {nearestVillage.Name} 을(를) 약탈하고 있습니다!"/>
+                <string id="BMGenderSlider" text="여성 지도자 확률 %"/>
+                <string id="BMGenderSliderDesc" text="도적 민병대 지도자가 여성이 될 확률. 0 = 모두 남성, 100 = 모두 여성."/>
         </strings>
 </base>

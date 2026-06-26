@@ -78,6 +78,7 @@ namespace BanditMilitiasRedux.Patches
                         {
                             Hero? capturedMilitiaLeader = BanditMilitiaParty.LeaderHero;
                             TakePrisonerAction.Apply(PartyBase.MainParty, capturedMilitiaLeader);
+                            Logs.WriteToFile("",$"[BMR-CAPTURE] {capturedMilitiaLeader?.Name} playerInvolved={playerInvolved} capturable={leaderCapturable} afterTake isPrisoner={capturedMilitiaLeader?.IsPrisoner} state={capturedMilitiaLeader?.HeroState} captor={capturedMilitiaLeader?.PartyBelongedToAsPrisoner?.Name}");
                             capturedMilitiaLeader.IsKnownToPlayer = true;
                             Helper.GrantDefeatBounty(capturedMilitiaLeader, BanditMilitiaParty.Party.EstimatedStrength);
 
@@ -221,8 +222,6 @@ namespace BanditMilitiasRedux.Patches
                 [
                     CodeInstruction.LoadArgument(0),
                     CodeInstruction.LoadField(typeof(PlayerEncounter), "_capturedAlreadyPrisonerHeroes"),
-                    CodeInstruction.LoadArgument(0),
-                    CodeInstruction.LoadField(typeof(PlayerEncounter), "_mapEvent"),
                     CodeInstruction.Call(typeof(PlayerEncounterDoFreeOrCapturePrisonerHeroesPatch), nameof(UnFreeBMHeroes))
                 ];
 
@@ -232,26 +231,21 @@ namespace BanditMilitiasRedux.Patches
                 return codeMatcher.Instructions();
             }
 
-            private static void UnFreeBMHeroes(List<TroopRosterElement> freedHeroes, MapEvent mapEvent)
+            private static void UnFreeBMHeroes(List<TroopRosterElement> freedHeroes)
             {
                 var bmHeroes = freedHeroes.WhereQ(t => t.Character.IsBanditMilitiaCharacterObject()).ToArrayQ();
                 if (bmHeroes.Length == 0)
                     return;
 
-                var playerMapEventParty = mapEvent.PartiesOnSide(mapEvent.PlayerSide).FirstOrDefault(p => p.Party == PartyBase.MainParty);
-                var receivingLootShare = playerMapEventParty?.RosterToReceiveLootPrisoners;
-
                 foreach (TroopRosterElement element in bmHeroes)
                 {
-                    if (element.Character.HeroObject.MapFaction?.IsAtWarWith(Hero.MainHero.MapFaction) == true)
+                    Hero? hero = element.Character.HeroObject;
+                    if (hero is { IsAlive: true } && hero.MapFaction?.IsAtWarWith(Hero.MainHero.MapFaction) == true)
                     {
-                        var prisonParty = element.Character.HeroObject.PartyBelongedToAsPrisoner;
-                        if (prisonParty is not null)
-                        {
-                            prisonParty.PrisonRoster.RemoveTroop(element.Character);
-                            receivingLootShare?.AddToCounts(element.Character, 1, true, element.WoundedNumber, element.Xp, false);
-                        }
+                        TakePrisonerAction.Apply(PartyBase.MainParty, hero);
+                        hero.IsKnownToPlayer = true;
                     }
+
                     freedHeroes.Remove(element);
                 }
             }

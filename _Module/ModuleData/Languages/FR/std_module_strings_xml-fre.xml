@@ -23,8 +23,6 @@
                 <string id="BMMergeSizeDesc" text="Les groupes de bandits plus petits que cette valeur ne fusionneront pas en Milice bandite."/>
                 <string id="BMSplit" text="Chance quotidienne de scission %"/>
                 <string id="BMSplitDesc" text="Probabilité quotidienne qu’une Milice bandite se divise lorsqu’elle est suffisamment grande."/>
-                <string id="BMDisperse" text="Dissoudre sous ce nombre de troupes"/>
-                <string id="BMDisperseDesc" text="Les milices vaincues avec moins de ce nombre de troupes restantes seront dissoutes."/>
 
                 <string id="BMTrain" text="Activer l’entraînement de milice"/>
                 <string id="BMTrainDesc" text="Les héros bandits entraîneront leurs milices."/>
@@ -111,5 +109,20 @@
                 <string id="BMLooterDesc" text="Combien de pillards sont convertis en meilleures unités lors de l’entraînement."/>
                 <string id="BMPower" text="Puissance globale"/>
                 <string id="BMPowerDesc" text="Plafonne la puissance de combat totale de toutes les Milices bandites combinées en pourcentage de tous les autres groupes du monde. Des valeurs plus élevées permettent davantage de MB et des MB plus fortes, mais peuvent affecter sensiblement l’équilibre du monde."/>
+
+                <string id="BMModName" text="Milices de Bandits Redux"/>
+                <string id="BMAIBehavior" text="Comportement &amp; IA"/>
+                <string id="BMAppearance" text="Apparence &amp; Personnalisation"/>
+                <string id="BMUI" text="Interface &amp; Notifications"/>
+                <string id="BMAdvanced" text="Avancé"/>
+                <string id="BMCooldown" text="Délai de fusion/séparation (heures)"/>
+                <string id="BMCooldownDesc" text="Une Milice de Bandits ne peut pas fusionner ni se séparer à nouveau avant que ce nombre d'heures en jeu ne se soit écoulé."/>
+                <string id="BMIgnoreSizePenalty" text="Ignorer le malus de vitesse lié à la taille du groupe"/>
+                <string id="BMIgnoreSizePenaltyDesc" text="Les Milices de Bandits se déplacent à pleine vitesse, quelle que soit la taille du groupe."/>
+                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} est en train d'être pillé par {party.Name} !"/>
+                <string id="BMVillageRaided" text="{raidedSettlement?.Name} pillé ! {party.Name} est lourdement chargé de butin près de {townName} !"/>
+                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} pille votre village {nearestVillage.Name} près de {nearestVillage.Town?.Name} !"/>
+                <string id="BMGenderSlider" text="Chance de cheffe féminine %"/>
+                <string id="BMGenderSliderDesc" text="Chance qu'une cheffe de Milice de Bandits soit une femme. 0 = tous hommes, 100 = toutes femmes."/>
         </strings>
 </base>
