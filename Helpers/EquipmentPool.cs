@@ -308,7 +308,10 @@ namespace BanditMilitiasRedux.Helpers
                 if (ItemTypes[ItemObject.ItemTypeEnum.Cape].Count > 0)
                     gear[9] = new EquipmentElement(ItemTypes[ItemObject.ItemTypeEnum.Cape].GetRandomElement());
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                Logs.WriteToFile("BMR-EQUIPMENT-BUILD", $"BuildViableEquipmentSet failed, returning partial set: {ex}");
+            }
 
             var clone = gear.Clone();
             clone.SyncEquipments = true;

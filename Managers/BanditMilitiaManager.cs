@@ -548,7 +548,7 @@ namespace BanditMilitiasRedux.Managers
 
         internal static void TryGrowMilitiaParty(MobileParty mobileParty)
         {
-            if (!CanGrowMilitiaParty(mobileParty) && !mobileParty.IsTooBusyToGrowOrSplit())
+            if (!CanGrowMilitiaParty(mobileParty) || mobileParty.IsTooBusyToGrowOrSplit())
                 return;
             
             int maxTrainingTier = Settings.MaxTrainingTier;

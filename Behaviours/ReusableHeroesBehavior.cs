@@ -18,12 +18,15 @@ namespace BanditMilitiasRedux.Behaviours
         public override void RegisterEvents()
         {
             CampaignEvents.HeroPrisonerReleased.AddNonSerializedListener(this, OnHeroPrisonerReleasedEvent);
+            CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTakenEvent);
             CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, OnHeroKilledEvent);
         }
         
         public override void SyncData(IDataStore dataStore) => dataStore.SyncData("_waitingToBeReusedHeroes", ref _waitingToBeReusedHeroes);
         
         internal static IReadOnlyDictionary<Clan, List<Hero>> GetWaitingHeroesByClan() => _waitingToBeReusedHeroes;
+        
+        internal static void Reset() => _waitingToBeReusedHeroes.Clear();
         
         public Hero? TryGetReusableBanditHero(Clan clan)
         {
@@ -57,6 +60,14 @@ namespace BanditMilitiasRedux.Behaviours
                 return;
 
             RemoveHeroFromTheWaitingDictionary(victim);
+        }
+        
+        private static void OnHeroPrisonerTakenEvent(PartyBase capturer, Hero prisoner)
+        {
+            if (prisoner is null || !prisoner.IsBanditMilitiaHero())
+                return;
+
+            RemoveHeroFromTheWaitingDictionary(prisoner);
         }
 
         internal static void AddHeroToTheWaitingDictionary(Hero hero)

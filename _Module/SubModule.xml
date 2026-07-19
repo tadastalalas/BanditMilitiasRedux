@@ -9,7 +9,7 @@
   <ModuleType value="Community" />
   <Url value="$moduleurl$" />
   <DependedModules>
-    <DependedModule Id="Bannerlord.Harmony" DependentVersion="v2.4.2.225" />
+    <DependedModule Id="Bannerlord.Harmony" DependentVersion="v2.3.3" />
     <DependedModule Id="Bannerlord.MBOptionScreen" DependentVersion="v5.11.4" />
 	<DependedModule Id="Native" />
 	<DependedModule Id="SandBoxCore" />
@@ -18,7 +18,7 @@
 	<DependedModule Id="CustomBattle" />
   </DependedModules>
   <DependedModuleMetadatas>
-    <DependedModuleMetadata id="Bannerlord.Harmony" order="LoadBeforeThis" version="v2.4.2.225" />
+    <DependedModuleMetadata id="Bannerlord.Harmony" order="LoadBeforeThis" version="v2.3.3" />
 	<DependedModuleMetadata id="Bannerlord.MBOptionScreen" order="LoadBeforeThis" version="v5.11.4" />
     <DependedModuleMetadata id="Native" order="LoadBeforeThis" />
     <DependedModuleMetadata id="SandBoxCore" order="LoadBeforeThis" />

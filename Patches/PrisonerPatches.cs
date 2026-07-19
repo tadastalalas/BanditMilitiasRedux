@@ -45,7 +45,22 @@ namespace BanditMilitiasRedux.Patches
         [HarmonyPatch(typeof(MapEvent), "CalculateAndCommitMapEventResults")]
         public static class MapEventCalculateAndCommitMapEventResultsPatch
         {
-            public static void Postfix(MapEvent __instance)
+            public static void Prefix(MapEvent __instance, out Dictionary<MobileParty, Hero> __state)
+            {
+                __state = [];
+
+                if (__instance.IsNavalMapEvent || !__instance.HasWinner)
+                    return;
+
+                foreach (var mapEventParty in __instance.PartiesOnSide(__instance.DefeatedSide))
+                {
+                    MobileParty? mobileParty = mapEventParty?.Party?.MobileParty;
+                    if (mobileParty?.IsBanditMilitiaParty() == true && mobileParty.LeaderHero is { IsAlive: true, IsPrisoner: false } leader)
+                        __state[mobileParty] = leader;
+                }
+            }
+
+            public static void Postfix(MapEvent __instance, Dictionary<MobileParty, Hero> __state)
             {
                 if (__instance.IsNavalMapEvent || !__instance.HasWinner)
                     return;
@@ -66,21 +81,21 @@ namespace BanditMilitiasRedux.Patches
                     if (BanditMilitiaParty?.IsActive != true)
                         continue;
 
-                    if (BanditMilitiaParty.LeaderHero is { IsAlive: true } defeatedLeader)
+                    __state.TryGetValue(BanditMilitiaParty, out Hero? defeatedLeader);
+
+                    if (defeatedLeader is { IsAlive: true })
                         NotorietyBehavior.Instance?.RecordDefeat(defeatedLeader, victorHero);
 
                     bool playerInvolved = __instance.InvolvedParties.AnyQ(partyBase => partyBase == PartyBase.MainParty);
-                    bool leaderCapturable = BanditMilitiaParty.LeaderHero is { IsAlive: true, IsPrisoner: false };
+                    bool leaderCapturable = defeatedLeader is { IsAlive: true, IsPrisoner: false };
                     
                     switch (playerInvolved)
                     {
                         case true when leaderCapturable:
                         {
-                            Hero? capturedMilitiaLeader = BanditMilitiaParty.LeaderHero;
-                            TakePrisonerAction.Apply(PartyBase.MainParty, capturedMilitiaLeader);
-                            Logs.WriteToFile("",$"[BMR-CAPTURE] {capturedMilitiaLeader?.Name} playerInvolved={playerInvolved} capturable={leaderCapturable} afterTake isPrisoner={capturedMilitiaLeader?.IsPrisoner} state={capturedMilitiaLeader?.HeroState} captor={capturedMilitiaLeader?.PartyBelongedToAsPrisoner?.Name}");
-                            capturedMilitiaLeader.IsKnownToPlayer = true;
-                            Helper.GrantDefeatBounty(capturedMilitiaLeader, BanditMilitiaParty.Party.EstimatedStrength);
+                            TakePrisonerAction.Apply(PartyBase.MainParty, defeatedLeader);
+                            defeatedLeader.IsKnownToPlayer = true;
+                            Helper.GrantDefeatBounty(defeatedLeader, BanditMilitiaParty.Party.EstimatedStrength);
 
                             if (Hero.MainHero?.PartyBelongedToAsPrisoner?.MobileParty != BanditMilitiaParty)
                                 TryTrashMobilePartySafelyReservingBanditLeader(BanditMilitiaParty);
@@ -93,7 +108,7 @@ namespace BanditMilitiasRedux.Patches
 
                             if (winnerLeaderParty is not null)
                             {
-                                TakePrisonerAction.Apply(winnerLeaderParty, BanditMilitiaParty.LeaderHero);
+                                TakePrisonerAction.Apply(winnerLeaderParty, defeatedLeader);
                                 if (Hero.MainHero?.PartyBelongedToAsPrisoner?.MobileParty != BanditMilitiaParty)
                                     TryTrashMobilePartySafelyReservingBanditLeader(BanditMilitiaParty);
                                 continue;

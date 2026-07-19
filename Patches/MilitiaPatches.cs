@@ -89,6 +89,25 @@ namespace BanditMilitiasRedux.Patches
                     bannerKey = component.BannerKey;
             }
         }
+        
+        [HarmonyPatch(typeof(MobilePartyVisual), "AddCharacterToPartyIcon")]
+        public static class MobilePartyVisualAddCharacterToPartyIconDiagnosticPatch
+        {
+            private static void Prefix(PartyBase party, CharacterObject characterObject)
+            {
+                if (characterObject is null || !characterObject.HasMount())
+                    return;
+
+                EquipmentElement mount = characterObject.Equipment[EquipmentIndex.Horse];
+                if (mount.Item?.HorseComponent?.Monster is not null)
+                    return;
+
+                Logs.WriteToFile("BMR-MOUNT-NULLCHECK",
+                    $"party={party?.Name} char={characterObject.StringId} isHero={characterObject.IsHero} " +
+                    $"hero={characterObject.HeroObject?.Name} isOurs={characterObject.IsBanditMilitiaCharacterObject()} " +
+                    $"mountItem={mount.Item?.StringId ?? "null"}");
+            }
+        }
 
         [HarmonyPatch(typeof(PartyBase), "Banner", MethodType.Getter)]
         public static class PartyBaseBannerGetterPatch
@@ -450,13 +469,21 @@ namespace BanditMilitiasRedux.Patches
                 if (!bmInvolved)
                     return true;
 
-                if (!IsUsable(originalHero) || !IsUsable(originalGainedRelationWith))
-                    return false;
-
-                return false;
+                return IsUsable(originalHero) && IsUsable(originalGainedRelationWith);
             }
 
-            private static Exception Finalizer(Exception __exception) => null;
+            private static Exception Finalizer(Hero originalHero, Hero originalGainedRelationWith, Exception __exception)
+            {
+                if (__exception is null)
+                    return null;
+
+                bool bmInvolved = originalHero?.IsBanditMilitiaHero() == true || originalGainedRelationWith?.IsBanditMilitiaHero() == true;
+                if (!bmInvolved)
+                    return __exception;
+
+                Logs.WriteToFile("BMR-RELATION-EXCEPTION", $"{originalHero?.StringId} <-> {originalGainedRelationWith?.StringId}: {__exception}");
+                return null;
+            }
 
             private static bool IsUsable(Hero hero)
                 => hero is not null

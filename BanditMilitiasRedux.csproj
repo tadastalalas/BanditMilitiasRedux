@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>4.8.0</Version>
+    <Version>4.8.2</Version>
     <TargetFrameworks>net472;net6</TargetFrameworks>
     <Platforms>x64</Platforms>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -9,8 +9,10 @@
     <Nullable>enable</Nullable>
 	<BuildForWindows>false</BuildForWindows>
 	<BuildForWindowsStore>false</BuildForWindowsStore>
-    <ModuleId>$(MSBuildProjectName)</ModuleId>
-    <ModuleName>$(MSBuildProjectName)</ModuleName>
+	  <AssemblyName>BanditMilitiasRedux</AssemblyName>
+	  <RootNamespace>BanditMilitiasRedux</RootNamespace>
+	  <ModuleId>BanditMilitiasRedux</ModuleId>
+	  <ModuleName>Bandit Militias Redux</ModuleName>
     <ModuleUrl>https://www.nexusmods.com/mountandblade2bannerlord/mods/9064</ModuleUrl>
     <GameFolder>$(BANNERLORD_GAME_DIR)</GameFolder>
     <GameBinariesFolder Condition="Exists('$(GameFolder)\bin\Win64_Shipping_Client\Bannerlord.exe')">Win64_Shipping_Client</GameBinariesFolder>
@@ -32,12 +34,15 @@
 		</Reference>
 		<Reference Include="Bannerlord.MBOptionScreen">
 		  <HintPath>$(GameFolder)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.ModuleLoader.Bannerlord.MBOptionScreen.dll</HintPath>
+			<Private>False</Private>
 		</Reference>
 		<Reference Include="MCM.UI.Adapter.MCMv5">
 		  <HintPath>$(GameFolder)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCM.UI.Adapter.MCMv5.dll</HintPath>
+			<Private>False</Private>
 		</Reference>
 		<Reference Include="MCMv5">
 		  <HintPath>$(GameFolder)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll</HintPath>
+			<Private>False</Private>
 		</Reference>
 		<Reference Include="$(GameFolder)\bin\$(GameBinariesFolder)\TaleWorlds.*.dll" Exclude="$(GameFolder)\bin\$(GameBinariesFolder)\TaleWorlds.Native.dll">
 			<HintPath>%(Identity)</HintPath>

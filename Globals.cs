@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using BanditMilitiasRedux.Behaviours;
 using BanditMilitiasRedux.Helpers;
 using BanditMilitiasRedux.Managers;
 using TaleWorlds.CampaignSystem;
@@ -116,8 +117,10 @@ namespace BanditMilitiasRedux
         {
             PowerCalculationManager.Reset();
             EquipmentPool.Reset();
+            ReusableHeroesBehavior.Reset();
             Banners.Clear();
             StuckTracker.Clear();
+            AllAliveBanditMilitiaHeroes.Clear();
             PartyImageMap = [];
             Recruits = [];
             RaidCap = 0;
