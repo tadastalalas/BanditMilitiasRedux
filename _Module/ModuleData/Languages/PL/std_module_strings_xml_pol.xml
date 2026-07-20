@@ -26,6 +26,8 @@
 
                 <string id="BMTrain" text="Włącz szkolenie milicji"/>
                 <string id="BMTrainDesc" text="Bohaterowie bandytów będą szkolić swoje milicje."/>
+                <string id="BMBanditOnly" text="Używaj tylko drzewek oddziałów bandyckich"/>
+                <string id="BMBanditOnlyDesc" text="Milicje awansują wyłącznie do innych oddziałów bandyckich, nigdy do regularnych oddziałów frakcji. Kompatybilne z modami, które dodają lub rozszerzają drzewka oddziałów bandyckich. Jeśli na danym poziomie nie jest dostępny żaden dalszy oddział bandycki, szkolenie po prostu się tam zatrzymuje."/>
                 <string id="BMDailyTrain" text="Dzienna szansa szkolenia"/>
                 <string id="BMDailyTrainDesc" text="Każdego dnia mogą szkolić się dalej."/>
                 <string id="BMTraining" text="Szkolenie &amp; Rozwój"/>

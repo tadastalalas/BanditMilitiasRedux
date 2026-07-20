@@ -28,7 +28,7 @@ namespace BanditMilitiasRedux.Helpers
                 if (mobileParty is null)
                     continue;
                 
-                if (mobileParty.GetBanditMilitiaParty().Leader is null)
+                if (bms[i].Leader is null)
                     leaderless++;
 
                 totalTroops += mobileParty.MemberRoster.TotalManCount;

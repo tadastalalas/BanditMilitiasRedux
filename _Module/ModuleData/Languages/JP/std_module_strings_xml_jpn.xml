@@ -26,6 +26,8 @@
 
                 <string id="BMTrain" text="民兵訓練を有効化"/>
                 <string id="BMTrainDesc" text="盗賊英雄が民兵を訓練します。"/>
+                <string id="BMBanditOnly" text="盗賊専用の兵種ツリーを使用"/>
+                <string id="BMBanditOnlyDesc" text="民兵は他の盗賊兵種にのみ昇格し、通常の勢力部隊には決して昇格しません。盗賊の兵種ツリーを追加・拡張するModと互換性があります。あるティアで昇格可能な盗賊兵種が存在しない場合、訓練はそこで単純に停止します。"/>
                 <string id="BMDailyTrain" text="日次訓練確率"/>
                 <string id="BMDailyTrainDesc" text="毎日さらに訓練を行う可能性があります。"/>
                 <string id="BMTraining" text="訓練 &amp; 成長"/>

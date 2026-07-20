@@ -26,6 +26,8 @@
 
                 <string id="BMTrain" text="Milis Eğitimini Etkinleştir"/>
                 <string id="BMTrainDesc" text="Haydut kahramanlar milislerini eğitir."/>
+                <string id="BMBanditOnly" text="Sadece Haydut Birlik Ağaçlarını Kullan"/>
+                <string id="BMBanditOnlyDesc" text="Milisler yalnızca diğer haydut birliklerine yükselir, asla düzenli fraksiyon birliklerine yükselmez. Haydut birlik ağaçlarını ekleyen veya genişleten modlarla uyumludur. Bir kademede başka haydut birliği bulunmuyorsa, eğitim orada basitçe durur."/>
                 <string id="BMDailyTrain" text="Günlük Eğitim Şansı"/>
                 <string id="BMDailyTrainDesc" text="Her gün daha fazla eğitim yapabilirler."/>
                 <string id="BMTraining" text="Eğitim &amp; Büyüme"/>

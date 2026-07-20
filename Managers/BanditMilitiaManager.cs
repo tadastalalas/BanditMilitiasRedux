@@ -52,14 +52,14 @@ namespace BanditMilitiasRedux.Managers
             if (mergeInitiatorParty.IsBanditMilitiaParty())
             {
                 initiatorPartyLeader = mergeInitiatorParty.LeaderHero;
-                AvoidanceManager.CalculateAverageAvoidance(mergeInitiatorParty.GetBanditMilitiaParty(), mergedAvoidances);
+                AvoidanceManager.CalculateAverageAvoidance(mergeInitiatorParty.GetBanditMilitiaParty()!, mergedAvoidances);
                 leaderMergeCounter++;
             }
 
             if (mergeTargetParty.IsBanditMilitiaParty())
             {
                 targetPartyLeader = mergeTargetParty.LeaderHero;
-                AvoidanceManager.CalculateAverageAvoidance(mergeTargetParty.GetBanditMilitiaParty(), mergedAvoidances);
+                AvoidanceManager.CalculateAverageAvoidance(mergeTargetParty.GetBanditMilitiaParty()!, mergedAvoidances);
                 leaderMergeCounter++;
             }
 
@@ -167,9 +167,12 @@ namespace BanditMilitiasRedux.Managers
 
         private static void ConfigureGoldAndMounts(MobileParty newBanditMilitiaParty)
         {
-            Hero leaderHero = newBanditMilitiaParty.GetBanditMilitiaParty().Leader;
+            BanditMilitiaPartyComponent? banditMilitiaParty = newBanditMilitiaParty.GetBanditMilitiaParty();
+            if (banditMilitiaParty is null)
+                return;
 
-            // Adding gold on purpose, let's see later if this will snowball.
+            Hero leaderHero = banditMilitiaParty.Leader;
+
             leaderHero.Gold += Convert.ToInt32(newBanditMilitiaParty.Party.EstimatedStrength * GoldValues[Settings.GoldReward.SelectedIndex]);
 
             if (MBRandom.RandomInt(0, 2) != 0 || Mounts.Count <= 0)
@@ -193,37 +196,14 @@ namespace BanditMilitiasRedux.Managers
                 return;
 
             int iterations = Settings.XpGift.SelectedIndex switch { 0 => 0, 1 => 1, 2 => 2, 3 => 4, _ => 1, };
+            bool banditOnly = Settings.UseBanditOnlyTroopTrees;
 
-            int number, numberToUpgrade;
-            if (Settings.UpgradeUnitsPercent > 0)
-            {
-                List<TroopRosterElement> allLooters = mobileParty.MemberRoster.GetTroopRoster()
-                    .WhereQ(looter => looter.Character == Looters?.BasicTroop).ToList();
-
-                if (allLooters.Count > 0)
-                {
-                    var culture = Helper.GetMostPrevalentFromNearbySettlements(mobileParty.Position.ToVec2());
-
-                    if (Recruits.TryGetValue(culture, out var cultureRecruits) && cultureRecruits.Count > 0)
-                    {
-                        foreach (var looter in allLooters)
-                        {
-                            number = looter.Number;
-                            numberToUpgrade = Convert.ToInt32(number * Settings.UpgradeUnitsPercent / 100f);
-                            if (numberToUpgrade == 0)
-                                continue;
-
-                            mobileParty.MemberRoster.AddToCounts(Looters?.BasicTroop, -numberToUpgrade);
-                            var recruit = cultureRecruits[MBRandom.RandomInt(0, cultureRecruits.Count)];
-                            mobileParty.MemberRoster.AddToCounts(recruit, numberToUpgrade);
-                        }
-                    }
-                }
-            }
+            ConvertLootersForTraining(mobileParty, banditOnly);
 
             _upgraderCampaignBehavior ??= Campaign.Current.GetCampaignBehavior<PartyUpgraderCampaignBehavior>();
             var troopUpgradeModel = Campaign.Current.Models.PartyTroopUpgradeModel;
             var validTroopsList = new List<TroopRosterElement>(mobileParty.MemberRoster.Count);
+            int number, numberToUpgrade;
 
             for (var i = 0; i < iterations && MilitiaPowerPercent <= Globals.Settings.GlobalPowerPercent; i++)
             {
@@ -237,7 +217,7 @@ namespace BanditMilitiasRedux.Managers
                         continue;
                     if (IsGloriousName(troopCharacter.Name))
                         continue;
-                    if (!troopUpgradeModel.IsTroopUpgradeable(mobileParty.Party, troopCharacter))
+                    if (banditOnly ? SelectBanditUpgradeTarget(troopCharacter) is null : !troopUpgradeModel.IsTroopUpgradeable(mobileParty.Party, troopCharacter))
                         continue;
                     validTroopsList.Add(troop);
                 }
@@ -262,7 +242,157 @@ namespace BanditMilitiasRedux.Managers
                 mobileParty.MemberRoster.AddXpToTroop(troopToTrain.Character, xpGain);
             }
 
-            _upgraderCampaignBehavior.UpgradeReadyTroops(mobileParty.Party);
+            if (banditOnly)
+                UpgradeReadyBanditTroops(mobileParty);
+            else
+                _upgraderCampaignBehavior.UpgradeReadyTroops(mobileParty.Party);
+        }
+
+        private static void ConvertLootersForTraining(MobileParty mobileParty, bool banditOnly)
+        {
+            if (Settings.UpgradeUnitsPercent <= 0)
+                return;
+
+            List<TroopRosterElement> allLooters = mobileParty.MemberRoster.GetTroopRoster()
+                .WhereQ(looter => looter.Character == Looters?.BasicTroop).ToList();
+
+            if (allLooters.Count == 0)
+                return;
+
+            if (banditOnly)
+                ConvertLootersToBanditTier(mobileParty, allLooters);
+            else
+                ConvertLootersToCultureRecruits(mobileParty, allLooters);
+        }
+
+        private static void ConvertLootersToCultureRecruits(MobileParty mobileParty, List<TroopRosterElement> allLooters)
+        {
+            var culture = Helper.GetMostPrevalentFromNearbySettlements(mobileParty.Position.ToVec2());
+            if (!Recruits.TryGetValue(culture, out var cultureRecruits) || cultureRecruits.Count == 0)
+                return;
+
+            for (int i = 0; i < allLooters.Count; i++)
+            {
+                TroopRosterElement looter = allLooters[i];
+                int numberToUpgrade = Convert.ToInt32(looter.Number * Settings.UpgradeUnitsPercent / 100f);
+                if (numberToUpgrade == 0)
+                    continue;
+
+                mobileParty.MemberRoster.AddToCounts(Looters?.BasicTroop, -numberToUpgrade);
+                var recruit = cultureRecruits[MBRandom.RandomInt(0, cultureRecruits.Count)];
+                mobileParty.MemberRoster.AddToCounts(recruit, numberToUpgrade);
+            }
+        }
+
+        private static void ConvertLootersToBanditTier(MobileParty mobileParty, List<TroopRosterElement> allLooters)
+        {
+            if (!BanditTroopsByTier.TryGetValue(1, out var byFormation) || byFormation.Count == 0)
+                return;
+
+            for (int i = 0; i < allLooters.Count; i++)
+            {
+                TroopRosterElement looter = allLooters[i];
+                int numberToUpgrade = Convert.ToInt32(looter.Number * Settings.UpgradeUnitsPercent / 100f);
+                if (numberToUpgrade == 0)
+                    continue;
+
+                List<CharacterObject>? candidates = null;
+                if (byFormation.TryGetValue(looter.Character.DefaultFormationClass, out var matched) && matched.Count > 0)
+                    candidates = matched;
+                else
+                    foreach (var list in byFormation.Values)
+                    {
+                        if (list.Count == 0)
+                            continue;
+                        candidates = list;
+                        break;
+                    }
+
+                if (candidates is null)
+                    continue;
+
+                mobileParty.MemberRoster.AddToCounts(Looters?.BasicTroop, -numberToUpgrade);
+                var recruit = candidates[MBRandom.RandomInt(0, candidates.Count)];
+                mobileParty.MemberRoster.AddToCounts(recruit, numberToUpgrade);
+            }
+        }
+
+        private static CharacterObject? SelectBanditUpgradeTarget(CharacterObject character)
+        {
+            CharacterObject[] nativeTargets = character.UpgradeTargets;
+            int banditCount = 0;
+            for (int i = 0; i < nativeTargets.Length; i++)
+                if (nativeTargets[i].Occupation is Occupation.Bandit)
+                    banditCount++;
+
+            if (banditCount > 0)
+            {
+                int chosen = MBRandom.RandomInt(0, banditCount);
+                int seen = 0;
+                for (int i = 0; i < nativeTargets.Length; i++)
+                {
+                    if (nativeTargets[i].Occupation is not Occupation.Bandit)
+                        continue;
+                    if (seen == chosen)
+                        return nativeTargets[i];
+                    seen++;
+                }
+            }
+
+            if (BanditTroopsByTier.TryGetValue(character.Tier + 1, out var byFormation)
+                && byFormation.TryGetValue(character.DefaultFormationClass, out var candidates)
+                && candidates.Count > 0)
+                return candidates[MBRandom.RandomInt(0, candidates.Count)];
+
+            return null;
+        }
+
+        private static void UpgradeReadyBanditTroops(MobileParty mobileParty)
+        {
+            TroopRoster memberRoster = mobileParty.MemberRoster;
+
+            for (int i = memberRoster.Count - 1; i >= 0; i--)
+            {
+                TroopRosterElement element = memberRoster.GetElementCopyAtIndex(i);
+                CharacterObject character = element.Character;
+                if (character.IsHero || character.Tier >= Settings.MaxTrainingTier)
+                    continue;
+
+                CharacterObject? upgradeTarget = SelectBanditUpgradeTarget(character);
+                if (upgradeTarget is null)
+                    continue;
+
+                int xpCost = GetBanditUpgradeXpCost(character.Tier, upgradeTarget.Tier);
+                if (xpCost <= 0)
+                    continue;
+
+                int possibleCount = Math.Min(element.Number - element.WoundedNumber, element.Xp / xpCost);
+                if (possibleCount <= 0)
+                    continue;
+
+                memberRoster.SetElementXp(i, element.Xp - possibleCount * xpCost);
+                memberRoster.AddToCounts(character, -possibleCount);
+                memberRoster.AddToCounts(upgradeTarget, possibleCount);
+            }
+        }
+
+        private static int GetBanditUpgradeXpCost(int fromTier, int toTier)
+        {
+            int cost = 0;
+            for (int tier = fromTier + 1; tier <= toTier; tier++)
+            {
+                cost += tier switch
+                {
+                    <= 1 => 100,
+                    2 => 300,
+                    3 => 550,
+                    4 => 900,
+                    5 => 1300,
+                    6 => 1700,
+                    _ => 2100,
+                };
+            }
+            return cost;
         }
 
         internal static void TrySplitBanditMilitiaParty(MobileParty mobilePartyToSplit)
@@ -362,8 +492,11 @@ namespace BanditMilitiasRedux.Managers
 
         private static void CreateSplitMilitiaParties(MobileParty mobilePartyToSplit, TroopRoster troopRosterOne, TroopRoster troopRosterTwo, TroopRoster prisonerRosterOne, TroopRoster prisonerRosterTwo, ItemRoster itemRosterOne, ItemRoster itemRosterTwo, Hero partyLeaderOne, Hero partyLeaderTwo)
         {
-            MobileParty newPartyOne = CreateBanditMilitiaParty(partyLeaderOne, partyLeaderOne.BornSettlement, mobilePartyToSplit.GetBanditMilitiaParty().Avoidance);
-            MobileParty newPartyTwo = CreateBanditMilitiaParty(partyLeaderTwo, partyLeaderTwo.BornSettlement, mobilePartyToSplit.GetBanditMilitiaParty().Avoidance);
+            Dictionary<Hero, float> avoidanceOne = mobilePartyToSplit.GetBanditMilitiaParty()?.Avoidance ?? [];
+            Dictionary<Hero, float> avoidanceTwo = new Dictionary<Hero, float>(avoidanceOne);
+
+            MobileParty newPartyOne = CreateBanditMilitiaParty(partyLeaderOne, partyLeaderOne.BornSettlement, avoidanceOne);
+            MobileParty newPartyTwo = CreateBanditMilitiaParty(partyLeaderTwo, partyLeaderTwo.BornSettlement, avoidanceTwo);
 
             newPartyOne.ItemRoster.Add(itemRosterOne);
             newPartyTwo.ItemRoster.Add(itemRosterTwo);
@@ -519,7 +652,7 @@ namespace BanditMilitiasRedux.Managers
                     if (raidingCount >= RaidCap)
                         break;
 
-                    if (nearestVillage.OwnerClan is not null && banditMilitiaPartyComponent.Avoidance is not null)
+                    if (nearestVillage.OwnerClan is not null && banditMilitiaPartyComponent?.Avoidance is not null)
                     {
                         foreach (Hero villageClanHero in nearestVillage.OwnerClan.Heroes)
                         {
@@ -675,7 +808,7 @@ namespace BanditMilitiasRedux.Managers
 
                 if (target.IsBanditMilitiaParty())
                 {
-                    BanditMilitiaPartyComponent targetBanditMilitiaParty = target.GetBanditMilitiaParty();
+                    BanditMilitiaPartyComponent targetBanditMilitiaParty = target.GetBanditMilitiaParty()!;
                     if (timeNow < targetBanditMilitiaParty.LastMergedOrSplitDate + cooldownToMergeOrSplit)
                         continue;
                 }

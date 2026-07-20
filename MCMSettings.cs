@@ -52,27 +52,31 @@ namespace BanditMilitiasRedux
         [SettingPropertyGroup("{=BMTraining}Training & Growth", GroupOrder = 1)]
         public bool CanTrain { get; private set; } = true;
 
-        [SettingPropertyInteger("{=BMDailyTrain}Daily Training Chance %", 0, 100, Order = 1, RequireRestart = false, HintText = "{=BMDailyTrainDesc}Each day there is this % chance the militia will be trained.")]
+        [SettingPropertyBool("{=BMBanditOnly}Use Bandit-Only Troop Trees", Order = 1, RequireRestart = false, HintText = "{=BMBanditOnlyDesc}Militias only ever upgrade into other bandit troops, never into regular faction troops. Compatible with mods that add or extend bandit troop trees. If no further bandit troop is available at a tier, training simply stops there.")]
+        [SettingPropertyGroup("{=BMTraining}Training & Growth")]
+        public bool UseBanditOnlyTroopTrees { get; private set; } = false;
+
+        [SettingPropertyInteger("{=BMDailyTrain}Daily Training Chance %", 0, 100, Order = 2, RequireRestart = false, HintText = "{=BMDailyTrainDesc}Each day there is this % chance the militia will be trained.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public int DailyTrainingChance { get; private set; } = 10;
 
-        [SettingPropertyDropdown("{=BMXpBoost}Bonus XP on Training", Order = 2, RequireRestart = false, HintText = "{=BMXpBoostDesc}Extra XP granted when training occurs. Hardest grants enough to significantly upgrade troops. Off grants no bonus XP.")]
+        [SettingPropertyDropdown("{=BMXpBoost}Bonus XP on Training", Order = 3, RequireRestart = false, HintText = "{=BMXpBoostDesc}Extra XP granted when training occurs. Hardest grants enough to significantly upgrade troops. Off grants no bonus XP.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public Dropdown<string> XpGift { get; internal set; } = new(["{=BMXpOff}Off", "{=BMXpNormal}Normal", "{=BMXpHard}Hard", "{=BMXpHardest}Hardest"], 1);
 
-        [SettingPropertyInteger("{=BMUpgrade}Upgrade % of Troops per Training", 0, 100, Order = 3, RequireRestart = false, HintText = "{=BMUpgradeDesc}At most this percentage of troops will be upgraded each time training occurs. Looters are included.")]
+        [SettingPropertyInteger("{=BMUpgrade}Upgrade % of Troops per Training", 0, 100, Order = 4, RequireRestart = false, HintText = "{=BMUpgradeDesc}At most this percentage of troops will be upgraded each time training occurs. Looters are included.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public int UpgradeUnitsPercent { get; private set; } = 25;
 
-        [SettingPropertyInteger("{=BMTier}Max Troop Tier from Training", 1, 6, Order = 4, RequireRestart = false, HintText = "{=BMTierDesc}Training will never upgrade troops beyond this tier.")]
+        [SettingPropertyInteger("{=BMTier}Max Troop Tier from Training", 1, 6, Order = 5, RequireRestart = false, HintText = "{=BMTierDesc}Training will never upgrade troops beyond this tier.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public int MaxTrainingTier { get; private set; } = 4;
 
-        [SettingPropertyInteger("{=BMGrowChance}Daily Growth Chance %", 0, 100, Order = 5, RequireRestart = false, HintText = "{=BMGrowChanceDesc}Each day there is this % chance the militia will gain troops. Set to 0 to disable growth.")]
+        [SettingPropertyInteger("{=BMGrowChance}Daily Growth Chance %", 0, 100, Order = 6, RequireRestart = false, HintText = "{=BMGrowChanceDesc}Each day there is this % chance the militia will gain troops. Set to 0 to disable growth.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public int GrowthChance { get; private set; } = 50;
 
-        [SettingPropertyInteger("{=BMGrowPercent}Troop Growth Amount %", 0, 100, Order = 6, RequireRestart = false, HintText = "{=BMGrowPercentDesc}When growth occurs, total party size grows by this percentage of its current count.")]
+        [SettingPropertyInteger("{=BMGrowPercent}Troop Growth Amount %", 0, 100, Order = 7, RequireRestart = false, HintText = "{=BMGrowPercentDesc}When growth occurs, total party size grows by this percentage of its current count.")]
         [SettingPropertyGroup("{=BMTraining}Training & Growth")]
         public int GrowthPercent { get; private set; } = 1;
 

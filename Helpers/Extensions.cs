@@ -30,11 +30,7 @@ namespace BanditMilitiasRedux.Helpers
         internal static bool IsBanditMilitiaHero(this Hero hero) => Globals.AllAliveBanditMilitiaHeroes.Contains(hero);
         internal static bool IsBanditMilitiaCharacterObject(this CharacterObject characterObject) => characterObject?.HeroObject?.IsBanditMilitiaHero() == true;
 
-        internal static BanditMilitiaPartyComponent GetBanditMilitiaParty(this MobileParty mobileParty)
-        {
-            if (mobileParty.PartyComponent is BanditMilitiaPartyComponent partyComponent)
-                return partyComponent;
-            return null;
-        }
+        internal static BanditMilitiaPartyComponent? GetBanditMilitiaParty(this MobileParty mobileParty)
+            => mobileParty.PartyComponent as BanditMilitiaPartyComponent;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using BanditMilitiasRedux.Behaviours;
 using BanditMilitiasRedux.Helpers;
 using BanditMilitiasRedux.Managers;
@@ -58,9 +57,7 @@ namespace BanditMilitiasRedux
         internal static readonly Dictionary<MobileParty, int> MountedCountBuffer = new(8);
 
         internal static Dictionary<CultureObject, List<CharacterObject>> Recruits = [];
-        internal static List<CharacterObject> BasicRanged = [];
-        internal static List<CharacterObject> BasicInfantry = [];
-        internal static List<CharacterObject> BasicCavalry = [];
+        internal static Dictionary<int, Dictionary<FormationClass, List<CharacterObject>>> BanditTroopsByTier = [];
         internal static CharacterObject? Giant;
 
         internal static Dictionary<MobileParty, BannerImageIdentifierVM> PartyImageMap = [];
@@ -128,6 +125,7 @@ namespace BanditMilitiasRedux
             Hideouts = [];
             Villages = [];
             LordConversationTokens = [];
+            BanditTroopsByTier = [];
         }
     }
 }

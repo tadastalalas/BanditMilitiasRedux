@@ -26,6 +26,8 @@
 
                 <string id="BMTrain" text="Miliz-Training aktivieren"/>
                 <string id="BMTrainDesc" text="Banditenhelden trainieren ihre Milizen."/>
+                <string id="BMBanditOnly" text="Nur Banditen-Truppenlinien verwenden"/>
+                <string id="BMBanditOnlyDesc" text="Milizen werden ausschließlich zu anderen Banditentruppen aufgewertet, niemals zu regulären Fraktionstruppen. Kompatibel mit Mods, die Banditen-Truppenlinien hinzufügen oder erweitern. Ist auf einer Stufe keine weitere Banditentruppe verfügbar, stoppt das Training dort einfach."/>
                 <string id="BMDailyTrain" text="Tägliche Trainingschance"/>
                 <string id="BMDailyTrainDesc" text="Jeden Tag könnten sie weiter trainieren."/>
                 <string id="BMTraining" text="Training &amp; Wachstum"/>

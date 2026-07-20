@@ -83,9 +83,8 @@ namespace BanditMilitiasRedux.Behaviours
             if (!mobileParty.IsBanditMilitiaParty())
                 return;
             
-            mobileParty.GetBanditMilitiaParty().ClearCachedName(); // This should be driven by events instead of daily ticks.
+            mobileParty.GetBanditMilitiaParty()?.ClearCachedName();
 
-            // Keep in mind that avoidance is measuring if the militia will attack the villages.
             if ((int)CampaignTime.Now.ToDays % CampaignTime.DaysInWeek == 0 && Settings.AllowPillaging)
                 AvoidanceManager.AdjustAvoidance(mobileParty);
 
@@ -140,7 +139,7 @@ namespace BanditMilitiasRedux.Behaviours
 
             if (isMilitia)
             {
-                BanditMilitiaPartyComponent partyComponent = banditMilitiaParty.GetBanditMilitiaParty();
+                BanditMilitiaPartyComponent partyComponent = banditMilitiaParty.GetBanditMilitiaParty()!;
                 if (timeNow < partyComponent.LastMergedOrSplitDate + cooldownToMergeOrSplit
                     || MobileParty.MainParty.ShortTermBehavior == AiBehavior.EngageParty && MobileParty.MainParty.ShortTermTargetParty == banditMilitiaParty)
                 {

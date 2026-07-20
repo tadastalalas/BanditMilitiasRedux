@@ -26,6 +26,8 @@
 
                 <string id="BMTrain" text="Ativar Treinamento da Milícia"/>
                 <string id="BMTrainDesc" text="Heróis bandidos treinarão suas milícias."/>
+                <string id="BMBanditOnly" text="Usar Apenas Árvores de Tropas Bandidas"/>
+                <string id="BMBanditOnlyDesc" text="As milícias só evoluem para outras tropas bandidas, nunca para tropas regulares de facções. Compatível com mods que adicionam ou expandem árvores de tropas bandidas. Se nenhuma tropa bandida adicional estiver disponível em um nível, o treinamento simplesmente para ali."/>
                 <string id="BMDailyTrain" text="Chance Diária de Treinamento"/>
                 <string id="BMDailyTrainDesc" text="A cada dia, eles podem treinar mais."/>
                 <string id="BMTraining" text="Treinamento &amp; Crescimento"/>

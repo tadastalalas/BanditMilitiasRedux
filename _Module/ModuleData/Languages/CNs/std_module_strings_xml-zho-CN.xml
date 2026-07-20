@@ -26,6 +26,8 @@
 
                 <string id="BMTrain" text="启用民兵训练"/>
                 <string id="BMTrainDesc" text="强盗英雄会训练他们的民兵。"/>
+                <string id="BMBanditOnly" text="仅使用强盗兵种升级树"/>
+                <string id="BMBanditOnlyDesc" text="民兵只会升级为其他强盗兵种，绝不会升级为正规阵营部队。与添加或扩展强盗兵种升级树的模组兼容。如果某一阶级没有可用的强盗兵种，训练将在该阶级停止。"/>
                 <string id="BMDailyTrain" text="每日训练几率"/>
                 <string id="BMDailyTrainDesc" text="他们每天可能会进一步训练。"/>
                 <string id="BMTraining" text="训练与成长"/>

@@ -26,6 +26,8 @@
 
                 <string id="BMTrain" text="Abilita addestramento milizia"/>
                 <string id="BMTrainDesc" text="Gli eroi banditi addestreranno le loro milizie."/>
+                <string id="BMBanditOnly" text="Usa solo alberi di truppe di banditi"/>
+                <string id="BMBanditOnlyDesc" text="Le milizie si potenziano solo in altre truppe di banditi, mai in truppe regolari delle fazioni. Compatibile con mod che aggiungono o estendono gli alberi delle truppe banditesche. Se a un livello non è disponibile altra truppa bandita, l'addestramento si ferma semplicemente lì."/>
                 <string id="BMDailyTrain" text="Probabilità giornaliera addestramento"/>
                 <string id="BMDailyTrainDesc" text="Ogni giorno potrebbero addestrarsi ulteriormente."/>
                 <string id="BMTraining" text="Addestramento &amp; Crescita"/>

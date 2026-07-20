@@ -256,10 +256,18 @@ namespace BanditMilitiasRedux.Helpers
                     Recruits.Add(recruit.Culture, [recruit]);
             }
 
-            var availableBandits = CharacterObject.All.WhereQ(c => c.Occupation is Occupation.Bandit && c.Level <= 11 && !c.HiddenInEncyclopedia).ToListQ();
-            Globals.BasicRanged = availableBandits.WhereQ(c => c.DefaultFormationClass is FormationClass.Ranged).ToListQ();
-            Globals.BasicInfantry = availableBandits.WhereQ(c => c.DefaultFormationClass is FormationClass.Infantry && c.StringId != "storymode_quest_raider").ToListQ();
-            Globals.BasicCavalry = availableBandits.WhereQ(c => c.DefaultFormationClass is FormationClass.Cavalry).ToListQ();
+            BanditTroopsByTier = [];
+            foreach (var troop in CharacterObject.All.WhereQ(c => c.Occupation is Occupation.Bandit && c is { IsHero: false, HiddenInEncyclopedia: false } && c.StringId != "storymode_quest_raider"))
+            {
+                if (!BanditTroopsByTier.TryGetValue(troop.Tier, out var byFormation))
+                    BanditTroopsByTier[troop.Tier] = byFormation = [];
+
+                if (!byFormation.TryGetValue(troop.DefaultFormationClass, out var list))
+                    byFormation[troop.DefaultFormationClass] = list = [];
+
+                list.Add(troop);
+            }
+            
             Globals.Villages = Settlement.All.WhereQ(s => s.IsVillage).ToListQ();
 
             PowerCalculationManager.DoPowerCalculations(true);

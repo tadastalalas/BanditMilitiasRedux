@@ -30,7 +30,11 @@ namespace BanditMilitiasRedux.Helpers
             if (Helper.IsHeroCapReached(targetClan))
                 return null;
             
-            Hero newBanditHero = CreateSpecialHeroFromATemplate(settlement, targetClan);
+            Hero? newBanditHero = CreateSpecialHeroFromATemplate(settlement, targetClan);
+            
+            if (newBanditHero is null)
+                return null;
+            
             HeroDeveloperFieldRef(newBanditHero) ??= (HeroDeveloper)HeroDeveloperConstructorRef.Invoke([newBanditHero]);
             HasMetFieldRef(newBanditHero) = false;
             GenerateBanditHeroName(newBanditHero);
@@ -45,11 +49,10 @@ namespace BanditMilitiasRedux.Helpers
             return newBanditHero;
         }
 
-        private static Hero CreateSpecialHeroFromATemplate(Settlement bornSettlement, Clan heroClan)
+        private static Hero? CreateSpecialHeroFromATemplate(Settlement bornSettlement, Clan heroClan)
         {
             CharacterObject? template = SelectWeightedTemplate(bornSettlement);
-            Hero specialHero = HeroCreator.CreateSpecialHero(template, bornSettlement, heroClan);
-            return specialHero;
+            return template is null ? null : HeroCreator.CreateSpecialHero(template, bornSettlement, heroClan);
         }
 
         private static CharacterObject? SelectWeightedTemplate(Settlement bornSettlement)
@@ -71,7 +74,8 @@ namespace BanditMilitiasRedux.Helpers
                 if (remaining < 0)
                     return characterObject;
             }
-            return HeroTemplates.FirstOrDefault(IsUsableCulture);
+            return HeroTemplates.FirstOrDefault(IsUsableCulture)
+                   ?? HeroTemplates.FirstOrDefault(c => c.Culture is not null);
 
             bool IsUsableCulture(CharacterObject characterObject)
                 => (characterObject.Culture is not null) && characterObject.IsFemale == isFemale;

@@ -117,7 +117,7 @@ namespace BanditMilitiasRedux.Patches
                 if (!Settings.RandomBanners || !__instance.IsMobile || !__instance.MobileParty.IsBanditMilitiaParty())
                     return;
                 
-                var bmBanner = __instance.MobileParty.GetBanditMilitiaParty().Banner;
+                var bmBanner = __instance.MobileParty.GetBanditMilitiaParty()!.Banner;
                 if (bmBanner is not null)
                     __result = bmBanner;
             }
@@ -132,7 +132,7 @@ namespace BanditMilitiasRedux.Patches
                 if (!Settings.RandomBanners || !party.IsMobile || !party.MobileParty.IsBanditMilitiaParty())
                     return;
                 
-                var bmBanner = party.MobileParty?.GetBanditMilitiaParty().Banner;
+                var bmBanner = party.MobileParty?.GetBanditMilitiaParty()?.Banner;
                 if (bmBanner is not null)
                     __result = bmBanner;
             }
@@ -273,7 +273,7 @@ namespace BanditMilitiasRedux.Patches
 
                 if (!PartyImageMap.TryGetValue(party, out var image))
                 {
-                    image = new BannerImageIdentifierVM(party.GetBanditMilitiaParty().Banner);
+                    image = new BannerImageIdentifierVM(party.GetBanditMilitiaParty()!.Banner);
                     PartyImageMap.Add(party, image);
                 }
 

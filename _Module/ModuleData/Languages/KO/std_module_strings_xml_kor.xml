@@ -26,6 +26,8 @@
 
                 <string id="BMTrain" text="민병대 훈련 활성화"/>
                 <string id="BMTrainDesc" text="도적 영웅이 자신의 민병대를 훈련합니다."/>
+                <string id="BMBanditOnly" text="도적 전용 병종 트리 사용"/>
+                <string id="BMBanditOnlyDesc" text="민병대는 오직 다른 도적 병종으로만 승급하며, 일반 진영 병력으로는 결코 승급하지 않습니다. 도적 병종 트리를 추가하거나 확장하는 모드와 호환됩니다. 특정 티어에서 이용 가능한 도적 병종이 없으면 훈련은 그 단계에서 멈춥니다."/>
                 <string id="BMDailyTrain" text="일일 훈련 확률"/>
                 <string id="BMDailyTrainDesc" text="매일 추가 훈련을 할 수 있습니다."/>
                 <string id="BMTraining" text="훈련 &amp; 성장"/>

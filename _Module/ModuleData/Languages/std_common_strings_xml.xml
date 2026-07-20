@@ -26,6 +26,8 @@
 
         <string id="BMTrain" text="Enable Militia Training"/>
         <string id="BMTrainDesc" text="Bandit heroes will train their militias."/>
+        <string id="BMBanditOnly" text="Use Bandit-Only Troop Trees"/>
+        <string id="BMBanditOnlyDesc" text="Militias only ever upgrade into other bandit troops, never into regular faction troops. Compatible with mods that add or extend bandit troop trees. If no further bandit troop is available at a tier, training simply stops there."/>
         <string id="BMDailyTrain" text="Daily Training Chance"/>
         <string id="BMDailyTrainDesc" text="Each day they might train further."/>
         <string id="BMTraining" text="Training &amp; Growth"/>
