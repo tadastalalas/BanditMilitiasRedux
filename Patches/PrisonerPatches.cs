@@ -214,7 +214,14 @@ namespace BanditMilitiasRedux.Patches
         [HarmonyPatch(typeof(RansomOfferCampaignBehavior), "ConsiderRansomPrisoner")]
         public static class RansomOfferCampaignBehaviorConsiderRansomPrisonerPatch
         {
-            public static bool Prefix(Hero hero) => !hero.IsBanditMilitiaHero();
+            public static bool Prefix(Hero hero)
+            {
+                if (hero is null || hero.IsBanditMilitiaHero())
+                    return false;
+
+                // Vanilla NRE guard: leaderless clans (e.g. bandit clans) produce a null ransom payer.
+                return hero.Clan?.Leader is not null;
+            }
         }
 
         [HarmonyPatch(typeof(PlayerEncounter), "DoFreeOrCapturePrisonerHeroes")]
