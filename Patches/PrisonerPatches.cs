@@ -262,7 +262,7 @@ namespace BanditMilitiasRedux.Patches
                 foreach (TroopRosterElement element in bmHeroes)
                 {
                     Hero? hero = element.Character.HeroObject;
-                    if (hero is { IsAlive: true } && hero.MapFaction?.IsAtWarWith(Hero.MainHero.MapFaction) == true)
+                    if (hero is { IsAlive: true })
                     {
                         TakePrisonerAction.Apply(PartyBase.MainParty, hero);
                         hero.IsKnownToPlayer = true;
