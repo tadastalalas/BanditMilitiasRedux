@@ -94,6 +94,13 @@
         <string id="BMRContinue" text="I see. Now, back to business." />
         <string id="BMRThreaten" text="Surrender now and I might let you live."/>
         <string id="BMRThreatenAnswer" text="Ha! You'll have to take our heads first. At them, lads!"/>
+        <string id="BMRCaptiveIntro" text="So it ends. Do what you will with me."/>
+        <string id="BMRCaptiveKeep" text="You are my prisoner now."/>
+        <string id="BMRCaptiveRelease" text="Get out of my sight."/>
+        <string id="BMRCaptiveExecute" text="Do not expect mercy. Off with your head!"/>
+        <string id="BMRCaptiveExecuteAnswer" text="Then be quick about it. My lads will remember your face — and they'll come looking for you."/>
+        <string id="BMRCaptiveExecuteConfirm" text="I care not. Prepare to die!"/>
+        <string id="BMRCaptiveExecuteCancel" text="Fine then. You are my prisoner now."/>
 
         <string id="BMGoldReward" text="Bandit Hero Gold Reward"/>
         <string id="BMRBounty" text="You collected a bounty of {GOLD} denars and {RENOWN} renown for {LEADER}."/>

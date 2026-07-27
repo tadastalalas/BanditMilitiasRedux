@@ -94,6 +94,13 @@
                 <string id="BMRContinue" text="알겠다. 이제 본론으로 돌아가자." />
                 <string id="BMRThreaten" text="지금 항복하면 목숨은 살려줄지도 모른다."/>
                 <string id="BMRThreatenAnswer" text="하! 우리 목부터 따고 말해라. 덤벼라, 얘들아!"/>
+                <string id="BMRCaptiveIntro" text="여기까지로군. 마음대로 해라."/>
+                <string id="BMRCaptiveKeep" text="이제 너는 내 포로다."/>
+                <string id="BMRCaptiveRelease" text="내 눈앞에서 사라져라."/>
+                <string id="BMRCaptiveExecute" text="자비는 기대하지 마라. 목을 쳐라!"/>
+                <string id="BMRCaptiveExecuteAnswer" text="그럼 빨리 끝내라. 내 부하들이 네 얼굴을 기억할 거다 — 반드시 찾아올 테니."/>
+                <string id="BMRCaptiveExecuteConfirm" text="상관없다. 죽을 준비나 해라!"/>
+                <string id="BMRCaptiveExecuteCancel" text="좋다. 이제 너는 내 포로다."/>
 
                 <string id="BMGoldReward" text="도적 영웅 금 보상"/>
                 <string id="BMRBounty" text="{LEADER}에 대한 현상금으로 {GOLD} 데나르와 {RENOWN} 명성을 획득했습니다."/>

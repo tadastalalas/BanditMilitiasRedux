@@ -94,6 +94,13 @@
                 <string id="BMRContinue" text="なるほど。では本題に戻ろう。" />
                 <string id="BMRThreaten" text="今すぐ降伏しろ。命だけは助けてやるかもしれない。"/>
                 <string id="BMRThreatenAnswer" text="ハッ！まずは俺たちの首を取ってみな！ かかれ、野郎ども！"/>
+                <string id="BMRCaptiveIntro" text="これで終わりか。好きにするがいい。"/>
+                <string id="BMRCaptiveKeep" text="お前はもう私の捕虜だ。"/>
+                <string id="BMRCaptiveRelease" text="失せろ。二度と顔を見せるな。"/>
+                <string id="BMRCaptiveExecute" text="慈悲は期待するな。その首を刎ねろ！"/>
+                <string id="BMRCaptiveExecuteAnswer" text="ならさっさとやれ。俺の仲間はお前の顔を忘れん——必ず探しに来るぞ。"/>
+                <string id="BMRCaptiveExecuteConfirm" text="知ったことか。死ぬ覚悟をしろ！"/>
+                <string id="BMRCaptiveExecuteCancel" text="いいだろう。お前はもう私の捕虜だ。"/>
 
                 <string id="BMGoldReward" text="盗賊英雄の金報酬"/>
                 <string id="BMRBounty" text="{LEADER} に対する賞金として {GOLD} デナールと名声 {RENOWN} を獲得しました。"/>

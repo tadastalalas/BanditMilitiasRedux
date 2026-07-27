@@ -117,7 +117,6 @@ namespace BanditMilitiasRedux
             ReusableHeroesBehavior.Reset();
             Banners.Clear();
             StuckTracker.Clear();
-            AllAliveBanditMilitiaHeroes.Clear();
             PartyImageMap = [];
             Recruits = [];
             RaidCap = 0;

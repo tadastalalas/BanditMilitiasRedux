@@ -78,19 +78,22 @@ namespace BanditMilitiasRedux.Helpers
         {
             if (Settlement.CurrentSettlement == null)
                 GameMenu.ExitToLast();
+            
             Campaign.Current.TimeControlMode = CampaignTimeControlMode.Stop;
             PartyImageMap.Clear();
             FlushMapEvents();
             LegacyFlushBanditMilitias();
             PowerCalculationManager.GetActiveBanditMilitiaParties(true).Do(bm => TryTrashMobilePartySafelyReservingBanditLeader(bm.MobileParty));
+            
             foreach (var hero in Hero.FindAll(hero => hero.IsBanditMilitiaHero()).ToArrayQ())
-            {
                 KillCharacterAction.ApplyByRemove(hero);
-            }
+            
             foreach (var hero in AllAliveBanditMilitiaHeroes.ToArrayQ())
-            {
                 KillCharacterAction.ApplyByRemove(hero);
-            }
+            
+            foreach (Hero hero in Hero.AllAliveHeroes.WhereQ(IsOrphanedBanditMilitiaHero).ToArrayQ())
+                KillCharacterAction.ApplyByRemove(hero);
+            
             AllAliveBanditMilitiaHeroes.Clear();
             InformationManager.DisplayMessage(new InformationMessage("BANDIT MILITIAS CLEARED"));
         }
@@ -183,6 +186,16 @@ namespace BanditMilitiasRedux.Helpers
             }
             catch (Exception) { }
         }
+        
+        private static bool IsOrphanedBanditMilitiaHero(Hero hero)
+            => hero is { IsAlive: true, IsNotable: false, IsSpecial: false, IsPlayerCompanion: false }
+               && hero != Hero.MainHero
+               && hero.Clan?.IsBanditFaction == true
+               && hero.Occupation == Occupation.Bandit
+               && hero.CharacterObject is not null
+               && !hero.CharacterObject.StringId.Contains("radagos")
+               && !hero.CharacterObject.StringId.Contains("tutorial")
+               && !hero.CharacterObject.StringId.Contains("quest");
 
         internal static CultureObject GetMostPrevalentFromNearbySettlements(Vec2 position)
         {

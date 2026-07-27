@@ -94,6 +94,13 @@
                 <string id="BMRContinue" text="明白了。現在，回到正事上。" />
                 <string id="BMRThreaten" text="現在投降，我也許會饒你一命。"/>
                 <string id="BMRThreatenAnswer" text="哈！先砍下我們的腦袋再說。兄弟們，上！"/>
+                <string id="BMRCaptiveIntro" text="就到此為止了。隨你處置吧。"/>
+                <string id="BMRCaptiveKeep" text="從現在起，你是我的俘虜。"/>
+                <string id="BMRCaptiveRelease" text="滾出我的視線。"/>
+                <string id="BMRCaptiveExecute" text="別指望我發慈悲。砍了他的頭！"/>
+                <string id="BMRCaptiveExecuteAnswer" text="那就快點動手。我的弟兄們會記住你的臉——他們會來找你的。"/>
+                <string id="BMRCaptiveExecuteConfirm" text="我不在乎。準備受死吧！"/>
+                <string id="BMRCaptiveExecuteCancel" text="算了。從現在起，你是我的俘虜。"/>
 
                 <string id="BMGoldReward" text="強盜英雄金幣獎勵"/>
                 <string id="BMRBounty" text="你因 {LEADER} 獲得了 {GOLD} 第納爾和 {RENOWN} 聲望的懸賞。"/>

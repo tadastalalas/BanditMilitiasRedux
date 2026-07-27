@@ -101,19 +101,17 @@ namespace BanditMilitiasRedux.Patches
                                 TryTrashMobilePartySafelyReservingBanditLeader(BanditMilitiaParty);
                             continue;
                         }
-                        case false when leaderCapturable:
+                        case true when leaderCapturable:
                         {
-                            var winnerLeaderParty = __instance.PartiesOnSide(__instance.WinningSide)
-                                .FirstOrDefaultQ(p => p?.Party?.LeaderHero is { IsAlive: true })?.Party;
+                            defeatedLeader.IsKnownToPlayer = true;
+                            Helper.GrantDefeatBounty(defeatedLeader, BanditMilitiaParty.Party.EstimatedStrength);
 
-                            if (winnerLeaderParty is not null)
-                            {
-                                TakePrisonerAction.Apply(winnerLeaderParty, defeatedLeader);
-                                if (Hero.MainHero?.PartyBelongedToAsPrisoner?.MobileParty != BanditMilitiaParty)
-                                    TryTrashMobilePartySafelyReservingBanditLeader(BanditMilitiaParty);
-                                continue;
-                            }
-                            break;
+                            if (!TryQueuePlayerCaptureConversation(__instance, defeatedLeader))
+                                TakePrisonerAction.Apply(PartyBase.MainParty, defeatedLeader);
+
+                            if (Hero.MainHero?.PartyBelongedToAsPrisoner?.MobileParty != BanditMilitiaParty)
+                                TryTrashMobilePartySafelyReservingBanditLeader(BanditMilitiaParty);
+                            continue;
                         }
                     }
 
@@ -139,6 +137,16 @@ namespace BanditMilitiasRedux.Patches
                 {
                     AvoidanceManager.DecreaseAvoidance(loserHeroes, party);
                 }
+            }
+            
+            private static bool TryQueuePlayerCaptureConversation(MapEvent mapEvent, Hero defeatedLeader)
+            {
+                if (PlayerEncounter.Current is null || mapEvent.WinningSide != PartyBase.MainParty.Side)
+                    return false;
+
+                defeatedLeader.PartyBelongedTo?.MemberRoster.RemoveTroop(defeatedLeader.CharacterObject);
+                PlayerEncounter.Current.RosterToReceiveLootPrisoners.AddToCounts(defeatedLeader.CharacterObject, 1);
+                return true;
             }
         }
 

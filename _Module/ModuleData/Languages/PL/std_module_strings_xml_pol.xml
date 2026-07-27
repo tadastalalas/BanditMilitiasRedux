@@ -94,6 +94,13 @@
                 <string id="BMRContinue" text="Rozumiem. Wracajmy do interesów." />
                 <string id="BMRThreaten" text="Poddaj się teraz, a może daruję ci życie."/>
                 <string id="BMRThreatenAnswer" text="Ha! Najpierw musisz urwać nam głowy. Na nich, chłopaki!"/>
+                <string id="BMRCaptiveIntro" text="A więc to koniec. Rób ze mną, co chcesz."/>
+                <string id="BMRCaptiveKeep" text="Jesteś teraz moim więźniem."/>
+                <string id="BMRCaptiveRelease" text="Zejdź mi z oczu."/>
+                <string id="BMRCaptiveExecute" text="Nie licz na litość. Ściąć go!"/>
+                <string id="BMRCaptiveExecuteAnswer" text="To się pospiesz. Moi ludzie zapamiętają twoją twarz — i przyjdą po ciebie."/>
+                <string id="BMRCaptiveExecuteConfirm" text="Nic mnie to nie obchodzi. Szykuj się na śmierć!"/>
+                <string id="BMRCaptiveExecuteCancel" text="Niech ci będzie. Jesteś teraz moim więźniem."/>
 
                 <string id="BMGoldReward" text="Złota nagroda za bohatera bandytów"/>
                 <string id="BMRBounty" text="Otrzymano nagrodę: {GOLD} denarów i {RENOWN} renomy za {LEADER}."/>

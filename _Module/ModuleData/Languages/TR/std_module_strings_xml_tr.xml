@@ -94,6 +94,13 @@
                 <string id="BMRContinue" text="Anlıyorum. Şimdi işimize dönelim." />
                 <string id="BMRThreaten" text="Şimdi teslim ol, belki yaşamana izin veririm."/>
                 <string id="BMRThreatenAnswer" text="Ha! Önce kafalarımızı alman gerek. Üstlerine, çocuklar!"/>
+                <string id="BMRCaptiveIntro" text="Demek böyle bitiyor. Bana ne istersen yap."/>
+                <string id="BMRCaptiveKeep" text="Artık benim esirimsin."/>
+                <string id="BMRCaptiveRelease" text="Defol, gözüm görmesin."/>
+                <string id="BMRCaptiveExecute" text="Merhamet bekleme. Kellesini uçurun!"/>
+                <string id="BMRCaptiveExecuteAnswer" text="O zaman çabuk ol. Adamlarım yüzünü unutmaz — peşine düşerler."/>
+                <string id="BMRCaptiveExecuteConfirm" text="Umurumda değil. Ölmeye hazırlan!"/>
+                <string id="BMRCaptiveExecuteCancel" text="Peki öyleyse. Artık benim esirimsin."/>
 
                 <string id="BMGoldReward" text="Haydut Kahraman Altın Ödülü"/>
                 <string id="BMRBounty" text="{LEADER} için {GOLD} dinar ve {RENOWN} nam ödülü topladınız."/>

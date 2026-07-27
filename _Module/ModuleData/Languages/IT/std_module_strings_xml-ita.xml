@@ -94,6 +94,13 @@
                 <string id="BMRContinue" text="Capisco. Ora torniamo agli affari." />
                 <string id="BMRThreaten" text="Arrenditi ora e forse ti lascerò vivere."/>
                 <string id="BMRThreatenAnswer" text="Ha! Dovrai prima staccarci la testa. Addosso, ragazzi!"/>
+                <string id="BMRCaptiveIntro" text="Così finisce. Fa' di me ciò che vuoi."/>
+                <string id="BMRCaptiveKeep" text="Ora sei mio prigioniero."/>
+                <string id="BMRCaptiveRelease" text="Sparisci dalla mia vista."/>
+                <string id="BMRCaptiveExecute" text="Non aspettarti pietà. Giù la testa!"/>
+                <string id="BMRCaptiveExecuteAnswer" text="Allora fai in fretta. I miei uomini ricorderanno la tua faccia — e verranno a cercarti."/>
+                <string id="BMRCaptiveExecuteConfirm" text="Non m'importa. Preparati a morire!"/>
+                <string id="BMRCaptiveExecuteCancel" text="E va bene. Ora sei mio prigioniero."/>
 
                 <string id="BMGoldReward" text="Ricompensa in oro eroe bandito"/>
                 <string id="BMRBounty" text="Hai riscosso una taglia di {GOLD} denari e {RENOWN} fama per {LEADER}."/>

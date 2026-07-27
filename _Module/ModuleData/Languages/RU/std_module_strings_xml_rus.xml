@@ -94,6 +94,13 @@
                 <string id="BMRContinue" text="Понятно. Теперь к делу." />
                 <string id="BMRThreaten" text="Сдавайся сейчас, и, возможно, я оставлю тебя в живых."/>
                 <string id="BMRThreatenAnswer" text="Ха! Сначала попробуй снести нам головы. Вперёд, парни!"/>
+                <string id="BMRCaptiveIntro" text="Вот и всё. Делай со мной что хочешь."/>
+                <string id="BMRCaptiveKeep" text="Теперь ты мой пленник."/>
+                <string id="BMRCaptiveRelease" text="Убирайся с глаз моих."/>
+                <string id="BMRCaptiveExecute" text="Милости не жди. Голову с плеч!"/>
+                <string id="BMRCaptiveExecuteAnswer" text="Тогда не тяни. Мои ребята запомнят твоё лицо — и придут за тобой."/>
+                <string id="BMRCaptiveExecuteConfirm" text="Мне всё равно. Готовься к смерти!"/>
+                <string id="BMRCaptiveExecuteCancel" text="Ладно. Теперь ты мой пленник."/>
 
                 <string id="BMGoldReward" text="Золотая награда за героя-бандита"/>
                 <string id="BMRBounty" text="Вы получили награду: {GOLD} динаров и {RENOWN} известности за {LEADER}."/>

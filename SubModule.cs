@@ -105,6 +105,7 @@ namespace BanditMilitiasRedux
         {
             base.OnGameEnd(game);
 
+            AllAliveBanditMilitiaHeroes.Clear();
             ClearGlobals();
             BanditMilitiaManager.ResetUpgraderBehavior();
             MCMSettings.OnSettingsChanged -= OnSettingsChanged;
