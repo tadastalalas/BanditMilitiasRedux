@@ -47,6 +47,7 @@ namespace BanditMilitiasRedux
         internal static List<ItemObject> Saddles => EquipmentPool.Saddles;
         internal static List<ItemObject> CamelSaddles => EquipmentPool.CamelSaddles;
         internal static List<ItemObject> NonCamelSaddles => EquipmentPool.NonCamelSaddles;
+        internal static readonly List<MobileParty> DeferredTrashParties = [];
 
         internal static List<Hero> AllAliveBanditMilitiaHeroes = [];
         internal static List<CharacterObject> HeroTemplates = [];
@@ -117,6 +118,7 @@ namespace BanditMilitiasRedux
             ReusableHeroesBehavior.Reset();
             Banners.Clear();
             StuckTracker.Clear();
+            DeferredTrashParties.Clear();
             PartyImageMap = [];
             Recruits = [];
             RaidCap = 0;

@@ -22,6 +22,8 @@ namespace BanditMilitiasRedux.Behaviours
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, OnMobilePartyDestroyed);
             CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, OnDailyTickPartyEvent);
             CampaignEvents.TickPartialHourlyAiEvent.AddNonSerializedListener(this, OnTickPartialHourlyAiEvent);
+            CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
+            CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTickEvent);
         }
 
         public override void SyncData(IDataStore dataStore) => dataStore.SyncData("Heroes", ref AllAliveBanditMilitiaHeroes);
@@ -151,6 +153,14 @@ namespace BanditMilitiasRedux.Behaviours
                 return;
             
             BanditMilitiaManager.TryFindAndMergeNearbyBandits(banditMilitiaParty, currentMilitiaPartyPosition, timeNow, cooldownToMergeOrSplit);
+        }
+        
+        private static void OnMapEventEnded(MapEvent mapEvent) => DrainDeferredTrashParties();
+
+        private static void OnHourlyTickEvent()
+        {
+            if (DeferredTrashParties.Count > 0)
+                DrainDeferredTrashParties();
         }
     }
 }

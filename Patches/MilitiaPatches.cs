@@ -644,5 +644,19 @@ namespace BanditMilitiasRedux.Patches
                 __instance.InformationText = NotorietyBehavior.BuildEncyclopediaText(hero).ToString();
             }
         }
+        
+        [HarmonyPatch(typeof(MobileParty), "MapFaction", MethodType.Getter)]
+        public static class MobilePartyMapFactionNullGuardPatch
+        {
+            public static void Postfix(MobileParty __instance, ref IFaction __result)
+            {
+                if (__result is not null || !__instance.IsBanditMilitiaParty())
+                    return;
+
+                __result = __instance.GetBanditMilitiaParty()?.PartyOwner?.Clan?.MapFaction
+                           ?? __instance.HomeSettlement?.OwnerClan?.MapFaction
+                           ?? Clan.BanditFactions.FirstOrDefault();
+            }
+        }
     }
 }

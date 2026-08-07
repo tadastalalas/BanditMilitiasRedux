@@ -53,7 +53,8 @@ namespace BanditMilitiasRedux.Constructors
         {
             _leader = newLeader;
             ClearCachedName();
-            ChangePartyOwner(newLeader);
+            if (newLeader is not null)
+                ChangePartyOwner(newLeader);
         }
 
         public override void ClearCachedName() => _cachedName = null;

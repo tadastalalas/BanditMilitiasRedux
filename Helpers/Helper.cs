@@ -65,13 +65,43 @@ namespace BanditMilitiasRedux.Helpers
 
         internal static void TryTrashMobilePartySafelyReservingBanditLeader(MobileParty mobileParty)
         {
+            if (mobileParty is null || !mobileParty.IsActive)
+                return;
+
+            if (mobileParty.MapEvent is { IsFinalized: false })
+            {
+                if (!DeferredTrashParties.Contains(mobileParty))
+                    DeferredTrashParties.Add(mobileParty);
+                return;
+            }
+
             Hero? leaderToReserve = mobileParty.LeaderHero;
-            
+
             if (leaderToReserve is { IsAlive: true, IsPrisoner: false })
-                ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(mobileParty.LeaderHero);
-                
+                ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(leaderToReserve);
+
             mobileParty.Ai?.DisableAi();
             DestroyPartyAction.Apply(null, mobileParty);
+        }
+
+        internal static void DrainDeferredTrashParties()
+        {
+            for (int i = DeferredTrashParties.Count - 1; i >= 0; i--)
+            {
+                MobileParty party = DeferredTrashParties[i];
+
+                if (party is null || !party.IsActive)
+                {
+                    DeferredTrashParties.RemoveAt(i);
+                    continue;
+                }
+
+                if (party.MapEvent is { IsFinalized: false })
+                    continue;
+
+                DeferredTrashParties.RemoveAt(i);
+                TryTrashMobilePartySafelyReservingBanditLeader(party);
+            }
         }
 
         internal static void NukeEverything()
