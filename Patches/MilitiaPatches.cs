@@ -109,20 +109,6 @@ namespace BanditMilitiasRedux.Patches
             }
         }
 
-        [HarmonyPatch(typeof(PartyBase), "Banner", MethodType.Getter)]
-        public static class PartyBaseBannerGetterPatch
-        {
-            private static void Postfix(PartyBase __instance, ref Banner __result)
-            {
-                if (!Settings.RandomBanners || !__instance.IsMobile || !__instance.MobileParty.IsBanditMilitiaParty())
-                    return;
-                
-                var bmBanner = __instance.MobileParty.GetBanditMilitiaParty()!.Banner;
-                if (bmBanner is not null)
-                    __result = bmBanner;
-            }
-        }
-
         [HarmonyPatch(typeof(PartyGroupAgentOrigin), "Banner", MethodType.Getter)]
         public static class PartyGroupAgentOriginBannerGetterPatch
         {
@@ -449,8 +435,15 @@ namespace BanditMilitiasRedux.Patches
         [HarmonyPatch(typeof(KillCharacterAction), "ApplyInternal")]
         public class KillCharacterActionApplyInternalPatch
         {
+            public static void Prefix(Hero victim, KillCharacterAction.KillCharacterActionDetail actionDetail)
+                => SuppressExecutionHonorPenalty = victim?.IsBanditMilitiaHero() == true
+                                                   && actionDetail is KillCharacterAction.KillCharacterActionDetail.Executed
+                                                       or KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent;
+            
             public static void Postfix(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail actionDetail, bool showNotification, bool isForced = false)
             {
+                SuppressExecutionHonorPenalty = false;
+                
                 if (!AllAliveBanditMilitiaHeroes.Contains(victim))
                     return;
                 
@@ -657,6 +650,24 @@ namespace BanditMilitiasRedux.Patches
                            ?? __instance.HomeSettlement?.OwnerClan?.MapFaction
                            ?? Clan.BanditFactions.FirstOrDefault();
             }
+        }
+        
+        [HarmonyPatch(typeof(DefaultExecutionRelationModel), nameof(DefaultExecutionRelationModel.GetRelationChangeForExecutingHero))]
+        public static class ExecutionRelationModelGetRelationChangePatch
+        {
+            public static void Postfix(Hero victim, ref int __result, ref bool showQuickNotification)
+            {
+                if (victim?.IsBanditMilitiaHero() != true)
+                    return;
+                __result = 0;
+                showQuickNotification = false;
+            }
+        }
+        
+        [HarmonyPatch(typeof(TraitLevelingHelper), nameof(TraitLevelingHelper.OnLordExecuted))]
+        public static class TraitLevelingHelperOnLordExecutedPatch
+        {
+            public static bool Prefix() => !SuppressExecutionHonorPenalty;
         }
     }
 }

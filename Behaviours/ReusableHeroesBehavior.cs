@@ -5,6 +5,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.SaveSystem;
+using static BanditMilitiasRedux.Globals;
 
 namespace BanditMilitiasRedux.Behaviours
 {
@@ -20,6 +21,7 @@ namespace BanditMilitiasRedux.Behaviours
             CampaignEvents.HeroPrisonerReleased.AddNonSerializedListener(this, OnHeroPrisonerReleasedEvent);
             CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTakenEvent);
             CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, OnHeroKilledEvent);
+            CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, _ => ReclaimOrphanedHeroes());
         }
         
         public override void SyncData(IDataStore dataStore) => dataStore.SyncData("_waitingToBeReusedHeroes", ref _waitingToBeReusedHeroes);
@@ -86,15 +88,21 @@ namespace BanditMilitiasRedux.Behaviours
             heroes.Add(hero);
         }
         
-        private static void RemoveHeroFromTheWaitingDictionary(Hero hero)   
+        internal static void RemoveHeroFromTheWaitingDictionary(Hero hero, Clan? clan = null)
         {
-            if (!_waitingToBeReusedHeroes.TryGetValue(hero.Clan, out List<Hero> heroes))
-                return;
-            
-            if (!heroes.Contains(hero))
-                return;
-
-            heroes.Remove(hero);
+            Clan? key = clan ?? hero.Clan;
+            if (key is not null && _waitingToBeReusedHeroes.TryGetValue(key, out List<Hero> heroes))
+                heroes.Remove(hero);
+        }
+        
+        private static void ReclaimOrphanedHeroes()
+        {
+            for (int i = 0; i < AllAliveBanditMilitiaHeroes.Count; i++)
+            {
+                Hero hero = AllAliveBanditMilitiaHeroes[i];
+                if (hero is { IsAlive: true, IsPrisoner: false, PartyBelongedTo: null, Clan: not null } && !IsWaitingForReuse(hero))
+                    AddHeroToTheWaitingDictionary(hero);
+            }
         }
         
         public bool HasReusableBanditHero(Clan clan) => _waitingToBeReusedHeroes.TryGetValue(clan, out List<Hero> heroes) && heroes.Count > 0;

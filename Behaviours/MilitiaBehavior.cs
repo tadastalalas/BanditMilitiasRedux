@@ -70,8 +70,8 @@ namespace BanditMilitiasRedux.Behaviours
             if (destroyedMobileParty.IsBanditMilitiaParty())
             {
                 StuckTracker.Remove(destroyedMobileParty);
-                if (destroyedMobileParty.LeaderHero is { IsAlive: true, IsPrisoner: false })
-                    ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(destroyedMobileParty.LeaderHero);
+                if (destroyedMobileParty.LeaderHero is { IsAlive: true, IsPrisoner: false } leader && leader.PartyBelongedTo == destroyedMobileParty)
+                    ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(leader);
             }
             
             if (!destroyedMobileParty.IsBanditMilitiaParty() || destroyer?.LeaderHero is null || !destroyer.LeaderHero.IsAlive)

@@ -403,11 +403,12 @@ namespace BanditMilitiasRedux.Managers
                 return;
             
             Hero? partyLeaderOne = mobilePartyToSplit.LeaderHero;
-            Hero? partyLeaderTwo = ReusableHeroesBehavior.Instance?.TryGetReusableBanditHero(mobilePartyToSplit.ActualClan);
-            
-            if (partyLeaderOne is null || partyLeaderTwo is null)
+            if (partyLeaderOne is null)
                 return;
             
+            Hero? partyLeaderTwo = ReusableHeroesBehavior.Instance?.TryGetReusableBanditHero(mobilePartyToSplit.ActualClan);
+            if (partyLeaderTwo is null)
+                return;
             
             if (ReusableHeroesBehavior.IsWaitingForReuse(partyLeaderOne))
                 Logs.WriteToFile("BMR-REATTACH-VIOLATION",
@@ -422,13 +423,13 @@ namespace BanditMilitiasRedux.Managers
             var itemRosterOne = new ItemRoster();
             var itemRosterTwo = new ItemRoster();
             
-            SplitRosters(mobilePartyToSplit, troopRosterOne, troopRosterTwo, prisonerRosterOne, prisonerRosterTwo, itemRosterOne, itemRosterTwo);
-            
             List<Hero> otherHeroes = mobilePartyToSplit.MemberRoster.GetTroopRoster()
                 .WhereQ(t => t.Character.IsHero && t.Character.HeroObject != partyLeaderOne && !t.Character.IsPlayerCharacter)
                 .SelectQ(t => t.Character.HeroObject)
                 .OrderByDescending(h => h.Power)
                 .ToListQ();
+            
+            SplitRosters(mobilePartyToSplit, troopRosterOne, troopRosterTwo, prisonerRosterOne, prisonerRosterTwo, itemRosterOne, itemRosterTwo);
             
             for (int i = otherHeroes.Count - 1; i >= 0; i--)
             {

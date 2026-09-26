@@ -32,6 +32,8 @@ namespace BanditMilitiasRedux.Constructors
         public override Settlement HomeSettlement => _homeSettlement;
         public new Banner? Banner => _banner;
         public string BannerKey => _bannerKey;
+        public override Banner GetDefaultComponentBanner() =>
+            Settings.RandomBanners ? _banner ?? base.GetDefaultComponentBanner() : base.GetDefaultComponentBanner();
         public Dictionary<Hero, float> Avoidance => _avoidance;
         
         protected override void OnMobilePartySetOnCreation()

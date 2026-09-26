@@ -15,6 +15,7 @@ namespace BanditMilitiasRedux
     public static class Globals
     {
         internal static bool IsGlobalModStateInitialized;
+        internal static bool SuppressExecutionHonorPenalty;
         internal const float FindNearbyBanditsRadius = 20;
         internal const float MergeDistanceSq = 2.25f;
         internal const float MinSizeRatioForSplit = 0.8f;
@@ -115,7 +116,6 @@ namespace BanditMilitiasRedux
         {
             PowerCalculationManager.Reset();
             EquipmentPool.Reset();
-            ReusableHeroesBehavior.Reset();
             Banners.Clear();
             StuckTracker.Clear();
             DeferredTrashParties.Clear();

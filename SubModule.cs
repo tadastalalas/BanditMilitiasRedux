@@ -78,6 +78,7 @@ namespace BanditMilitiasRedux
                 gameStarter.AddBehavior(new ReusableHeroesBehavior());
                 gameStarter.AddBehavior(new NotorietyBehavior());
                 gameStarter.AddBehavior(new DialogsBehavior());
+                gameStarter.AddBehavior(new HeroDefectionBehavior());
             }
             if (MCMSettings.Instance != null)
                 MCMSettings.OnSettingsChanged += OnSettingsChanged;
@@ -106,6 +107,7 @@ namespace BanditMilitiasRedux
             base.OnGameEnd(game);
 
             AllAliveBanditMilitiaHeroes.Clear();
+            ReusableHeroesBehavior.Reset();
             ClearGlobals();
             BanditMilitiaManager.ResetUpgraderBehavior();
             MCMSettings.OnSettingsChanged -= OnSettingsChanged;

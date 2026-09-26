@@ -214,7 +214,7 @@ namespace BanditMilitiasRedux.Patches
                 if (__instance?.IsBanditMilitiaParty() != true)
                     return;
 
-                if (__instance.LeaderHero is { IsAlive: true, IsPrisoner: false } leader && leader.IsBanditMilitiaHero())
+                if (__instance.LeaderHero is { IsAlive: true, IsPrisoner: false } leader && leader.IsBanditMilitiaHero() && leader.PartyBelongedTo == __instance)
                     ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(leader);
             }
         }

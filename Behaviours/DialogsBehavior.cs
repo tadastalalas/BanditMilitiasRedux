@@ -77,6 +77,18 @@ namespace BanditMilitiasRedux.Behaviours
             starter.AddPlayerLine("bmr_captive_execute_cancel", "bmr_captive_execute_confirm", "close_window",
                 "{=BMRCaptiveExecuteCancel}Fine then. You are my prisoner now.",
                 null, bmr_captive_keep_consequence, Priority);
+            
+            starter.AddDialogLine("bmr_prisoner_pretalk", "lord_pretalk", "prisoner_recruit_start_player",
+                "{=BMRPrisonerPretalk}What else do you want from me?",
+                bmr_prisoner_pretalk_condition, null, Priority);
+            
+            starter.AddPlayerLine("bmr_prisoner_execute", "prisoner_recruit_start_player", "bmr_captive_execute_answer",
+                "{=BMRCaptiveExecute}Do not expect mercy. Off with your head!",
+                bmr_prisoner_execute_condition, null, Priority);
+
+            starter.AddPlayerLine("bmr_prisoner_execute_cancel", "bmr_captive_execute_confirm", "prisoner_recruit_start_player",
+                "{=BMRPrisonerExecuteCancel}On second thought... not today.",
+                bmr_prisoner_execute_condition, null, Priority + 1);
         }
 
         private static bool bmr_leader_condition()
@@ -139,5 +151,13 @@ namespace BanditMilitiasRedux.Behaviours
                     Hero.MainHero, hero, SceneNotificationData.RelevantContextType.Any,
                     () => KillCharacterAction.ApplyByExecution(hero, Hero.MainHero, true, isForced: true)));
         }
+        
+        private static bool bmr_prisoner_pretalk_condition()
+            => Hero.OneToOneConversationHero is { IsPrisoner: true } hero && hero.IsBanditMilitiaHero();
+        
+        private static bool bmr_prisoner_execute_condition()
+            => Hero.OneToOneConversationHero is { IsPrisoner: true, IsAlive: true } hero
+               && hero.IsBanditMilitiaHero()
+               && hero.PartyBelongedToAsPrisoner == PartyBase.MainParty;
     }
 }

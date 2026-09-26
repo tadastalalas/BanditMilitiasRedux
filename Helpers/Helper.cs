@@ -77,7 +77,7 @@ namespace BanditMilitiasRedux.Helpers
 
             Hero? leaderToReserve = mobileParty.LeaderHero;
 
-            if (leaderToReserve is { IsAlive: true, IsPrisoner: false })
+            if (leaderToReserve is { IsAlive: true, IsPrisoner: false } && leaderToReserve.PartyBelongedTo == mobileParty)
                 ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(leaderToReserve);
 
             mobileParty.Ai?.DisableAi();
@@ -274,7 +274,10 @@ namespace BanditMilitiasRedux.Helpers
             Giant = MBObjectManager.Instance.GetObject<CharacterObject>("giant");
 
             var stateMap = AccessTools.FieldRefAccess<ConversationManager, Dictionary<string, int>>("stateMap")(Campaign.Current.ConversationManager);
-            LordConversationTokens = [.. stateMap.Keys.WhereQ(k => k.Contains("lord_") || k.Contains("_lord")).SelectQ(k => stateMap[k])];
+            // lord_pretalk is the shared "back to hub" token; vanilla routes it unconditionally to hero_main_options
+            LordConversationTokens = [.. stateMap.Keys
+                .WhereQ(k => k != "lord_pretalk" && (k.Contains("lord_") || k.Contains("_lord")))
+                .SelectQ(k => stateMap[k])];
             
             var filter = new List<string>
             {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Module xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/BUTR/Bannerlord.XmlSchemas/master/SubModule.xsd" >
+<Module>
   <Id value="$moduleid$" />
   <Name value="$modulename$" />
   <Version value="v$version$" />
@@ -10,21 +9,19 @@
   <Url value="$moduleurl$" />
   <DependedModules>
     <DependedModule Id="Bannerlord.Harmony" DependentVersion="v2.4.2" />
-    <DependedModule Id="Bannerlord.MBOptionScreen" DependentVersion="v5.12.1" />
+    <DependedModule Id="Bannerlord.MBOptionScreen" DependentVersion="v5.12.3" />
 	<DependedModule Id="Native" />
 	<DependedModule Id="SandBoxCore" />
 	<DependedModule Id="Sandbox" />
 	<DependedModule Id="StoryMode" />
-	<DependedModule Id="CustomBattle" />
   </DependedModules>
   <DependedModuleMetadatas>
     <DependedModuleMetadata id="Bannerlord.Harmony" order="LoadBeforeThis" version="v2.4.2" />
-	<DependedModuleMetadata id="Bannerlord.MBOptionScreen" order="LoadBeforeThis" version="v5.12.1" />
+	<DependedModuleMetadata id="Bannerlord.MBOptionScreen" order="LoadBeforeThis" version="v5.12.3" />
     <DependedModuleMetadata id="Native" order="LoadBeforeThis" />
     <DependedModuleMetadata id="SandBoxCore" order="LoadBeforeThis" />
     <DependedModuleMetadata id="Sandbox" order="LoadBeforeThis" />
     <DependedModuleMetadata id="StoryMode" order="LoadBeforeThis" />
-    <DependedModuleMetadata id="CustomBattle" order="LoadBeforeThis" />
   </DependedModuleMetadatas>
   <SubModules>
     <SubModule>
