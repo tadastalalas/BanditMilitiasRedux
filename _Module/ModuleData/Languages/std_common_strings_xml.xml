@@ -44,6 +44,8 @@
 
         <string id="BMIgnore" text="Ignore Villagers/Caravans"/>
         <string id="BMIgnoreDesc" text="They won't be attacked by BMs."/>
+        <string id="BMExecHonorXp" text="Honor XP per Executed BM Leader"/>
+        <string id="BMExecHonorXpDesc" text="Honor trait XP the player gains for executing a Bandit Militia leader. 0 disables."/>
         <string id="BMStronger" text="Max Stronger Target %"/>
         <string id="BMStrongerDesc" text="BMs will not engage parties stronger than themselves by more than this %. 100 means attack regardless of how strong the target is."/>
         <string id="BMWeaker" text="Ignore Weaker Parties"/>

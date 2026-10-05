@@ -136,8 +136,13 @@ namespace BanditMilitiasRedux.Behaviours
         private static void bmr_captive_release_consequence()
         {
             Hero? hero = Hero.OneToOneConversationHero;
-            if (hero is { IsPrisoner: true })
+            if (hero is not { IsAlive: true })
+                return;
+
+            if (hero.IsPrisoner)
                 EndCaptivityAction.ApplyByReleasedAfterBattle(hero);
+            else
+                ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(hero);
         }
         
         private static void bmr_captive_execute_consequence()

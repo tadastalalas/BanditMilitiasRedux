@@ -44,6 +44,8 @@
 
                 <string id="BMIgnore" text="忽略村民／商隊"/>
                 <string id="BMIgnoreDesc" text="他們不會被 BM 攻擊。"/>
+                <string id="BMExecHonorXp" text="處決 BM 首領獲得的榮譽經驗"/>
+                <string id="BMExecHonorXpDesc" text="玩家處決土匪民兵首領時獲得的榮譽特質經驗。0 表示停用。"/>
                 <string id="BMStronger" text="可攻擊更強目標最大 %"/>
                 <string id="BMStrongerDesc" text="BM 不會與比自身強出超過此百分比的隊伍交戰。100 表示無論目標多強都會攻擊。"/>
                 <string id="BMWeaker" text="忽略較弱隊伍"/>

@@ -44,6 +44,8 @@
 
                 <string id="BMIgnore" text="村人/隊商を無視"/>
                 <string id="BMIgnoreDesc" text="BM は彼らを攻撃しません。"/>
+                <string id="BMExecHonorXp" text="BM リーダー処刑ごとの名誉 XP"/>
+                <string id="BMExecHonorXpDesc" text="盗賊民兵のリーダーを処刑した際にプレイヤーが得る名誉特性 XP。0 で無効。"/>
                 <string id="BMStronger" text="より強い目標の上限 %"/>
                 <string id="BMStrongerDesc" text="BM は自身よりこの割合以上に強い部隊とは交戦しません。100 は相手の強さに関係なく攻撃を意味します。"/>
                 <string id="BMWeaker" text="弱い部隊を無視"/>

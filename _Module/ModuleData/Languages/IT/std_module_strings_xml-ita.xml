@@ -44,6 +44,8 @@
 
                 <string id="BMIgnore" text="Ignora villaggi/carovane"/>
                 <string id="BMIgnoreDesc" text="Non verranno attaccati dalle MB."/>
+                <string id="BMExecHonorXp" text="PE Onore per capo MB giustiziato"/>
+                <string id="BMExecHonorXpDesc" text="PE del tratto Onore che il giocatore ottiene giustiziando un capo della Milizia di Banditi. 0 disattiva."/>
                 <string id="BMStronger" text="% max bersaglio più forte"/>
                 <string id="BMStrongerDesc" text="Le MB non ingaggeranno gruppi più forti di loro oltre questa %. 100 significa attaccare indipendentemente dalla forza del bersaglio."/>
                 <string id="BMWeaker" text="Ignora gruppi più deboli"/>

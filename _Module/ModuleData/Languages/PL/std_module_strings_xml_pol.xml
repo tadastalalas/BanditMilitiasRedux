@@ -44,6 +44,8 @@
 
                 <string id="BMIgnore" text="Ignoruj wieśniaków/karawany"/>
                 <string id="BMIgnoreDesc" text="Nie będą atakowani przez BM."/>
+                <string id="BMExecHonorXp" text="PD Honoru za egzekucję przywódcy BM"/>
+                <string id="BMExecHonorXpDesc" text="PD cechy Honor, które gracz otrzymuje za egzekucję przywódcy Milicji Bandytów. 0 wyłącza."/>
                 <string id="BMStronger" text="Maks. % silniejszego celu"/>
                 <string id="BMStrongerDesc" text="BM nie zaatakują grup silniejszych od siebie o więcej niż ten %. 100 oznacza atak niezależnie od siły celu."/>
                 <string id="BMWeaker" text="Ignoruj słabsze grupy"/>

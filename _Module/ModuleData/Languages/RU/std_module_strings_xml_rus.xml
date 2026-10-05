@@ -44,6 +44,8 @@
 
                 <string id="BMIgnore" text="Игнорировать крестьян/караваны"/>
                 <string id="BMIgnoreDesc" text="Они не будут атаковаться BM."/>
+                <string id="BMExecHonorXp" text="Опыт Чести за казнь лидера BM"/>
+                <string id="BMExecHonorXpDesc" text="Опыт черты «Честь», получаемый игроком за казнь лидера Бандитского ополчения. 0 отключает."/>
                 <string id="BMStronger" text="Макс. % более сильной цели"/>
                 <string id="BMStrongerDesc" text="BM не вступают в бой с отрядами, которые сильнее их более чем на этот %. 100 означает атаку независимо от силы цели."/>
                 <string id="BMWeaker" text="Игнорировать более слабые отряды"/>

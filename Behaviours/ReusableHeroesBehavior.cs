@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BanditMilitiasRedux.Helpers;
+using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
@@ -24,7 +25,13 @@ namespace BanditMilitiasRedux.Behaviours
             CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, _ => ReclaimOrphanedHeroes());
         }
         
-        public override void SyncData(IDataStore dataStore) => dataStore.SyncData("_waitingToBeReusedHeroes", ref _waitingToBeReusedHeroes);
+        public override void SyncData(IDataStore dataStore)
+        {
+            dataStore.SyncData("_waitingToBeReusedHeroes", ref _waitingToBeReusedHeroes);
+            if (dataStore.IsLoading)
+                foreach (List<Hero> heroes in _waitingToBeReusedHeroes.Values)
+                    heroes.RemoveAll(h => h is not { IsAlive: true, HeroDeveloper: not null });
+        }
         
         internal static IReadOnlyDictionary<Clan, List<Hero>> GetWaitingHeroesByClan() => _waitingToBeReusedHeroes;
         
@@ -34,15 +41,15 @@ namespace BanditMilitiasRedux.Behaviours
         {
             if (!_waitingToBeReusedHeroes.TryGetValue(clan, out List<Hero> heroes))
                 _waitingToBeReusedHeroes[clan] = heroes = [];
-            
-            Hero? reusableHero = heroes.FirstOrDefault();
 
-            if (reusableHero == null)
-                return null;
-            
-            RemoveHeroFromTheWaitingDictionary(reusableHero);
-            
-            return reusableHero;
+            while (heroes.Count > 0)
+            {
+                Hero hero = heroes[0];
+                heroes.RemoveAt(0);
+                if (hero is { IsAlive: true, HeroDeveloper: not null })
+                    return hero;
+            }
+            return null;
         }
 
         private static void OnHeroPrisonerReleasedEvent(Hero? prisoner, PartyBase? party, IFaction capturerFaction, EndCaptivityDetail detail, bool showNotification = true)
@@ -52,7 +59,8 @@ namespace BanditMilitiasRedux.Behaviours
 
             if (detail == EndCaptivityDetail.Death)
                 return;
-
+            
+            EquipmentHelper.AssignHeroEquipmentFromEquipment(prisoner, EquipmentPool.GetRandomEquipmentSet());
             AddHeroToTheWaitingDictionary(prisoner);
         }
 
@@ -61,7 +69,8 @@ namespace BanditMilitiasRedux.Behaviours
             if (victim == null || !victim.IsBanditMilitiaHero())
                 return;
 
-            RemoveHeroFromTheWaitingDictionary(victim);
+            foreach (List<Hero> heroes in _waitingToBeReusedHeroes.Values)
+                heroes.Remove(victim);
         }
         
         private static void OnHeroPrisonerTakenEvent(PartyBase capturer, Hero prisoner)

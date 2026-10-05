@@ -44,6 +44,8 @@
 
                 <string id="BMIgnore" text="Dorfbewohner/Karawanen ignorieren"/>
                 <string id="BMIgnoreDesc" text="Sie werden nicht von BMs angegriffen."/>
+                <string id="BMExecHonorXp" text="Ehre-EP pro hingerichtetem BM-Anführer"/>
+                <string id="BMExecHonorXpDesc" text="Ehre-Eigenschafts-EP, die der Spieler für die Hinrichtung eines Banditenmiliz-Anführers erhält. 0 deaktiviert."/>
                 <string id="BMStronger" text="Max. stärkeres Ziel %"/>
                 <string id="BMStrongerDesc" text="BMs greifen keine Parteien an, die um mehr als diesen Prozentsatz stärker sind als sie selbst. 100 bedeutet Angriff unabhängig von der Stärke des Ziels."/>
                 <string id="BMWeaker" text="Schwächere Parteien ignorieren"/>

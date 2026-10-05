@@ -93,16 +93,6 @@ namespace BanditMilitiasRedux.Patches
                     {
                         case true when leaderCapturable:
                         {
-                            TakePrisonerAction.Apply(PartyBase.MainParty, defeatedLeader);
-                            defeatedLeader.IsKnownToPlayer = true;
-                            Helper.GrantDefeatBounty(defeatedLeader, BanditMilitiaParty.Party.EstimatedStrength);
-
-                            if (Hero.MainHero?.PartyBelongedToAsPrisoner?.MobileParty != BanditMilitiaParty)
-                                TryTrashMobilePartySafelyReservingBanditLeader(BanditMilitiaParty);
-                            continue;
-                        }
-                        case true when leaderCapturable:
-                        {
                             defeatedLeader.IsKnownToPlayer = true;
                             Helper.GrantDefeatBounty(defeatedLeader, BanditMilitiaParty.Party.EstimatedStrength);
 

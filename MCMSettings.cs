@@ -103,16 +103,20 @@ namespace BanditMilitiasRedux
         [SettingPropertyBool("{=BMIgnore}Ignore Villagers & Caravans", Order = 2, RequireRestart = false, HintText = "{=BMIgnoreDesc}Bandit Militias will not attack villagers or caravans.")]
         [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
         public bool IgnoreVillagersCaravans { get; private set; } = false;
+        
+        [SettingPropertyInteger("{=BMExecHonorXp}Honor XP per Executed BM Leader", 0, 1000, Order = 3, RequireRestart = false, HintText = "{=BMExecHonorXpDesc}Honor trait XP the player gains for executing a Bandit Militia leader. 0 disables.")]
+        [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
+        public int ExecutionHonorXp { get; private set; } = 0;
 
-        [SettingPropertyBool("{=BMPillage}Enable Village Raiding", Order = 3, RequireRestart = false, HintText = "{=BMPillageDesc}Allow Bandit Militias to raid villages.")]
+        [SettingPropertyBool("{=BMPillage}Enable Village Raiding", Order = 4, RequireRestart = false, HintText = "{=BMPillageDesc}Allow Bandit Militias to raid villages.")]
         [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
         public bool AllowPillaging { get; private set; } = true;
 
-        [SettingPropertyFloatingInteger("{=BMPillageChance}Hourly Raid Chance %", 0, 100, Order = 4, RequireRestart = false, HintText = "{=BMPillageChanceDesc}Each hour every Bandit Militia has this % chance to consider raiding a nearby village. Keep this low.")]
+        [SettingPropertyFloatingInteger("{=BMPillageChance}Hourly Raid Chance %", 0, 100, Order = 5, RequireRestart = false, HintText = "{=BMPillageChanceDesc}Each hour every Bandit Militia has this % chance to consider raiding a nearby village. Keep this low.")]
         [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
         public float PillagingChance { get; private set; } = 1;
 
-        [SettingPropertyInteger("{=BMRaidCapScale}Raid Cap Scale %", 10, 500, Order = 5, RequireRestart = false, HintText = "{=BMRaidCapScaleDesc}Scales the maximum number of simultaneous village raids. The baseline is auto-calculated as (total villages ÷ 10). 100% = default. Lower = fewer raids at once, Higher = more raids at once.")]
+        [SettingPropertyInteger("{=BMRaidCapScale}Raid Cap Scale %", 10, 500, Order = 6, RequireRestart = false, HintText = "{=BMRaidCapScaleDesc}Scales the maximum number of simultaneous village raids. The baseline is auto-calculated as (total villages ÷ 10). 100% = default. Lower = fewer raids at once, Higher = more raids at once.")]
         [SettingPropertyGroup("{=BMAIBehavior}Behavior & AI")]
         public int RaidCapPercent { get; private set; } = 100;
 

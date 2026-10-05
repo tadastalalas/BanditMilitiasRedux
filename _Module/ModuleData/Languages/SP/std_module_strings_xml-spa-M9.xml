@@ -44,6 +44,8 @@
 
                 <string id="BMIgnore" text="Ignorar aldeanos/caravanas"/>
                 <string id="BMIgnoreDesc" text="No serán atacados por las MB."/>
+                <string id="BMExecHonorXp" text="PX de Honor por líder de MB ejecutado"/>
+                <string id="BMExecHonorXpDesc" text="PX del rasgo Honor que gana el jugador al ejecutar a un líder de Milicia de Bandidos. 0 lo desactiva."/>
                 <string id="BMStronger" text="% máx. de objetivo más fuerte"/>
                 <string id="BMStrongerDesc" text="Las MB no atacarán partidas más fuertes que ellas por más de este %. 100 significa atacar sin importar qué tan fuerte sea el objetivo."/>
                 <string id="BMWeaker" text="Ignorar partidas más débiles"/>

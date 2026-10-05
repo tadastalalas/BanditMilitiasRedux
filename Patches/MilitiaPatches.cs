@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using BanditMilitiasRedux.Behaviours;
 using BanditMilitiasRedux.Constructors;
@@ -31,6 +32,7 @@ using TaleWorlds.CampaignSystem.ViewModelCollection.Encyclopedia.Pages;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Map.Tracker;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.ImageIdentifiers;
+using TaleWorlds.Library;
 using TaleWorlds.LinQuick;
 using TaleWorlds.Localization;
 using static BanditMilitiasRedux.Globals;
@@ -192,15 +194,49 @@ namespace BanditMilitiasRedux.Patches
         [HarmonyPatch(typeof(DefaultVoiceOverModel), "GetSoundPathForCharacter")]
         public static class DefaultVoiceOverModelGetSoundPathForCharacterPatch
         {
+            private static readonly List<string> Candidates = [];
+            private static readonly char[] PathSeparators = ['\\', '/'];
+
             public static void Postfix(CharacterObject character, VoiceObject voiceObject, ref string __result)
             {
-                if (!Globals.Settings.CheckVoiceGender)
+                if (character is null || voiceObject?.VoicePaths is null || !character.IsBanditMilitiaCharacterObject())
                     return;
-                
-                if (character.IsBanditMilitiaCharacterObject() && character.IsFemale)
+
+                if (character.IsFemale)
                 {
-                    if (!__result.Contains("_female"))
+                    // No vanilla female bandit lines exist; keep the gender guard until we ship our own.
+                    if (Globals.Settings.CheckVoiceGender && __result?.Contains("_female") != true)
                         __result = "";
+                    return;
+                }
+
+                string? culture = character.HeroObject?.Clan?.Culture?.StringId;
+                Candidates.Clear();
+                if (culture is not null)
+                    AddBanditVoiceMatches(voiceObject.VoicePaths, culture, Candidates);
+                if (Candidates.Count == 0 && culture != "looters")
+                    AddBanditVoiceMatches(voiceObject.VoicePaths, "looters", Candidates);
+                if (Candidates.Count == 0)
+                    return;
+
+                string path = Candidates[character.HeroObject?.RandomInt(Candidates.Count) ?? 0].Replace("$PLATFORM", "PC");
+                __result = path.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) ? path : path + ".ogg";
+            }
+
+            // Legacy bandit lines: "{culture}_NN_token", e.g. "looters_01_greeting".
+            private static void AddBanditVoiceMatches(MBReadOnlyList<string> paths, string culture, List<string> result)
+            {
+                string prefix = culture + "_";
+                for (int i = 0; i < paths.Count; i++)
+                {
+                    string path = paths[i];
+                    int start = path.LastIndexOfAny(PathSeparators) + 1;
+                    if (string.Compare(path, start, prefix, 0, prefix.Length, StringComparison.OrdinalIgnoreCase) != 0)
+                        continue;
+                    int p = start + prefix.Length;
+                    if (p + 3 > path.Length || !char.IsDigit(path[p]) || !char.IsDigit(path[p + 1]) || path[p + 2] != '_')
+                        continue;
+                    result.Add(path);
                 }
             }
         }
@@ -435,20 +471,30 @@ namespace BanditMilitiasRedux.Patches
         [HarmonyPatch(typeof(KillCharacterAction), "ApplyInternal")]
         public class KillCharacterActionApplyInternalPatch
         {
-            public static void Prefix(Hero victim, KillCharacterAction.KillCharacterActionDetail actionDetail)
-                => SuppressExecutionHonorPenalty = victim?.IsBanditMilitiaHero() == true
-                                                   && actionDetail is KillCharacterAction.KillCharacterActionDetail.Executed
-                                                       or KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent;
+            private static readonly MethodInfo AddPlayerTraitXp = AccessTools.Method(typeof(TraitLevelingHelper), "AddPlayerTraitXPAndLogEntry");
             
+            public static void Prefix(Hero victim, KillCharacterAction.KillCharacterActionDetail actionDetail)
+            {
+                if (victim?.IsBanditMilitiaHero() == true
+                    && actionDetail is KillCharacterAction.KillCharacterActionDetail.Executed
+                        or KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent)
+                    SuppressedExecutionVictim = victim;
+            }
+
             public static void Postfix(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail actionDetail, bool showNotification, bool isForced = false)
             {
-                SuppressExecutionHonorPenalty = false;
-                
-                if (!AllAliveBanditMilitiaHeroes.Contains(victim))
+                bool wasBmExecution = victim is not null && SuppressedExecutionVictim == victim;
+                if (wasBmExecution)
+                    SuppressedExecutionVictim = null;
+
+                if (victim is null || !AllAliveBanditMilitiaHeroes.Contains(victim))
                     return;
-                
+
                 AllAliveBanditMilitiaHeroes.Remove(victim);
                 CharacterRelationManager.Instance.RemoveHero(victim);
+
+                if (wasBmExecution && killer == Hero.MainHero && Globals.Settings.ExecutionHonorXp > 0)
+                    AddPlayerTraitXp?.Invoke(null, [DefaultTraits.Honor, Globals.Settings.ExecutionHonorXp, ActionNotes.SacrificedTroops, victim]);
             }
         }
 
@@ -664,10 +710,12 @@ namespace BanditMilitiasRedux.Patches
             }
         }
         
-        [HarmonyPatch(typeof(TraitLevelingHelper), nameof(TraitLevelingHelper.OnLordExecuted))]
-        public static class TraitLevelingHelperOnLordExecutedPatch
+        [HarmonyPatch(typeof(TraitLevelingHelper), "AddPlayerTraitXPAndLogEntry")]
+        public static class TraitLevelingHelperAddPlayerTraitXpPatch
         {
-            public static bool Prefix() => !SuppressExecutionHonorPenalty;
+            // Prefix: must skip vanilla's -1000 Honor; OnLordExecuted itself gets inlined so patching it does nothing.
+            public static bool Prefix(TraitObject trait, int xpValue)
+                => SuppressedExecutionVictim is null || trait != DefaultTraits.Honor || xpValue != -1000;
         }
     }
 }

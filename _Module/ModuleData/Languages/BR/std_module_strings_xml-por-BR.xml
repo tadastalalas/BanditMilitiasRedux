@@ -44,6 +44,8 @@
 
                 <string id="BMIgnore" text="Ignorar Aldeões/Caravanas"/>
                 <string id="BMIgnoreDesc" text="Eles não serão atacados pelas MBs."/>
+                <string id="BMExecHonorXp" text="XP de Honra por Líder de MB Executado"/>
+                <string id="BMExecHonorXpDesc" text="XP do traço Honra que o jogador ganha ao executar um líder de Milícia de Bandidos. 0 desativa."/>
                 <string id="BMStronger" text="Máx. % de Alvo Mais Forte"/>
                 <string id="BMStrongerDesc" text="MBs não enfrentarão grupos mais fortes que elas em mais de X%. 100 significa atacar independentemente da força do alvo."/>
                 <string id="BMWeaker" text="Ignorar Grupos Mais Fracos"/>

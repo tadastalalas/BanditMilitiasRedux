@@ -44,6 +44,8 @@
 
                 <string id="BMIgnore" text="Ignorer villageois/caravanes"/>
                 <string id="BMIgnoreDesc" text="Ils ne seront pas attaqués par les MB."/>
+                <string id="BMExecHonorXp" text="XP d'Honneur par chef de MB exécuté"/>
+                <string id="BMExecHonorXpDesc" text="XP du trait Honneur gagnée par le joueur en exécutant un chef de Milice de Bandits. 0 désactive."/>
                 <string id="BMStronger" text="% max de cible plus forte"/>
                 <string id="BMStrongerDesc" text="Les MB n’engageront pas des groupes plus forts qu’elles de plus de ce %. 100 signifie attaquer quelle que soit la force de la cible."/>
                 <string id="BMWeaker" text="Ignorer les groupes plus faibles"/>

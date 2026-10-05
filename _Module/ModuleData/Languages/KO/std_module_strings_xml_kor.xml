@@ -44,6 +44,8 @@
 
                 <string id="BMIgnore" text="마을 주민/대상단 무시"/>
                 <string id="BMIgnoreDesc" text="BM이 이들을 공격하지 않습니다."/>
+                <string id="BMExecHonorXp" text="BM 지도자 처형당 명예 XP"/>
+                <string id="BMExecHonorXpDesc" text="산적 민병대 지도자를 처형할 때 플레이어가 얻는 명예 특성 XP입니다. 0이면 비활성화됩니다."/>
                 <string id="BMStronger" text="더 강한 대상 최대 %"/>
                 <string id="BMStrongerDesc" text="BM은 자신보다 이 비율 이상 강한 파티와 교전하지 않습니다. 100은 대상이 아무리 강해도 공격함을 의미합니다."/>
                 <string id="BMWeaker" text="더 약한 파티 무시"/>

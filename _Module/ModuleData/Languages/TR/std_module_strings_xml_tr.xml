@@ -44,6 +44,8 @@
 
                 <string id="BMIgnore" text="Köylüleri/Kervanları Yoksay"/>
                 <string id="BMIgnoreDesc" text="BM'ler tarafından saldırıya uğramazlar."/>
+                <string id="BMExecHonorXp" text="İdam Edilen BM Lideri Başına Onur TP"/>
+                <string id="BMExecHonorXpDesc" text="Oyuncunun bir Haydut Milisi liderini idam ederek kazandığı Onur özellik TP'si. 0 devre dışı bırakır."/>
                 <string id="BMStronger" text="Azami Daha Güçlü Hedef %"/>
                 <string id="BMStrongerDesc" text="BM'ler, kendilerinden bu yüzdeden daha fazla güçlü gruplara saldırmaz. 100, hedef ne kadar güçlü olursa olsun saldırmak demektir."/>
                 <string id="BMWeaker" text="Daha Zayıf Grupları Yoksay"/>
