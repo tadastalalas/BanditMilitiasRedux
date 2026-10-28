@@ -25,7 +25,7 @@ namespace BanditMilitiasRedux.Constructors
         [SaveableField(6)] public CampaignTime LastMergedOrSplitDate = CampaignTime.Now;
         [SaveableField(7)] private readonly Dictionary<Hero, float> _avoidance;
 
-        public override TextObject Name => _cachedName ?? CreateCachedName();
+        public override TextObject Name => _cachedName ??= CreateCachedName();
         private Hero Owner { get => _owner; set => _owner = value; }
         public override Hero PartyOwner => Owner;
         public override Hero Leader => _leader;

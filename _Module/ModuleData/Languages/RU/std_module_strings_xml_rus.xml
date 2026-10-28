@@ -130,9 +130,9 @@
                 <string id="BMCooldownDesc" text="Бандитское ополчение не сможет снова объединиться или разделиться, пока не пройдёт столько игровых часов."/>
                 <string id="BMIgnoreSizePenalty" text="Игнорировать штраф скорости за размер отряда"/>
                 <string id="BMIgnoreSizePenaltyDesc" text="Бандитские ополчения передвигаются с полной скоростью независимо от размера отряда."/>
-                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} подвергается набегу со стороны {party.Name}!"/>
-                <string id="BMVillageRaided" text="{raidedSettlement?.Name} разграблено! {party.Name} с богатой добычей у {townName}!"/>
-                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} грабит вашу деревню {nearestVillage.Name} рядом с {nearestVillage.Town?.Name}!"/>
+                <string id="BMVillageBeingRaided" text="{VILLAGE} подвергается набегу со стороны {PARTY}!"/>
+                <string id="BMVillageRaided" text="{VILLAGE} разграблено! {PARTY} с богатой добычей у {TOWN}!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{PARTY} грабит вашу деревню {VILLAGE} рядом с {TOWN}!"/>
                 <string id="BMGenderSlider" text="Шанс женщины-лидера (%)"/>
                 <string id="BMGenderSliderDesc" text="Шанс того, что лидер бандитского ополчения будет женщиной. 0 = все мужчины, 100 = все женщины."/>
         </strings>

@@ -130,9 +130,9 @@
                 <string id="BMCooldownDesc" text="도적 민병대는 게임 내 이 시간이 지나기 전까지 다시 합치거나 분리할 수 없습니다."/>
                 <string id="BMIgnoreSizePenalty" text="파티 규모 속도 페널티 무시"/>
                 <string id="BMIgnoreSizePenaltyDesc" text="도적 민병대는 파티 규모와 관계없이 최고 속도로 이동합니다."/>
-                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} 이(가) {party.Name} 에게 약탈당하고 있습니다!"/>
-                <string id="BMVillageRaided" text="{raidedSettlement?.Name} 약탈당함! {party.Name} 이(가) {townName} 근처에서 전리품을 가득 싣고 있습니다!"/>
-                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} 이(가) {nearestVillage.Town?.Name} 근처의 당신의 마을 {nearestVillage.Name} 을(를) 약탈하고 있습니다!"/>
+                <string id="BMVillageBeingRaided" text="{VILLAGE} 이(가) {PARTY} 에게 약탈당하고 있습니다!"/>
+                <string id="BMVillageRaided" text="{VILLAGE} 약탈당함! {PARTY} 이(가) {TOWN} 근처에서 전리품을 가득 싣고 있습니다!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{PARTY} 이(가) {TOWN} 근처의 당신의 마을 {VILLAGE} 을(를) 약탈하고 있습니다!"/>
                 <string id="BMGenderSlider" text="여성 지도자 확률 %"/>
                 <string id="BMGenderSliderDesc" text="도적 민병대 지도자가 여성이 될 확률. 0 = 모두 남성, 100 = 모두 여성."/>
         </strings>

@@ -19,7 +19,6 @@ namespace BanditMilitiasRedux
         internal const float MergeDistanceSq = 2.25f;
         internal const float MinSizeRatioForSplit = 0.8f;
         internal const float AvoidanceEffectToOtherBanditHeroesRadiusSq = 10000f;
-        internal const float AvoidanceDecayToOtherBanditHeroesRadiusSq = 2500f;
         internal const int AvoidanceIncreaseMin = 15;
         internal const int AvoidanceIncreaseMax = 35;
         internal const int AvoidanceDecreaseAmount = 10;

@@ -130,9 +130,9 @@
                 <string id="BMCooldownDesc" text="Une Milice de Bandits ne peut pas fusionner ni se séparer à nouveau avant que ce nombre d'heures en jeu ne se soit écoulé."/>
                 <string id="BMIgnoreSizePenalty" text="Ignorer le malus de vitesse lié à la taille du groupe"/>
                 <string id="BMIgnoreSizePenaltyDesc" text="Les Milices de Bandits se déplacent à pleine vitesse, quelle que soit la taille du groupe."/>
-                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} est en train d'être pillé par {party.Name} !"/>
-                <string id="BMVillageRaided" text="{raidedSettlement?.Name} pillé ! {party.Name} est lourdement chargé de butin près de {townName} !"/>
-                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} pille votre village {nearestVillage.Name} près de {nearestVillage.Town?.Name} !"/>
+                <string id="BMVillageBeingRaided" text="{VILLAGE} est en train d'être pillé par {PARTY} !"/>
+                <string id="BMVillageRaided" text="{VILLAGE} pillé ! {PARTY} est lourdement chargé de butin près de {TOWN} !"/>
+                <string id="BMPlayerVillageBeingRaided" text="{PARTY} pille votre village {VILLAGE} près de {TOWN} !"/>
                 <string id="BMGenderSlider" text="Chance de cheffe féminine %"/>
                 <string id="BMGenderSliderDesc" text="Chance qu'une cheffe de Milice de Bandits soit une femme. 0 = tous hommes, 100 = toutes femmes."/>
         </strings>

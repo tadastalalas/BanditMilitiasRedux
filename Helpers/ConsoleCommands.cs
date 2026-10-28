@@ -4,7 +4,10 @@ using BanditMilitiasRedux.Behaviours;
 using BanditMilitiasRedux.Constructors;
 using BanditMilitiasRedux.Managers;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Party.PartyComponents;
+using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Library;
 using static BanditMilitiasRedux.Globals;
 // ReSharper disable LoopCanBeConvertedToQuery
@@ -190,6 +193,55 @@ namespace BanditMilitiasRedux.Helpers
             }
 
             return sb.ToString();
+        }
+        
+        [CommandLineFunctionality.CommandLineArgumentFunction("orphans", "bmr")]
+        public static string ListOrphans(List<string> strings)
+        {
+            StringBuilder sb = new();
+            foreach (MobileParty party in MobileParty.All)
+            {
+                TroopRoster roster = party.MemberRoster;
+                for (int i = 0; i < roster.Count; i++)
+                {
+                    Hero? hero = roster.GetCharacterAtIndex(i)?.HeroObject;
+                    if (hero is null || hero.IsBanditMilitiaHero() || hero.Clan?.IsBanditFaction != true)
+                        continue;
+                    sb.AppendLine($"{hero.Name} | {hero.Occupation} | {hero.Clan.Name} | party={party.StringId} | {party.PartyComponent?.GetType().Name} | leader={(party.LeaderHero?.Name.ToString() ?? "none")} | size={roster.TotalManCount}");
+                }
+            }
+            return sb.Length == 0 ? "No orphaned bandit heroes in parties." : sb.ToString();
+        }
+        
+        [CommandLineFunctionality.CommandLineArgumentFunction("fix_orphans", "bmr")]
+        public static string FixOrphans(List<string> strings)
+        {
+            int adopted = 0;
+            List<MobileParty> emptied = [];
+            foreach (MobileParty party in MobileParty.All)
+            {
+                if (party.PartyComponent is not BanditPartyComponent || party.MapEvent is not null)
+                    continue;
+
+                TroopRoster roster = party.MemberRoster;
+                for (int i = roster.Count - 1; i >= 0; i--)
+                {
+                    Hero? hero = roster.GetCharacterAtIndex(i)?.HeroObject;
+                    if (hero is null || hero.IsBanditMilitiaHero() || hero.Occupation != Occupation.Bandit || hero.Clan?.IsBanditFaction != true)
+                        continue;
+
+                    roster.AddToCounts(hero.CharacterObject, -1);
+                    AllAliveBanditMilitiaHeroes.Add(hero);
+                    ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(hero);
+                    adopted++;
+                }
+                if (roster.TotalManCount == 0)
+                    emptied.Add(party);
+            }
+            for (int i = 0; i < emptied.Count; i++)
+                DestroyPartyAction.Apply(null, emptied[i]);
+
+            return $"Re-adopted {adopted} hero(es), destroyed {emptied.Count} empty party(ies).";
         }
     }
 }

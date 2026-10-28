@@ -130,9 +130,9 @@
                 <string id="BMCooldownDesc" text="盗賊民兵は、ゲーム内でこの時間が経過するまで再び合流または分割できません。"/>
                 <string id="BMIgnoreSizePenalty" text="部隊規模による速度ペナルティを無視"/>
                 <string id="BMIgnoreSizePenaltyDesc" text="盗賊民兵は部隊規模に関係なく最大速度で移動します。"/>
-                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} が {party.Name} に略奪されています！"/>
-                <string id="BMVillageRaided" text="{raidedSettlement?.Name} が略奪された！{party.Name} は {townName} 付近で戦利品を満載している！"/>
-                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} が {nearestVillage.Town?.Name} 付近のあなたの村 {nearestVillage.Name} を略奪しています！"/>
+                <string id="BMVillageBeingRaided" text="{VILLAGE} が {PARTY} に略奪されています！"/>
+                <string id="BMVillageRaided" text="{VILLAGE} が略奪された！{PARTY} は {TOWN} 付近で戦利品を満載している！"/>
+                <string id="BMPlayerVillageBeingRaided" text="{PARTY} が {TOWN} 付近のあなたの村 {VILLAGE} を略奪しています！"/>
                 <string id="BMGenderSlider" text="女性リーダー出現率 %"/>
                 <string id="BMGenderSliderDesc" text="盗賊民兵のリーダーが女性になる確率。0 = 全員男性、100 = 全員女性。"/>
         </strings>

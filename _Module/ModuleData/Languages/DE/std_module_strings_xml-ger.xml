@@ -130,9 +130,9 @@
                 <string id="BMCooldownDesc" text="Eine Banditenmiliz kann sich erst erneut zusammenführen oder aufteilen, wenn so viele Spielstunden vergangen sind."/>
                 <string id="BMIgnoreSizePenalty" text="Geschwindigkeitsmalus durch Gruppengröße ignorieren"/>
                 <string id="BMIgnoreSizePenaltyDesc" text="Banditenmilizen bewegen sich unabhängig von der Gruppengröße mit voller Geschwindigkeit."/>
-                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} wird von {party.Name} geplündert!"/>
-                <string id="BMVillageRaided" text="{raidedSettlement?.Name} geplündert! {party.Name} ist nahe {townName} mit Beute schwer beladen!"/>
-                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} plündert dein Dorf {nearestVillage.Name} nahe {nearestVillage.Town?.Name}!"/>
+                <string id="BMVillageBeingRaided" text="{VILLAGE} wird von {PARTY} geplündert!"/>
+                <string id="BMVillageRaided" text="{VILLAGE} geplündert! {PARTY} ist nahe {TOWN} mit Beute schwer beladen!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{PARTY} plündert dein Dorf {VILLAGE} nahe {TOWN}!"/>
                 <string id="BMGenderSlider" text="Chance auf weibliche Anführerin %"/>
                 <string id="BMGenderSliderDesc" text="Chance, dass die Anführerin einer Banditenmiliz weiblich ist. 0 = alle männlich, 100 = alle weiblich."/>
         </strings>

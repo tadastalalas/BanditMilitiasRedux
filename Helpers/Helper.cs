@@ -327,9 +327,9 @@ namespace BanditMilitiasRedux.Helpers
                     && eventParty.Party.MobileParty?.IsBanditMilitiaParty() == true)?.Party;
         }
 
-        internal static Settlement FindNearestTown(Vec2 anchorPos)
+        internal static Settlement? FindNearestTown(Vec2 anchorPos)
         {
-            Settlement nearest = null;
+            Settlement? nearest = null;
             var nearestDistSq = float.MaxValue;
             var search = Settlement.StartFindingLocatablesAroundPosition(anchorPos, SettlementFindRange);
             for (var s = Settlement.FindNextLocatable(ref search); s != null; s = Settlement.FindNextLocatable(ref search))

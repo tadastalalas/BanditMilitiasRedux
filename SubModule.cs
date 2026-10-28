@@ -52,8 +52,8 @@ namespace BanditMilitiasRedux
 
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
-            Settings.XpGift = new Dropdown<string>(DifficultyXpMap.Keys.SelectQ(k => k.ToString()), 1);
-            Settings.GoldReward = new Dropdown<string>(GoldMap.Keys.SelectQ(k => k.ToString()), 1);
+            Settings.XpGift = new Dropdown<string>(DifficultyXpMap.Keys.SelectQ(k => k.ToString()), Settings.XpGift?.SelectedIndex ?? 1);
+            Settings.GoldReward = new Dropdown<string>(GoldMap.Keys.SelectQ(k => k.ToString()), Settings.GoldReward?.SelectedIndex ?? 1);
             AdjustForLoadOrder();
         }
 
@@ -99,6 +99,7 @@ namespace BanditMilitiasRedux
                 if (banditMilitiaPartyComponent?.MobileParty is null)
                     continue;
                 ResetCached.Invoke(banditMilitiaPartyComponent.MobileParty, null);
+                MilitiaTrackerManager.Refresh(banditMilitiaPartyComponent.MobileParty);
             }
         }
 
@@ -109,15 +110,10 @@ namespace BanditMilitiasRedux
             AllAliveBanditMilitiaHeroes.Clear();
             ReusableHeroesBehavior.Reset();
             ClearGlobals();
+            MilitiaTrackerManager.Reset();
             BanditMilitiaManager.ResetUpgraderBehavior();
             MCMSettings.OnSettingsChanged -= OnSettingsChanged;
             IsGlobalModStateInitialized = false;
-        }
-
-        public override void OnGameInitializationFinished(Game game)
-        {
-            base.OnGameInitializationFinished(game);
-            CacheBanners();
         }
     }
 }

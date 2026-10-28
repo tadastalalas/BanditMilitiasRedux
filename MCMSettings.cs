@@ -155,6 +155,14 @@ namespace BanditMilitiasRedux
         [SettingPropertyBool("{=BMRemovePrisonerMessages}Hide Prisoner Capture Messages", Order = 2, RequireRestart = false, HintText = "{=BMRemovePrisonerMessagesDesc}Suppress notifications when Bandit Militia heroes are taken or released as prisoners.")]
         [SettingPropertyGroup("{=BMUI}UI & Notifications")]
         public bool RemovePrisonerMessages { get; set; } = true;
+        
+        [SettingPropertyBool("{=BMMarkers}Militia Map Markers", Order = 3, RequireRestart = false, HintText = "{=BMMarkersDesc}Shows all Bandit Militias on the map.")]
+        [SettingPropertyGroup("{=BMUI}UI & Notifications")]
+        public bool ShowMilitiaMarkers { get; set; } = true;
+
+        [SettingPropertyInteger("{=BMTrackSize}Minimum BM Size To Track", 0, 500, Order = 4, RequireRestart = false, HintText = "{=BMTrackSizeDesc}Any smaller BMs won't be tracked.")]
+        [SettingPropertyGroup("{=BMUI}UI & Notifications")]
+        public int TrackedSizeMinimum { get; set; } = 50;
 
         // ==================== ADVANCED ====================
 

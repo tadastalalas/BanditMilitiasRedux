@@ -12,6 +12,7 @@ using HarmonyLib;
 using SandBox.View.Map;
 using SandBox.View.Map.Visuals;
 using SandBox.ViewModelCollection.Nameplate;
+using SandBox.ViewModelCollection.Map.Tracker;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.AgentOrigins;
@@ -251,11 +252,16 @@ namespace BanditMilitiasRedux.Patches
 
                 MobileParty attacker = MobilePartyFieldRef(__instance);
                 var bm = attacker.GetBanditMilitiaParty();
+                
                 if (bm is null) return true;
 
                 PartyBase targetPartyBase = interactablePoint as PartyBase;
                 MobileParty targetParty = targetPartyBase?.MobileParty;
+                
                 if (targetParty is null || !targetPartyBase.IsMobile)
+                    return true;
+                
+                if (!FactionManager.IsAtWarAgainstFaction(attacker.MapFaction, targetParty.MapFaction))
                     return true;
 
                 if (Globals.Settings.IgnoreVillagersCaravans
@@ -300,6 +306,24 @@ namespace BanditMilitiasRedux.Patches
                 }
 
                 ____factionVisualBind = image;
+            }
+        }
+        
+        // BMR-FEATURE: Militia map markers | gate: always | Postfix: remember the map's tracker provider so militia markers can be refreshed
+        [HarmonyPatch(typeof(MapTrackerProvider), MethodType.Constructor)]
+        public static class MapTrackerProviderCtorPatch
+        {
+            public static void Postfix(MapTrackerProvider __instance) => MilitiaTrackerManager.SetProvider(__instance);
+        }
+
+        // BMR-FEATURE: Militia map markers | gate: setting:ShowMilitiaMarkers | Postfix: vanilla never tracks bandit parties
+        [HarmonyPatch(typeof(MapTrackerProvider), "CanAddMobileParty")]
+        public static class MapTrackerProviderCanAddMobilePartyPatch
+        {
+            public static void Postfix(MobileParty party, ref bool __result)
+            {
+                if (!__result && party is not null && MilitiaTrackerManager.ShouldTrack(party))
+                    __result = true;
             }
         }
 
@@ -420,8 +444,9 @@ namespace BanditMilitiasRedux.Patches
                     codes.InsertRange(insertion, stack);
                     return codes.AsEnumerable();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Logs.WriteToFile("BMR-TRANSPILER", $"GetPossibleUpgradeTargets patch failed, vanilla kept: {e.Message}");
                     return instructions;
                 }
             }
@@ -487,7 +512,7 @@ namespace BanditMilitiasRedux.Patches
                 if (wasBmExecution)
                     SuppressedExecutionVictim = null;
 
-                if (victim is null || !AllAliveBanditMilitiaHeroes.Contains(victim))
+                if (victim is null || victim.IsAlive || !AllAliveBanditMilitiaHeroes.Contains(victim))
                     return;
 
                 AllAliveBanditMilitiaHeroes.Remove(victim);

@@ -130,9 +130,9 @@
                 <string id="BMCooldownDesc" text="Una Milizia Bandita non può fondersi o dividersi di nuovo finché non sono trascorse queste ore di gioco."/>
                 <string id="BMIgnoreSizePenalty" text="Ignora penalità velocità per dimensione del gruppo"/>
                 <string id="BMIgnoreSizePenaltyDesc" text="Le Milizie Bandite si muovono alla massima velocità indipendentemente dalla dimensione del gruppo."/>
-                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} è sotto razzia da parte di {party.Name}!"/>
-                <string id="BMVillageRaided" text="{raidedSettlement?.Name} razziato! {party.Name} è carico di bottino vicino a {townName}!"/>
-                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} sta razziando il tuo villaggio {nearestVillage.Name} vicino a {nearestVillage.Town?.Name}!"/>
+                <string id="BMVillageBeingRaided" text="{VILLAGE} è sotto razzia da parte di {PARTY}!"/>
+                <string id="BMVillageRaided" text="{VILLAGE} razziato! {PARTY} è carico di bottino vicino a {TOWN}!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{PARTY} sta razziando il tuo villaggio {VILLAGE} vicino a {TOWN}!"/>
                 <string id="BMGenderSlider" text="Probabilità capo femminile %"/>
                 <string id="BMGenderSliderDesc" text="Probabilità che il capo di una Milizia Bandita sia femmina. 0 = tutti maschi, 100 = tutte femmine."/>
         </strings>

@@ -130,9 +130,9 @@
         <string id="BMCooldownDesc" text="A Bandit Militia cannot merge or split again until this many in-game hours have passed."/>
         <string id="BMIgnoreSizePenalty" text="Ignore Party Size Speed Penalty"/>
         <string id="BMIgnoreSizePenaltyDesc" text="Bandit Militias move at full speed regardless of party size."/>
-        <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} is being raided by {party.Name}!"/>
-        <string id="BMVillageRaided" text="{raidedSettlement?.Name} raided! {party.Name} is fat with loot near {townName}!"/>
-        <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} is raiding your village {nearestVillage.Name} near {nearestVillage.Town?.Name}!"/>
+        <string id="BMVillageBeingRaided" text="{VILLAGE} is being raided by {PARTY}!"/>
+        <string id="BMVillageRaided" text="{VILLAGE} raided! {PARTY} is fat with loot near {TOWN}!"/>
+        <string id="BMPlayerVillageBeingRaided" text="{PARTY} is raiding your village {VILLAGE} near {TOWN}!"/>
         <string id="BMGenderSlider" text="Female Leader Chance %"/>
         <string id="BMGenderSliderDesc" text="Chance for a Bandit Militia leader to be female. 0 = all male, 100 = all female."/>
     </strings>

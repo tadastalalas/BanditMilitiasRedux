@@ -76,7 +76,7 @@ namespace BanditMilitiasRedux.Behaviours
 
             starter.AddPlayerLine("bmr_captive_execute_cancel", "bmr_captive_execute_confirm", "close_window",
                 "{=BMRCaptiveExecuteCancel}Fine then. You are my prisoner now.",
-                null, bmr_captive_keep_consequence, Priority);
+                bmr_captive_execute_cancel_condition, bmr_captive_keep_consequence, Priority);
             
             starter.AddDialogLine("bmr_prisoner_pretalk", "lord_pretalk", "prisoner_recruit_start_player",
                 "{=BMRPrisonerPretalk}What else do you want from me?",
@@ -88,7 +88,7 @@ namespace BanditMilitiasRedux.Behaviours
 
             starter.AddPlayerLine("bmr_prisoner_execute_cancel", "bmr_captive_execute_confirm", "prisoner_recruit_start_player",
                 "{=BMRPrisonerExecuteCancel}On second thought... not today.",
-                bmr_prisoner_execute_condition, null, Priority + 1);
+                bmr_prisoner_execute_cancel_condition, null, Priority + 1);
         }
 
         private static bool bmr_leader_condition()
@@ -113,8 +113,7 @@ namespace BanditMilitiasRedux.Behaviours
         
         private static bool bmr_captive_condition()
         {
-            if (Campaign.Current?.CurrentConversationContext is not (ConversationContext.FreeOrCapturePrisonerHero
-                or ConversationContext.CapturedLord))
+            if (!bmr_is_capture_context())
                 return false;
 
             Hero? hero = Hero.OneToOneConversationHero;
@@ -164,5 +163,14 @@ namespace BanditMilitiasRedux.Behaviours
             => Hero.OneToOneConversationHero is { IsPrisoner: true, IsAlive: true } hero
                && hero.IsBanditMilitiaHero()
                && hero.PartyBelongedToAsPrisoner == PartyBase.MainParty;
+        
+        private static bool bmr_is_capture_context()
+            => Campaign.Current?.CurrentConversationContext is ConversationContext.FreeOrCapturePrisonerHero
+                or ConversationContext.CapturedLord;
+
+        private static bool bmr_captive_execute_cancel_condition() => bmr_is_capture_context();
+
+        private static bool bmr_prisoner_execute_cancel_condition()
+            => !bmr_is_capture_context() && bmr_prisoner_execute_condition();
     }
 }

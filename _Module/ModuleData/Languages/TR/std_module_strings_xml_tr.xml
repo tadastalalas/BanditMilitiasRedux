@@ -130,9 +130,9 @@
                 <string id="BMCooldownDesc" text="Bir Haydut Milisi, oyunda bu kadar saat geçmeden tekrar birleşemez veya bölünemez."/>
                 <string id="BMIgnoreSizePenalty" text="Parti Boyutu Hız Cezasını Yoksay"/>
                 <string id="BMIgnoreSizePenaltyDesc" text="Haydut Milisleri, parti boyutundan bağımsız olarak tam hızda hareket eder."/>
-                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name}, {party.Name} tarafından yağmalanıyor!"/>
-                <string id="BMVillageRaided" text="{raidedSettlement?.Name} yağmalandı! {party.Name}, {townName} yakınlarında ganimetle dolu!"/>
-                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name}, {nearestVillage.Town?.Name} yakınındaki {nearestVillage.Name} köyünü yağmalıyor!"/>
+                <string id="BMVillageBeingRaided" text="{VILLAGE}, {PARTY} tarafından yağmalanıyor!"/>
+                <string id="BMVillageRaided" text="{VILLAGE} yağmalandı! {PARTY}, {TOWN} yakınlarında ganimetle dolu!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{PARTY}, {TOWN} yakınındaki {VILLAGE} köyünü yağmalıyor!"/>
                 <string id="BMGenderSlider" text="Kadın Lider Şansı %"/>
                 <string id="BMGenderSliderDesc" text="Bir Haydut Milisi liderinin kadın olma ihtimali. 0 = hepsi erkek, 100 = hepsi kadın."/>
         </strings>

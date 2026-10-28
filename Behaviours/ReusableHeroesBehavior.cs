@@ -42,12 +42,18 @@ namespace BanditMilitiasRedux.Behaviours
             if (!_waitingToBeReusedHeroes.TryGetValue(clan, out List<Hero> heroes))
                 _waitingToBeReusedHeroes[clan] = heroes = [];
 
-            while (heroes.Count > 0)
+            for (int i = 0; i < heroes.Count; i++)
             {
-                Hero hero = heroes[0];
-                heroes.RemoveAt(0);
-                if (hero is { IsAlive: true, HeroDeveloper: not null })
-                    return hero;
+                Hero hero = heroes[i];
+                if (hero is not { IsAlive: true, HeroDeveloper: not null })
+                {
+                    heroes.RemoveAt(i--);
+                    continue;
+                }
+                if (hero.IsPrisoner || hero.PartyBelongedTo is { IsActive: true })
+                    continue;
+                heroes.RemoveAt(i);
+                return hero;
             }
             return null;
         }

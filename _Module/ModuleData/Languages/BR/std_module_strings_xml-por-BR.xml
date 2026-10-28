@@ -130,9 +130,9 @@
                 <string id="BMCooldownDesc" text="Uma Milícia de Bandidos não pode mesclar ou dividir novamente até que esta quantidade de horas no jogo tenha passado."/>
                 <string id="BMIgnoreSizePenalty" text="Ignorar Penalidade de Velocidade por Tamanho do Grupo"/>
                 <string id="BMIgnoreSizePenaltyDesc" text="Milícias de Bandidos se movem em velocidade máxima independentemente do tamanho do grupo."/>
-                <string id="BMVillageBeingRaided" text="{villageBeingRaided.Name} está sendo saqueada por {party.Name}!"/>
-                <string id="BMVillageRaided" text="{raidedSettlement?.Name} saqueada! {party.Name} está carregada de saque perto de {townName}!"/>
-                <string id="BMPlayerVillageBeingRaided" text="{banditMilitiaParty.Name} está saqueando sua vila {nearestVillage.Name} perto de {nearestVillage.Town?.Name}!"/>
+                <string id="BMVillageBeingRaided" text="{VILLAGE} está sendo saqueada por {PARTY}!"/>
+                <string id="BMVillageRaided" text="{VILLAGE} saqueada! {PARTY} está carregada de saque perto de {TOWN}!"/>
+                <string id="BMPlayerVillageBeingRaided" text="{PARTY} está saqueando sua vila {VILLAGE} perto de {TOWN}!"/>
                 <string id="BMGenderSlider" text="Chance de Líder Feminina %"/>
                 <string id="BMGenderSliderDesc" text="Chance de uma líder de Milícia de Bandidos ser mulher. 0 = todos homens, 100 = todas mulheres."/>
         </strings>

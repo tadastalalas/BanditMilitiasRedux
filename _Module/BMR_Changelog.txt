@@ -1,0 +1,27 @@
+﻿BMR v4.9.0 :
+- Re-added Militia Map Markers: Bandit Militias show a banner tracker on the map like your own parties and armies.
+	New settings under UI & Notifications: Militia Map Markers (on) and Minimum BM Size To Track (50).
+- Changed avoidance decay: each Bandit Militia now forgets avoidance once per week, regardless of the pillaging setting.
+    Previously it only decayed with pillaging enabled and faster for militias with many neighbours.
+- Fixed hero prisoners (e.g. captured lords) vanishing when a Bandit Militia split.
+	They now move to the first new party.
+- Fixed a waiting bandit hero being reused while still in an active party.
+- Fixed Bonus XP on Training and Gold Reward on Hero Kill resetting to Normal on every launch.
+- Fixed single items being tripled when a Bandit Militia split.
+- Fixed Bandit Militia party names being rebuilt on every read instead of cached.
+- Fixed Daily Split Chance: 0% now never splits and 100% always splits.
+- Fixed a crash when a Bandit Militia looked for a village to raid and none was valid.
+- Fixed the "raiding your village" message ignoring the Notify on Village Raid setting.
+- Fixed a crash when a raid finished with no town within range.
+- Fixed wounded troops being healed and troop XP being lost when a Bandit Militia split.
+- Fixed two cancel options appearing when executing a Bandit Militia prisoner from the prison talk.
+- Fixed raid messages showing blank village, party and town names.
+	Text variables renamed to VILLAGE, PARTY and TOWN in all 13 languages.
+	The "raiding your village" message now names the village's bound town.
+- Fixed inventory items being lost when bandit parties merged into a Bandit Militia.
+- Fixed Bandit Militias refusing to move toward friendly bandit parties they were trying to merge with.
+	Strength and avoidance checks now apply to hostile targets only.
+- Fixed banner icons of destroyed Bandit Militias staying in memory until the next load.
+- Fixed deserter spawn logging building a stack trace while file logging was off.
+- Fixed random banners being generated twice on every load.
+- Updated the Simplified and Traditional Chinese translations with Cartoonist57's versions.

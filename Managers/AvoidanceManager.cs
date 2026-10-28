@@ -17,24 +17,15 @@ internal static class AvoidanceManager
 {
     internal static void AdjustAvoidance(MobileParty mobileParty)
     {
-        Vec2 currentPartyPosition = mobileParty.Position.ToVec2();
-        foreach (BanditMilitiaPartyComponent nearbyMilitiaParty in PowerCalculationManager.GetActiveBanditMilitiaParties()
-             .WhereQ(militiaThatIsAround => militiaThatIsAround?.Leader is not null
-             && militiaThatIsAround.MobileParty is { IsActive: true }
-             && militiaThatIsAround.MobileParty.Position.ToVec2().DistanceSquared(currentPartyPosition) < AvoidanceDecayToOtherBanditHeroesRadiusSq))
-        {
-            if (nearbyMilitiaParty?.Avoidance is null)
-                continue;
+        Dictionary<Hero, float>? avoidance = mobileParty.GetBanditMilitiaParty()?.Avoidance;
+        if (avoidance is null || avoidance.Count == 0)
+            return;
 
-            KeyValuePair<Hero, float>[] storedEnemyLordsWithAvoidance = nearbyMilitiaParty.Avoidance.ToArrayQ();
-            foreach (KeyValuePair<Hero, float> enemyLordWithAvoidance in storedEnemyLordsWithAvoidance)
-            {
-                if (enemyLordWithAvoidance.Key is null)
-                    continue;
-                
-                float newAvoidanceValue = enemyLordWithAvoidance.Value - AvoidanceDecreaseAmount;
-                nearbyMilitiaParty.Avoidance[enemyLordWithAvoidance.Key] = newAvoidanceValue < 0 ? 0 : newAvoidanceValue;
-            }
+        KeyValuePair<Hero, float>[] storedEnemyLordsWithAvoidance = avoidance.ToArrayQ();
+        foreach (KeyValuePair<Hero, float> enemyLordWithAvoidance in storedEnemyLordsWithAvoidance)
+        {
+            float newAvoidanceValue = enemyLordWithAvoidance.Value - AvoidanceDecreaseAmount;
+            avoidance[enemyLordWithAvoidance.Key] = newAvoidanceValue < 0 ? 0 : newAvoidanceValue;
         }
     }
     

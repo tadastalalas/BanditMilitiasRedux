@@ -141,7 +141,8 @@ namespace BanditMilitiasRedux.Managers
             ItemRoster sourceInventory = source.ItemRoster;
             ItemRoster destinationInventory = destination.ItemRoster;
 
-            foreach (ItemRosterElement item in sourceInventory)
+            ItemRosterElement[] items = [.. sourceInventory];
+            foreach (ItemRosterElement item in items)
             {
                 if (item.IsEmpty)
                     continue;
@@ -161,8 +162,10 @@ namespace BanditMilitiasRedux.Managers
         {
             newBanditMilitiaParty.InitializeMobilePartyAtPosition(mergedRoster[0], mergedRoster[1], position);
             newBanditMilitiaParty.ChangePartyLeader(newLeader);
+            ReusableHeroesBehavior.RemoveHeroFromTheWaitingDictionary(newLeader);
             ConfigureGoldAndMounts(newBanditMilitiaParty);
             TrainBanditMilitiaParty(newBanditMilitiaParty);
+            MilitiaTrackerManager.Refresh(newBanditMilitiaParty);
         }
 
         private static void ConfigureGoldAndMounts(MobileParty newBanditMilitiaParty)
@@ -399,7 +402,7 @@ namespace BanditMilitiasRedux.Managers
         {
             if (MilitiaPowerPercent > Settings.GlobalPowerPercent || mobilePartyToSplit.Party.MemberRoster.TotalManCount / 2 < Settings.MinPartySize || mobilePartyToSplit.IsTooBusyToGrowOrSplit())
                 return;
-            if (MBRandom.RandomInt(0, 101) > Settings.RandomSplitChance|| mobilePartyToSplit.Party.MemberRoster.TotalManCount < Math.Max(1, CalculatedMaxPartySize * MinSizeRatioForSplit))
+            if (MBRandom.RandomInt(0, 100) > Settings.RandomSplitChance|| mobilePartyToSplit.Party.MemberRoster.TotalManCount < Math.Max(1, CalculatedMaxPartySize * MinSizeRatioForSplit))
                 return;
             
             Hero? partyLeaderOne = mobilePartyToSplit.LeaderHero;
@@ -455,8 +458,13 @@ namespace BanditMilitiasRedux.Managers
             mobilePartyToSplit.MemberRoster.Clear();
 
             if (mobilePartyToSplit.PrisonRoster.TotalManCount > 0)
-                foreach (var rosterElement in mobilePartyToSplit.PrisonRoster.GetTroopRoster().WhereQ(x => x.Character.HeroObject is null))
-                    SplitRosters(prisonerRosterOne, prisonerRosterTwo, rosterElement);
+                foreach (TroopRosterElement rosterElement in mobilePartyToSplit.PrisonRoster.GetTroopRoster())
+                {
+                    if (rosterElement.Character.HeroObject is null)
+                        SplitRosters(prisonerRosterOne, prisonerRosterTwo, rosterElement);
+                    else if (!rosterElement.Character.IsPlayerCharacter)
+                        prisonerRosterOne.AddToCounts(rosterElement.Character, rosterElement.Number, false, rosterElement.WoundedNumber, rosterElement.Xp);
+                }
 
             mobilePartyToSplit.PrisonRoster.Clear();
 
@@ -465,30 +473,29 @@ namespace BanditMilitiasRedux.Managers
                 if (string.IsNullOrEmpty(item.EquipmentElement.Item?.Name?.ToString()))
                     continue;
 
-                int half = Math.Max(1, item.Amount / 2);
-                itemRosterOne.AddToCounts(item.EquipmentElement, half);
-                int remainder = item.Amount % 2;
-                itemRosterTwo.AddToCounts(item.EquipmentElement, half + remainder);
+                int half = item.Amount / 2;
+                if (half > 0)
+                    itemRosterOne.AddToCounts(item.EquipmentElement, half);
+                itemRosterTwo.AddToCounts(item.EquipmentElement, item.Amount - half);
             }
             mobilePartyToSplit.ItemRoster.Clear();
         }
 
         private static void SplitRosters(TroopRoster roster1, TroopRoster roster2, TroopRosterElement rosterElement)
         {
-            if (rosterElement.Number == 1)
-            {
-                if (MBRandom.RandomInt(0, 2) == 0)
-                    roster1.AddToCounts(rosterElement.Character, 1);
-                else
-                    roster2.AddToCounts(rosterElement.Character, 1);
-            }
-            else
-            {
-                int half = rosterElement.Number / 2;
-                roster1.AddToCounts(rosterElement.Character, half);
-                int remainder = rosterElement.Number % 2;
-                roster2.AddToCounts(rosterElement.Character, Math.Max(1, half + remainder));
-            }
+            int number = rosterElement.Number;
+            if (number <= 0)
+                return;
+
+            int countOne = number == 1 ? MBRandom.RandomInt(0, 2) : number / 2;
+            int countTwo = number - countOne;
+            int woundedOne = rosterElement.WoundedNumber * countOne / number;
+            int xpOne = (int)((long)rosterElement.Xp * countOne / number);
+
+            if (countOne > 0)
+                roster1.AddToCounts(rosterElement.Character, countOne, false, woundedOne, xpOne);
+            if (countTwo > 0)
+                roster2.AddToCounts(rosterElement.Character, countTwo, false, rosterElement.WoundedNumber - woundedOne, rosterElement.Xp - xpOne);
         }
 
         private static void CreateSplitMilitiaParties(MobileParty mobilePartyToSplit, TroopRoster troopRosterOne, TroopRoster troopRosterTwo, TroopRoster prisonerRosterOne, TroopRoster prisonerRosterTwo, ItemRoster itemRosterOne, ItemRoster itemRosterTwo, Hero partyLeaderOne, Hero partyLeaderTwo)
@@ -641,6 +648,8 @@ namespace BanditMilitiasRedux.Managers
                         nearest = villageSettlement;
                     }
                     Settlement nearestVillage = nearest;
+                    if (nearestVillage is null)
+                        break;
 
                     int raidingCount = 0;
                     var cachedBanditMilitias = PowerCalculationManager.GetActiveBanditMilitiaParties();
@@ -672,9 +681,9 @@ namespace BanditMilitiasRedux.Managers
                     banditMilitiaParty.SetMoveRaidSettlement(nearestVillage, MobileParty.NavigationType.Default, false);
                     banditMilitiaParty.Ai.SetDoNotMakeNewDecisions(true);
 
-                    if (Hero.MainHero?.Clan is not null && nearestVillage.OwnerClan == Hero.MainHero.Clan)
+                    if (Settings.ShowRaids && Hero.MainHero?.Clan is not null && nearestVillage.OwnerClan == Hero.MainHero.Clan)
                         InformationManager.DisplayMessage(new InformationMessage(
-                            new TextObject("{=BMPlayerVillageBeingRaided}{banditMilitiaParty.Name} is raiding your village {nearestVillage.Name} near {nearestVillage.Town?.Name}!").SetTextVariable("banditMilitiaParty.Name", banditMilitiaParty.Name).SetTextVariable("nearestVillage.Name", nearestVillage.Name).SetTextVariable("nearestVillage.Town?.Name", nearestVillage.Town?.Name).ToString()));
+                            new TextObject("{=BMPlayerVillageBeingRaided}{PARTY} is raiding your village {VILLAGE} near {TOWN}!").SetTextVariable("PARTY", banditMilitiaParty.Name).SetTextVariable("VILLAGE", nearestVillage.Name).SetTextVariable("TOWN", nearestVillage.Village?.Bound?.Name?.ToString() ?? string.Empty).ToString()));
                 }
                 break;
             }

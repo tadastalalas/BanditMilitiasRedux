@@ -1,4 +1,5 @@
-﻿using BanditMilitiasRedux.Constructors;
+﻿using System;
+using BanditMilitiasRedux.Constructors;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -24,6 +25,7 @@ namespace BanditMilitiasRedux.Behaviours
             CampaignEvents.TickPartialHourlyAiEvent.AddNonSerializedListener(this, OnTickPartialHourlyAiEvent);
             CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
             CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTickEvent);
+            CampaignEvents.MobilePartyCreated.AddNonSerializedListener(this, OnMobilePartyCreated);
         }
 
         public override void SyncData(IDataStore dataStore) => dataStore.SyncData("Heroes", ref AllAliveBanditMilitiaHeroes);
@@ -38,7 +40,7 @@ namespace BanditMilitiasRedux.Behaviours
                 return;
             
             if (Settings.ShowRaids && villageBeingRaided.Owner?.LeaderHero == Hero.MainHero)
-                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=BMVillageBeingRaided}{villageBeingRaided.Name} is being raided by {party.Name}!").SetTextVariable("villageBeingRaided.Name", villageBeingRaided.Name).SetTextVariable("party.Name", party.Name).ToString()));
+                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=BMVillageBeingRaided}{VILLAGE} is being raided by {PARTY}!").SetTextVariable("VILLAGE", villageBeingRaided.Name).SetTextVariable("PARTY", party.Name).ToString()));
         }
 
         private static void OnRaidCompletedEvent(BattleSideEnum winnerSide, RaidEventComponent eventComponent)
@@ -61,8 +63,8 @@ namespace BanditMilitiasRedux.Behaviours
             
             var raidedSettlement = eventComponent.MapEventSettlement;
             Vec2 anchorPos = raidedSettlement?.GatePosition.ToVec2() ?? party.Position.ToVec2();
-            string townName = FindNearestTown(anchorPos).Name?.ToString() ?? "(Unknown Town)";
-            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=BMVillageRaided}{raidedSettlement?.Name} raided! {party.Name} is fat with loot near {townName}!").SetTextVariable("raidedSettlement?.Name", raidedSettlement?.Name).SetTextVariable("party.Name", party.Name).SetTextVariable("townName", townName).ToString()));
+            string townName = FindNearestTown(anchorPos)?.Name?.ToString() ?? "(Unknown Town)";
+            InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=BMVillageRaided}{VILLAGE} raided! {PARTY} is fat with loot near {TOWN}!").SetTextVariable("VILLAGE", raidedSettlement?.Name?.ToString() ?? string.Empty).SetTextVariable("PARTY", party.Name).SetTextVariable("TOWN", townName).ToString()));
         }
 
         private static void OnMobilePartyDestroyed(MobileParty destroyedMobileParty, PartyBase? destroyer)
@@ -70,6 +72,7 @@ namespace BanditMilitiasRedux.Behaviours
             if (destroyedMobileParty.IsBanditMilitiaParty())
             {
                 StuckTracker.Remove(destroyedMobileParty);
+                PartyImageMap.Remove(destroyedMobileParty);
                 if (destroyedMobileParty.LeaderHero is { IsAlive: true, IsPrisoner: false } leader && leader.PartyBelongedTo == destroyedMobileParty)
                     ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(leader);
             }
@@ -87,7 +90,7 @@ namespace BanditMilitiasRedux.Behaviours
             
             mobileParty.GetBanditMilitiaParty()?.ClearCachedName();
 
-            if ((int)CampaignTime.Now.ToDays % CampaignTime.DaysInWeek == 0 && Settings.AllowPillaging)
+            if ((int)CampaignTime.Now.ToDays % CampaignTime.DaysInWeek == 0)
                 AvoidanceManager.AdjustAvoidance(mobileParty);
 
             BanditMilitiaManager.TryGrowMilitiaParty(mobileParty);
@@ -96,6 +99,7 @@ namespace BanditMilitiasRedux.Behaviours
                 BanditMilitiaManager.TrainBanditMilitiaParty(mobileParty);
 
             BanditMilitiaManager.TrySplitBanditMilitiaParty(mobileParty);
+            MilitiaTrackerManager.Refresh(mobileParty);
             
             PowerCalculationManager.DoPowerCalculations();
         }
@@ -161,6 +165,12 @@ namespace BanditMilitiasRedux.Behaviours
         {
             if (DeferredTrashParties.Count > 0)
                 DrainDeferredTrashParties();
+        }
+        
+        private static void OnMobilePartyCreated(MobileParty party)
+        {
+            if (Settings?.EnableFileLogging == true && party.StringId.StartsWith("deserters", StringComparison.Ordinal))
+                Logs.WriteToFile("BMR-DESERTERS-SPAWN", $"{party.StringId}\n{Environment.StackTrace}");
         }
     }
 }

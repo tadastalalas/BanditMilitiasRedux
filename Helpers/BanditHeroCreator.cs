@@ -26,7 +26,8 @@ namespace BanditMilitiasRedux.Helpers
             Hero? reusedBanditHero = ReusableHeroesBehavior.Instance?.TryGetReusableBanditHero(targetClan);
             if (reusedBanditHero is not null)
             {
-                // HeroDeveloperFieldRef(reusedBanditHero) ??= (HeroDeveloper)HeroDeveloperConstructorRef.Invoke([reusedBanditHero]);
+                if (!AllAliveBanditMilitiaHeroes.Contains(reusedBanditHero))
+                    AllAliveBanditMilitiaHeroes.Add(reusedBanditHero);
                 return reusedBanditHero;
             }
             
