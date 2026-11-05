@@ -24,9 +24,16 @@ namespace BanditMilitiasRedux
         internal const int AvoidanceDecreaseAmount = 10;
         internal const float StuckDistanceThresholdSq = 225f;
         internal const int StuckHourLimit = 12;
-        internal const float EscapeMinDistanceSq = 900f;
         internal const float ArrivedAtHideoutEpsilonSq = 0.1f;
         internal const int SettlementFindRange = 200;
+        internal const int SettlementFindRangeWide = 400; // Fallback patrol search when no village is within SettlementFindRange of home.
+        internal const int PatrolPickAttempts = 3; // Random patrol villages tried before giving up (unreachable ones are skipped).
+        internal const float PatrolRepickDays = 3f; // A patrolling militia picks a new village near home after this many days.
+        internal const float IdleRetryHours = 6f; // A militia that found nothing to patrol waits this long before searching again.
+        internal const int StuckRescueLimit = 2; // Rescues in a row without moving before the militia just holds.
+        internal const float RaidSearchRangeSq = 40000f; // Raid targets must be within 200 map units.
+        internal const float RaidDistanceBias = 50f; // Raid score = Hearth / (distance + bias); higher bias favours rich villages over near ones.
+        internal const int RaidTargetAttempts = 3; // Raid candidates tried when the best one is avoided or unreachable.
 
         internal static MCMSettings Settings => MCMSettings.Instance;
 
@@ -69,7 +76,10 @@ namespace BanditMilitiasRedux
         internal static HashSet<int>? LordConversationTokens;
         internal static Hero? SuppressedExecutionVictim;
 
-        internal static readonly Dictionary<MobileParty, (Vec2 LastPos, int HourCount)> StuckTracker = [];
+        internal static readonly Dictionary<MobileParty, (Vec2 LastPos, int HourCount, int Rescues)> StuckTracker = [];
+        internal static readonly Dictionary<MobileParty, CampaignTime> PatrolRepickTimes = [];
+        internal static readonly Dictionary<MobileParty, CampaignTime> IdleRetryTimes = [];
+        internal static readonly List<Settlement> RaidTargetRejectBuffer = new(RaidTargetAttempts);
 
         internal static CultureObject? BlackFlag;
 
@@ -117,6 +127,9 @@ namespace BanditMilitiasRedux
             EquipmentPool.Reset();
             Banners.Clear();
             StuckTracker.Clear();
+            PatrolRepickTimes.Clear();
+            IdleRetryTimes.Clear();
+            RaidTargetRejectBuffer.Clear();
             DeferredTrashParties.Clear();
             PartyImageMap = [];
             Recruits = [];

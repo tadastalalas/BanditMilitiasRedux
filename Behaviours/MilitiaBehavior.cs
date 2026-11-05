@@ -26,6 +26,7 @@ namespace BanditMilitiasRedux.Behaviours
             CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
             CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTickEvent);
             CampaignEvents.MobilePartyCreated.AddNonSerializedListener(this, OnMobilePartyCreated);
+            CampaignEvents.VillageStateChanged.AddNonSerializedListener(this, OnVillageStateChanged);
         }
 
         public override void SyncData(IDataStore dataStore) => dataStore.SyncData("Heroes", ref AllAliveBanditMilitiaHeroes);
@@ -67,11 +68,21 @@ namespace BanditMilitiasRedux.Behaviours
             InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=BMVillageRaided}{VILLAGE} raided! {PARTY} is fat with loot near {TOWN}!").SetTextVariable("VILLAGE", raidedSettlement?.Name?.ToString() ?? string.Empty).SetTextVariable("PARTY", party.Name).SetTextVariable("TOWN", townName).ToString()));
         }
 
+        private static void OnVillageStateChanged(Village village, Village.VillageStates oldState, Village.VillageStates newState, MobileParty? raiderParty)
+        {
+            if (newState != Village.VillageStates.Looted || village?.Settlement is null)
+                return;
+
+            BanditMilitiaManager.ReleaseMilitiasRaidingLootedVillage(village.Settlement, raiderParty);
+        }
+
         private static void OnMobilePartyDestroyed(MobileParty destroyedMobileParty, PartyBase? destroyer)
         {
             if (destroyedMobileParty.IsBanditMilitiaParty())
             {
                 StuckTracker.Remove(destroyedMobileParty);
+                PatrolRepickTimes.Remove(destroyedMobileParty);
+                IdleRetryTimes.Remove(destroyedMobileParty);
                 PartyImageMap.Remove(destroyedMobileParty);
                 if (destroyedMobileParty.LeaderHero is { IsAlive: true, IsPrisoner: false } leader && leader.PartyBelongedTo == destroyedMobileParty)
                     ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(leader);

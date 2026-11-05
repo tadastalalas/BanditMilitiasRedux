@@ -4,6 +4,12 @@ apply: always
 
 # BanditMilitiasRedux, GitHub Copilot Chat
 
+## Start Here
+- Read `FEATURES.md` (repo root) first. It maps every feature to its gate (setting) and files, so open only the files you need.
+- Keep `FEATURES.md` up to date in the same change set: when a feature is added, removed or changed, or a listed file moves, is renamed or is deleted.
+
+---
+
 ## Project Overview
 - Mount & Blade II: Bannerlord mod, targets `net472` and `net6.0`, C# 12.0.
 - Uses **Harmony** for patching and **MCM** for mod configuration.
@@ -43,7 +49,7 @@ apply: always
 - `GetBanditMilitiaParty()` retrieves the `BanditMilitiaPartyComponent` from a party.
 - All mod behaviors extend `CampaignBehaviorBase`.
 - Singleton instances use the `public static T? Instance { get; private set; }` pattern.
-- Logging uses `BMRLog.WriteToChat(...)` and `BMRLog.WriteToFile(...)`.
+- Logging uses `Logs.WriteToChat(...)` and `Logs.WriteToFile(tag, message)` (`Helpers\Logs.cs`).
 
 ---
 

@@ -1,4 +1,22 @@
-﻿BMR v4.9.0 :
+﻿BMR v4.10.0 :
+- Changed Bandit Militia patrols to stay near home.
+	Home is the nearest active hideout of the militia's own bandit culture (e.g. forest bandits), else its home settlement, else where it stands.
+	Patrol villages are picked around home and re-picked every 3 days. If none is within 200, the search widens to 400.
+	A militia that finds nothing to patrol waits 6 hours before searching again instead of searching every tick.
+- Changed raid target choice: Bandit Militias now pick the richest village (hearths) weighed against distance, within 200, instead of the nearest one on the whole map.
+	If the chosen village is avoided or can't be reached by land, up to 2 more villages are tried.
+	Avoidance now uses one roll against the highest avoidance toward the village owner's clan.
+- Fixed the raid cap counting only militias already raiding, not the ones marching to raid.
+	The cap is now checked before searching for a village.
+- Fixed Bandit Militias marching to raid a village that someone else already looted. They now stop and pick something else.
+- Fixed stuck Bandit Militias being sent to a random hideout anywhere on the map, including other bandit areas.
+	They now go back to patrolling near home. After 2 rescues in a row without moving they hold for 6 hours.
+	Stuck rescues are logged as BMR-STUCK when file logging is on.
+- Fixed Bandit Militias on islands endlessly trying to reach places they can't walk to.
+	Patrol, home and raid targets must now be reachable by land.
+- Save compatibility: no change. All new tracking is in memory only.
+
+BMR v4.9.0 :
 - Re-added Militia Map Markers: Bandit Militias show a banner tracker on the map like your own parties and armies.
 	New settings under UI & Notifications: Militia Map Markers (on) and Minimum BM Size To Track (50).
 - Changed avoidance decay: each Bandit Militia now forgets avoidance once per week, regardless of the pillaging setting.

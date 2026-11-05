@@ -585,21 +585,10 @@ namespace BanditMilitiasRedux.Managers
                 case AiBehavior.Hold:
                 if (banditMilitiaParty.TargetSettlement is null)
                 {
-                    var settlementsInRange = Settlement.StartFindingLocatablesAroundPosition(banditMilitiaParty.Position.ToVec2(), SettlementFindRange);
-                    Settlement? chosen = null;
-                    int seen = 0;
-                    for (var settlement = Settlement.FindNextLocatable(ref settlementsInRange);
-                         settlement != null;
-                         settlement = Settlement.FindNextLocatable(ref settlementsInRange))
-                    {
-                        if (settlement.IsHideout || settlement.IsTown || settlement.IsCastle)
-                            continue;
-                        seen++;
-                        if (MBRandom.RandomInt(seen) == 0)
-                            chosen = settlement;
-                    }
-                    if (chosen is not null)
-                        banditMilitiaParty.SetMovePatrolAroundSettlement(chosen, MobileParty.NavigationType.Default, false);
+                    if (IdleRetryTimes.TryGetValue(banditMilitiaParty, out CampaignTime idleRetryTime) && CampaignTime.Now < idleRetryTime)
+                        break;
+                    if (!TryStartHomePatrol(banditMilitiaParty, null))
+                        IdleRetryTimes[banditMilitiaParty] = CampaignTime.Now + CampaignTime.Hours(IdleRetryHours);
                 }
                 break;
                 case AiBehavior.GoToSettlement:
@@ -613,79 +602,220 @@ namespace BanditMilitiasRedux.Managers
                 }
                 break;
                 case AiBehavior.PatrolAroundPoint:
+                CampaignTime now = CampaignTime.Now;
+                if (!PatrolRepickTimes.TryGetValue(banditMilitiaParty, out CampaignTime repickTime))
+                    PatrolRepickTimes[banditMilitiaParty] = now + CampaignTime.Days(PatrolRepickDays);
+                else if (now >= repickTime)
+                {
+                    PatrolRepickTimes[banditMilitiaParty] = now + CampaignTime.Days(PatrolRepickDays);
+                    if (TryStartHomePatrol(banditMilitiaParty, banditMilitiaParty.TargetSettlement))
+                        break;
+                }
+
                 var banditMilitiaPartyComponent = banditMilitiaParty.GetBanditMilitiaParty();
                 if (banditMilitiaParty.MapFaction is null)
                     return;
 
                 if (Settings.AllowPillaging && banditMilitiaParty.Party.EstimatedStrength > MilitiaPartyAveragePower && MBRandom.RandomFloat < Settings.PillagingChance * 0.01f)
                 {
-                    Vec2 militiaPosition = banditMilitiaParty.Position.ToVec2();
-                    Settlement nearest = null;
-                    float nearestDistSq = float.MaxValue;
-                    List<Settlement> villages = Villages;
-                    for (int i = 0, n = villages.Count; i < n; i++)
-                    {
-                        Settlement villageSettlement = villages[i];
-                        
-                        Village.VillageStates villageState = villageSettlement.Village.VillageState;
-                        if (villageState is Village.VillageStates.BeingRaided or Village.VillageStates.Looted)
-                            continue;
-                        
-                        if (villageSettlement.Owner is null)
-                            continue;
-                        
-                        if (villageSettlement.MapFaction is null || !villageSettlement.MapFaction.IsAtWarWith(banditMilitiaParty.MapFaction))
-                            continue;
-                        
-                        if (villageSettlement.GetValue() <= 0)
-                            continue;
-
-                        float distanceToVillageSq = villageSettlement.GatePosition.ToVec2().DistanceSquared(militiaPosition);
-                        if (distanceToVillageSq >= nearestDistSq)
-                            continue;
-                        
-                        nearestDistSq = distanceToVillageSq;
-                        nearest = villageSettlement;
-                    }
-                    Settlement nearestVillage = nearest;
-                    if (nearestVillage is null)
+                    if (CountRaidingMilitias() >= RaidCap)
                         break;
 
-                    int raidingCount = 0;
-                    var cachedBanditMilitias = PowerCalculationManager.GetActiveBanditMilitiaParties();
-                    for (int i = 0, n = cachedBanditMilitias.Count; i < n; i++)
-                    {
-                        if (cachedBanditMilitias[i]?.MobileParty?.ShortTermBehavior == AiBehavior.RaidSettlement)
-                            raidingCount++;
-                    }
-
-                    if (raidingCount >= RaidCap)
+                    Settlement? raidTarget = FindRaidTarget(banditMilitiaParty, banditMilitiaPartyComponent);
+                    if (raidTarget is null)
                         break;
 
-                    if (nearestVillage.OwnerClan is not null && banditMilitiaPartyComponent?.Avoidance is not null)
-                    {
-                        foreach (Hero villageClanHero in nearestVillage.OwnerClan.Heroes)
-                        {
-                            if (villageClanHero is null
-                                || !banditMilitiaPartyComponent.Avoidance.TryGetValue(villageClanHero, out var avoidanceValue)
-                                || MBRandom.RandomFloat * 100f > avoidanceValue)
-                                continue;
-                            nearestVillage = null;
-                            break;
-                        }
-
-                        if (nearestVillage is null)
-                            break;
-                    }
-
-                    banditMilitiaParty.SetMoveRaidSettlement(nearestVillage, MobileParty.NavigationType.Default, false);
+                    banditMilitiaParty.SetMoveRaidSettlement(raidTarget, MobileParty.NavigationType.Default, false);
                     banditMilitiaParty.Ai.SetDoNotMakeNewDecisions(true);
 
-                    if (Settings.ShowRaids && Hero.MainHero?.Clan is not null && nearestVillage.OwnerClan == Hero.MainHero.Clan)
+                    if (Settings.ShowRaids && Hero.MainHero?.Clan is not null && raidTarget.OwnerClan == Hero.MainHero.Clan)
                         InformationManager.DisplayMessage(new InformationMessage(
-                            new TextObject("{=BMPlayerVillageBeingRaided}{PARTY} is raiding your village {VILLAGE} near {TOWN}!").SetTextVariable("PARTY", banditMilitiaParty.Name).SetTextVariable("VILLAGE", nearestVillage.Name).SetTextVariable("TOWN", nearestVillage.Village?.Bound?.Name?.ToString() ?? string.Empty).ToString()));
+                            new TextObject("{=BMPlayerVillageBeingRaided}{PARTY} is raiding your village {VILLAGE} near {TOWN}!").SetTextVariable("PARTY", banditMilitiaParty.Name).SetTextVariable("VILLAGE", raidTarget.Name).SetTextVariable("TOWN", raidTarget.Village?.Bound?.Name?.ToString() ?? string.Empty).ToString()));
                 }
                 break;
+            }
+        }
+
+        // Home = nearest infested hideout of the militia's own bandit culture, else its HomeSettlement; both must be reachable by land.
+        private static Settlement? FindHomeSettlement(MobileParty mobileParty)
+        {
+            CultureObject? clanCulture = mobileParty.ActualClan?.Culture;
+            List<Settlement>? hideouts = Hideouts;
+            Vec2 position = mobileParty.Position.ToVec2();
+            Settlement? nearestHideout = null;
+            float nearestDistanceSq = float.MaxValue;
+            if (clanCulture is not null && hideouts is not null)
+            {
+                for (int i = 0; i < hideouts.Count; i++)
+                {
+                    Settlement hideout = hideouts[i];
+                    if (hideout?.Hideout is null || hideout.Culture != clanCulture)
+                        continue;
+                    float distanceSq = hideout.GatePosition.ToVec2().DistanceSquared(position);
+                    if (distanceSq >= nearestDistanceSq || !hideout.Hideout.IsInfested)
+                        continue;
+                    nearestDistanceSq = distanceSq;
+                    nearestHideout = hideout;
+                }
+            }
+
+            if (nearestHideout is not null && IsReachableByLand(mobileParty, nearestHideout))
+                return nearestHideout;
+
+            Settlement? homeSettlement = mobileParty.HomeSettlement;
+            return homeSettlement is not null && IsReachableByLand(mobileParty, homeSettlement) ? homeSettlement : null;
+        }
+
+        private static bool IsReachableByLand(MobileParty mobileParty, Settlement settlement)
+            => Campaign.Current?.Models?.MapDistanceModel?.PathExistBetweenPoints(mobileParty.Position, settlement.GatePosition, MobileParty.NavigationType.Default) ?? true;
+
+        private static bool TryStartHomePatrol(MobileParty mobileParty, Settlement? excludedSettlement)
+        {
+            Vec2 homePoint = FindHomeSettlement(mobileParty)?.GatePosition.ToVec2() ?? mobileParty.Position.ToVec2();
+            Settlement? patrolTarget = PickReachablePatrolSettlement(mobileParty, homePoint, SettlementFindRange, excludedSettlement)
+                                       ?? PickReachablePatrolSettlement(mobileParty, homePoint, SettlementFindRangeWide, excludedSettlement);
+            if (patrolTarget is null)
+                return false;
+
+            mobileParty.SetMovePatrolAroundSettlement(patrolTarget, MobileParty.NavigationType.Default, false);
+            PatrolRepickTimes[mobileParty] = CampaignTime.Now + CampaignTime.Days(PatrolRepickDays);
+            IdleRetryTimes.Remove(mobileParty);
+            return true;
+        }
+
+        private static Settlement? PickReachablePatrolSettlement(MobileParty mobileParty, Vec2 center, float range, Settlement? excludedSettlement)
+        {
+            for (int attempt = 0; attempt < PatrolPickAttempts; attempt++)
+            {
+                Settlement? candidate = PickRandomPatrolSettlement(center, range, excludedSettlement);
+                if (candidate is null)
+                    return null;
+                if (IsReachableByLand(mobileParty, candidate))
+                    return candidate;
+            }
+            return null;
+        }
+
+        private static Settlement? PickRandomPatrolSettlement(Vec2 center, float range, Settlement? excludedSettlement)
+        {
+            var settlementsInRange = Settlement.StartFindingLocatablesAroundPosition(center, range);
+            Settlement? chosen = null;
+            int seen = 0;
+            for (Settlement settlement = Settlement.FindNextLocatable(ref settlementsInRange);
+                 settlement != null;
+                 settlement = Settlement.FindNextLocatable(ref settlementsInRange))
+            {
+                if (settlement.IsHideout || settlement.IsTown || settlement.IsCastle || settlement == excludedSettlement)
+                    continue;
+                seen++;
+                if (MBRandom.RandomInt(seen) == 0)
+                    chosen = settlement;
+            }
+            return chosen;
+        }
+
+        private static int CountRaidingMilitias()
+        {
+            int raidingCount = 0;
+            IReadOnlyList<BanditMilitiaPartyComponent?> cachedBanditMilitias = PowerCalculationManager.GetActiveBanditMilitiaParties();
+            for (int i = 0, n = cachedBanditMilitias.Count; i < n; i++)
+            {
+                if (cachedBanditMilitias[i]?.MobileParty?.DefaultBehavior == AiBehavior.RaidSettlement)
+                    raidingCount++;
+            }
+            return raidingCount;
+        }
+
+        private static Settlement? FindRaidTarget(MobileParty banditMilitiaParty, BanditMilitiaPartyComponent? banditMilitiaPartyComponent)
+        {
+            List<Settlement> rejected = RaidTargetRejectBuffer;
+            rejected.Clear();
+            for (int attempt = 0; attempt < RaidTargetAttempts; attempt++)
+            {
+                Settlement? candidate = FindBestRaidVillage(banditMilitiaParty, rejected);
+                if (candidate is null)
+                    return null;
+                if (!IsVillageAvoided(banditMilitiaPartyComponent, candidate) && IsReachableByLand(banditMilitiaParty, candidate))
+                    return candidate;
+                rejected.Add(candidate);
+            }
+            return null;
+        }
+
+        // Richest village (Hearth) weighed against distance, within RaidSearchRangeSq.
+        private static Settlement? FindBestRaidVillage(MobileParty banditMilitiaParty, List<Settlement> rejected)
+        {
+            List<Settlement>? villages = Villages;
+            if (villages is null)
+                return null;
+
+            Vec2 militiaPosition = banditMilitiaParty.Position.ToVec2();
+            IFaction militiaFaction = banditMilitiaParty.MapFaction;
+            Settlement? best = null;
+            float bestScore = float.MinValue;
+            for (int i = 0, n = villages.Count; i < n; i++)
+            {
+                Settlement villageSettlement = villages[i];
+                Village? village = villageSettlement?.Village;
+                if (village is null || village.VillageState is Village.VillageStates.BeingRaided or Village.VillageStates.Looted)
+                    continue;
+
+                if (villageSettlement!.Owner is null)
+                    continue;
+
+                if (villageSettlement.MapFaction is null || !villageSettlement.MapFaction.IsAtWarWith(militiaFaction))
+                    continue;
+
+                if (villageSettlement.GetValue() <= 0)
+                    continue;
+
+                float distanceSq = villageSettlement.GatePosition.ToVec2().DistanceSquared(militiaPosition);
+                if (distanceSq > RaidSearchRangeSq || rejected.Contains(villageSettlement))
+                    continue;
+
+                float score = village.Hearth / ((float)Math.Sqrt(distanceSq) + RaidDistanceBias);
+                if (score <= bestScore)
+                    continue;
+
+                bestScore = score;
+                best = villageSettlement;
+            }
+            return best;
+        }
+
+        // One roll against the highest avoidance this militia holds toward any hero of the village owner clan.
+        private static bool IsVillageAvoided(BanditMilitiaPartyComponent? banditMilitiaPartyComponent, Settlement village)
+        {
+            Dictionary<Hero, float>? avoidance = banditMilitiaPartyComponent?.Avoidance;
+            Clan? ownerClan = village.OwnerClan;
+            if (avoidance is null || avoidance.Count == 0 || ownerClan is null)
+                return false;
+
+            float maxAvoidance = 0f;
+            MBReadOnlyList<Hero> clanHeroes = ownerClan.Heroes;
+            for (int i = 0; i < clanHeroes.Count; i++)
+            {
+                Hero clanHero = clanHeroes[i];
+                if (clanHero is not null && avoidance.TryGetValue(clanHero, out float value) && value > maxAvoidance)
+                    maxAvoidance = value;
+            }
+            return maxAvoidance > 0f && MBRandom.RandomFloat * 100f <= maxAvoidance;
+        }
+
+        // Called when a village gets looted: militias still marching to raid it are released.
+        internal static void ReleaseMilitiasRaidingLootedVillage(Settlement villageSettlement, MobileParty? raiderParty)
+        {
+            IReadOnlyList<BanditMilitiaPartyComponent?> militias = PowerCalculationManager.GetActiveBanditMilitiaParties();
+            for (int i = 0, n = militias.Count; i < n; i++)
+            {
+                MobileParty? militia = militias[i]?.MobileParty;
+                if (militia is null || militia == raiderParty || militia.MapEvent is not null)
+                    continue;
+                if (militia.DefaultBehavior != AiBehavior.RaidSettlement || militia.TargetSettlement != villageSettlement)
+                    continue;
+
+                militia.Ai?.SetDoNotMakeNewDecisions(false);
+                militia.SetMoveModeHold();
             }
         }
 
@@ -735,39 +865,31 @@ namespace BanditMilitiasRedux.Managers
 
         internal static bool TryHandleStuckMilitia(MobileParty mobileParty, Vec2 currentMilitiaPartyPosition)
         {
-            if (StuckTracker.TryGetValue(mobileParty, out var stuckState))
+            if (!StuckTracker.TryGetValue(mobileParty, out (Vec2 LastPos, int HourCount, int Rescues) stuckState)
+                || currentMilitiaPartyPosition.DistanceSquared(stuckState.LastPos) >= StuckDistanceThresholdSq)
             {
-                if (currentMilitiaPartyPosition.DistanceSquared(stuckState.LastPos) < StuckDistanceThresholdSq)
-                {
-                    var newCount = stuckState.HourCount + 1;
-                    StuckTracker[mobileParty] = (stuckState.LastPos, newCount);
-
-                    if (newCount < StuckHourLimit)
-                        return false;
-                    
-                    StuckTracker.Remove(mobileParty);
-
-                    var escapePool = Hideouts
-                        .WhereQ(s => s != null && s.GatePosition.ToVec2().DistanceSquared(currentMilitiaPartyPosition) > EscapeMinDistanceSq).ToListQ();
-
-                    if (escapePool.Count == 0)
-                        escapePool = Settlement.All.WhereQ(s => s is { IsTown: false, IsCastle: false }
-                                                                && s.GatePosition.ToVec2().DistanceSquared(currentMilitiaPartyPosition) > EscapeMinDistanceSq).ToListQ();
-
-                    if (escapePool.Count <= 0)
-                        return false;
-                    
-                    var escapeTarget = escapePool.GetRandomElement();
-                    mobileParty.SetMoveGoToPoint(escapeTarget.GatePosition, MobileParty.NavigationType.Default);
-                    return true;
-                }
-                StuckTracker[mobileParty] = (currentMilitiaPartyPosition, 0);
+                StuckTracker[mobileParty] = (currentMilitiaPartyPosition, 0, 0);
+                return false;
             }
-            else
+
+            int newCount = stuckState.HourCount + 1;
+            if (newCount < StuckHourLimit)
             {
-                StuckTracker[mobileParty] = (currentMilitiaPartyPosition, 0);
+                StuckTracker[mobileParty] = (stuckState.LastPos, newCount, stuckState.Rescues);
+                return false;
             }
-            return false;
+
+            int rescues = stuckState.Rescues + 1;
+            StuckTracker[mobileParty] = (currentMilitiaPartyPosition, 0, rescues);
+            Logs.WriteToFile("BMR-STUCK", $"{mobileParty.StringId} rescue {rescues} default={mobileParty.DefaultBehavior} shortTerm={mobileParty.ShortTermBehavior} target={mobileParty.TargetSettlement?.StringId ?? "none"} pos={currentMilitiaPartyPosition}");
+
+            mobileParty.Ai?.SetDoNotMakeNewDecisions(false);
+            if (rescues <= StuckRescueLimit)
+                return TryStartHomePatrol(mobileParty, mobileParty.TargetSettlement);
+
+            mobileParty.SetMoveModeHold();
+            IdleRetryTimes[mobileParty] = CampaignTime.Now + CampaignTime.Hours(IdleRetryHours);
+            return true;
         }
 
         internal static void TryFindAndMergeNearbyBandits(MobileParty banditMilitiaParty, Vec2 currentMilitiaPartyPosition, CampaignTime timeNow, CampaignTime cooldownToMergeOrSplit)
