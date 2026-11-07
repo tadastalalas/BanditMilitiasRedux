@@ -1,4 +1,10 @@
-﻿BMR v4.10.0 :
+﻿BMR v4.11.0 :
+[Preparation for Serve as Soldier 1.4.7 update]
+- Compatibility: Serve as Soldier's bait-run bandit party is no longer re-ordered, merged or split by BMR while SaS controls it.
+	Needs a Serve as Soldier version 1.4.7 with ServeAsSoldier.Compat.SaSPublicApi. Without it nothing changes.
+- Save compatibility: no change.
+
+BMR v4.10.0 :
 - Changed Bandit Militia patrols to stay near home.
 	Home is the nearest active hideout of the militia's own bandit culture (e.g. forest bandits), else its home settlement, else where it stands.
 	Patrol villages are picked around home and re-picked every 3 days. If none is within 200, the search widens to 400.

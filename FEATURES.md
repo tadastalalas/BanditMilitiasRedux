@@ -123,6 +123,7 @@ Tuning numbers (not in MCM) live in `Globals.cs`.
 | Militias excluded from the outlaws quest tick | always | `Patches\MilitiaPatches.cs` (`MerchantNeedsHelpWithOutlawsIssueQuestHourlyTickParty`) |
 | Disabled (commented out): militia hero full-name patch | — | `Patches\MilitiaPatches.cs` (`NameGenerator.GenerateHeroFullName`) |
 | Unused: `PatchSaSDeserters` (not applied anywhere) | — | `Patches\MilitiaPatches.cs` |
+| Serve as Soldier bait-run party (`SaSPublicApi.IsPartyReserved`) is not re-ordered, merged, split or engage-filtered | always (SaS installed) | `Helpers\SaSCompat.cs`, `Behaviours\MilitiaBehavior.cs` (`OnTickPartialHourlyAiEvent`, `OnRaidCompletedEvent`), `Managers\BanditMilitiaManager.cs` (`TryFindAndMergeNearbyBandits`, `CanMobilePartiesMerge`, `TrySplitBanditMilitiaParty`, `ReleaseMilitiasRaidingLootedVillage`), `Patches\MilitiaPatches.cs` (`MobilePartyAiTickInternalPatch`, `MobilePartyAiSetAiBehaviorPatch`) |
 
 ## Console, settings, diagnostics
 
@@ -131,7 +132,7 @@ Tuning numbers (not in MCM) live in `Globals.cs`.
 | Console: `bmr.stats`, `bmr.heroes`, `bmr.orphans`, `bmr.fix_orphans` | always | `Helpers\ConsoleCommands.cs` |
 | MCM settings (Spawning, Training, Power, AI, Appearance, UI, Advanced) | always | `MCMSettings.cs` |
 | Chat log | setting:EnableChatLogging | `Helpers\Logs.cs` |
-| File log (`Modules\BanditMilitiasRedux\logs\`); tags `BMR-STUCK`, `BMR-DESERTERS-SPAWN`, `BMR-MOUNT-NULLCHECK`, `BMR-RELATION-EXCEPTION` | setting:EnableFileLogging | `Helpers\Logs.cs`, `Managers\BanditMilitiaManager.cs`, `Behaviours\MilitiaBehavior.cs`, `Patches\MilitiaPatches.cs` |
+| File log (`Modules\BanditMilitiasRedux\logs\`); tags `BMR-STUCK`, `BMR-DESERTERS-SPAWN`, `BMR-MOUNT-NULLCHECK`, `BMR-RELATION-EXCEPTION`, `BMR-SAS-COMPAT` | setting:EnableFileLogging | `Helpers\Logs.cs`, `Managers\BanditMilitiaManager.cs`, `Behaviours\MilitiaBehavior.cs`, `Patches\MilitiaPatches.cs`, `Helpers\SaSCompat.cs` |
 
 ## Save data
 

@@ -53,7 +53,7 @@ namespace BanditMilitiasRedux.Behaviours
             if (party is null)
                 return;
 
-            if (party.MobileParty?.Ai is not null)
+            if (party.MobileParty?.Ai is not null && !SaSCompat.IsReservedBySaS(party.MobileParty))
             {
                 party.MobileParty.Ai.SetDoNotMakeNewDecisions(false);
                 party.MobileParty.SetMoveModeHold();
@@ -117,6 +117,9 @@ namespace BanditMilitiasRedux.Behaviours
 
         private static void OnTickPartialHourlyAiEvent(MobileParty banditMilitiaParty)
         {
+            if (SaSCompat.IsReservedBySaS(banditMilitiaParty))
+                return;
+
             bool isMilitia = banditMilitiaParty.IsBanditMilitiaParty();
             
             if (!isMilitia && !BanditMilitiaManager.IsAvailableBanditParty(banditMilitiaParty))

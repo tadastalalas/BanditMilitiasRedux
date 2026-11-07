@@ -402,6 +402,8 @@ namespace BanditMilitiasRedux.Managers
         {
             if (MilitiaPowerPercent > Settings.GlobalPowerPercent || mobilePartyToSplit.Party.MemberRoster.TotalManCount / 2 < Settings.MinPartySize || mobilePartyToSplit.IsTooBusyToGrowOrSplit())
                 return;
+            if (SaSCompat.IsReservedBySaS(mobilePartyToSplit))
+                return;
             if (MBRandom.RandomInt(0, 100) > Settings.RandomSplitChance|| mobilePartyToSplit.Party.MemberRoster.TotalManCount < Math.Max(1, CalculatedMaxPartySize * MinSizeRatioForSplit))
                 return;
             
@@ -813,6 +815,8 @@ namespace BanditMilitiasRedux.Managers
                     continue;
                 if (militia.DefaultBehavior != AiBehavior.RaidSettlement || militia.TargetSettlement != villageSettlement)
                     continue;
+                if (SaSCompat.IsReservedBySaS(militia))
+                    continue;
 
                 militia.Ai?.SetDoNotMakeNewDecisions(false);
                 militia.SetMoveModeHold();
@@ -909,7 +913,7 @@ namespace BanditMilitiasRedux.Managers
                 if (nearbyLocatable.HasNavalNavigationCapability)
                     continue;
 
-                if (IsAvailableBanditParty(nearbyLocatable) && !nearbyLocatable.IsTooBusyToMerge())
+                if (IsAvailableBanditParty(nearbyLocatable) && !nearbyLocatable.IsTooBusyToMerge() && !SaSCompat.IsReservedBySaS(nearbyLocatable))
                     nearbyBandits.Add(nearbyLocatable);
             }
 
@@ -997,7 +1001,8 @@ namespace BanditMilitiasRedux.Managers
                    attackerMobileParty.MapEvent is null && defenderMobileParty.MapEvent is null &&
                    !FactionManager.IsAtWarAgainstFaction(attackerMobileParty.MapFaction, defenderMobileParty.MapFaction) &&
                    !attackerMobileParty.IsUsedByAQuest() && !defenderMobileParty.IsUsedByAQuest() &&
-                   !attackerMobileParty.HasNavalNavigationCapability && !defenderMobileParty.HasNavalNavigationCapability;
+                   !attackerMobileParty.HasNavalNavigationCapability && !defenderMobileParty.HasNavalNavigationCapability &&
+                   !SaSCompat.IsReservedBySaS(attackerMobileParty) && !SaSCompat.IsReservedBySaS(defenderMobileParty);
         }
 
         internal static bool IfEngagedByThePlayer(MobileParty attackerParty, MobileParty defenderParty)

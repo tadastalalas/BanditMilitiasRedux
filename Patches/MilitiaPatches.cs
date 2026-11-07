@@ -253,7 +253,7 @@ namespace BanditMilitiasRedux.Patches
                 MobileParty attacker = MobilePartyFieldRef(__instance);
                 var bm = attacker.GetBanditMilitiaParty();
                 
-                if (bm is null) return true;
+                if (bm is null || SaSCompat.IsReservedBySaS(attacker)) return true;
 
                 PartyBase targetPartyBase = interactablePoint as PartyBase;
                 MobileParty targetParty = targetPartyBase?.MobileParty;
@@ -370,7 +370,7 @@ namespace BanditMilitiasRedux.Patches
                 if (!mobileParty.IsBanditMilitiaParty())
                     return;
 
-                if (mobileParty is { DefaultBehavior: AiBehavior.Hold, TargetSettlement: null })
+                if (mobileParty is { DefaultBehavior: AiBehavior.Hold, TargetSettlement: null } && !SaSCompat.IsReservedBySaS(mobileParty))
                     BanditMilitiaManager.Think(mobileParty);
             }
         }

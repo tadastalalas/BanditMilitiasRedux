@@ -9,19 +9,17 @@
   <Url value="$moduleurl$" />
   <DependedModules>
     <DependedModule Id="Bannerlord.Harmony" DependentVersion="v2.4.2" />
-    <DependedModule Id="Bannerlord.MBOptionScreen" DependentVersion="v5.12.3" />
+    <DependedModule Id="Bannerlord.MBOptionScreen" DependentVersion="v5.13.1" />
 	<DependedModule Id="Native" />
 	<DependedModule Id="SandBoxCore" />
 	<DependedModule Id="Sandbox" />
-	<DependedModule Id="StoryMode" />
   </DependedModules>
   <DependedModuleMetadatas>
     <DependedModuleMetadata id="Bannerlord.Harmony" order="LoadBeforeThis" version="v2.4.2" />
-	<DependedModuleMetadata id="Bannerlord.MBOptionScreen" order="LoadBeforeThis" version="v5.12.3" />
+	<DependedModuleMetadata id="Bannerlord.MBOptionScreen" order="LoadBeforeThis" version="v5.13.1" />
     <DependedModuleMetadata id="Native" order="LoadBeforeThis" />
     <DependedModuleMetadata id="SandBoxCore" order="LoadBeforeThis" />
     <DependedModuleMetadata id="Sandbox" order="LoadBeforeThis" />
-    <DependedModuleMetadata id="StoryMode" order="LoadBeforeThis" />
   </DependedModuleMetadatas>
   <SubModules>
     <SubModule>
