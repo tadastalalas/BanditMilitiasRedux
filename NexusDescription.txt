@@ -1,0 +1,120 @@
+[center][size=4]Nearby bandits band together under a [color=#93c47d]bandit hero[/color] and form [color=#93c47d]Bandit Militias[/color] - organized warbands, not disorganized mobs.[/size]
+[size=3]Large militias may [color=#93c47d]split[/color] into two smaller but more dangerous parties. Every merge and split [color=#93c47d]trains[/color] their troops.[/size]
+[i][color=#93c47d]The idea and original code are by [/color][url=https://www.nexusmods.com/mountandblade2bannerlord/users/3261668]johnrambo42[/url][color=#93c47d] ([/color][url=https://www.nexusmods.com/mountandblade2bannerlord/mods/1768]Bandit Militias[/url][color=#93c47d]), later updated with permission by [/color][url=https://www.nexusmods.com/mountandblade2bannerlord/users/2416904]JungleDruid[/url][color=#93c47d] ([/color][url=https://www.nexusmods.com/mountandblade2bannerlord/mods/7649]Bandit Militias Updated v1.2.12[/url][color=#93c47d]) - this is a revised version, with the author's permission.[/color][/i]
+
+[color=#93c47d][size=3]Supported game versions: 1.5.7, 1.4.8, 1.4.7.[/size][/color]
+
+[img]https://i.ibb.co/tP8C5W11/Nexus-Desc.jpg[/img]
+
+[img]https://i.ibb.co/tpZDYhSZ/Nexus-Desc-Merge.jpg[/img]
+
+[img]https://i.ibb.co/YTW0qjj7/Nexus-Desc-Raiding-Village.jpg[/img]
+
+[img]https://i.ibb.co/tp5RyzB2/Nexus-Desc2.jpg[/img][/center]
+
+[color=#ffff00][size=4]Features[/size][/color]
+[color=#ffd966]Bandit parties of the same clan that meet nearby merge into a Bandit Militia led by a bandit hero.[/color]
+[color=#93c47d]Militia leaders are persistent heroes: they gain power, earn epithets like "the Bold" or "the Butcher" from victories and age, and get their own encyclopedia story.[/color]
+[color=#ffd966]Large militias split into two; militias grow and train over time, up to a global power cap you choose.[/color]
+[color=#93c47d]Militias patrol around their home hideout and raid rich villages nearby.[/color] ([color=#6aa84f]on[/color]/[color=#e06666]off[/color])
+[color=#ffd966]Each militia remembers the lords who destroyed militias near it and avoids them. Beating a lord lowers that fear; it also fades every week.[/color]
+[color=#93c47d]Defeat a militia leader to collect a bounty, then keep, release or execute your captive.[/color]
+[color=#ffd966]Unique random banners for every militia, on the map and in battle.[/color] ([color=#6aa84f]on[/color]/[color=#e06666]off[/color])
+[color=#93c47d]Map markers for large militias, like your own parties and armies.[/color] ([color=#6aa84f]on[/color]/[color=#e06666]off[/color])
+[color=#ffd966]Messages when militias raid your villages.[/color] ([color=#6aa84f]on[/color]/[color=#e06666]off[/color])
+[color=#93c47d]Just plug and play. No need to change anything for a great experience.[/color]
+[color=#ffd966]Works with or without Mod Configuration Menu.[/color]
+[color=#93c47d]Translations for 12 languages.[/color]
+
+[center][color=#6fa8dc][size=4]Additional languages included (no extra file needed)[/size][/color]
+Português (BR), 简体中文, 繁體中文, Deutsch, Français, Italiano, 日本語, 한국어, Polski, Русский, Español (LA), Türkçe
+简体中文 and 繁體中文 by [url=https://www.nexusmods.com/profile/Cartoonist57]Cartoonist57[/url], the others using copilot ai translation.
+Want to translate or fix a translation? [color=#93c47d]You have the permission[/color].[/center]
+
+[color=#ffff00][size=4]Settings[/size][/color]
+[color=#6fa8dc]Spawning & Formation[/color]
+[color=#ffd966]Bandit Hero Pool Cap (per clan)[/color] - 1 to 20, default [color=#93c47d]4[/color]
+[color=#ffd966]Minimum Size to Merge[/color] - 1 to 100, default [color=#93c47d]15[/color]
+[color=#ffd966]Daily Split Chance %[/color] - 0 to 100, default [color=#93c47d]5[/color]
+[color=#6fa8dc]Training & Growth[/color]
+[color=#ffd966]Enable Militia Training[/color] - default [color=#6aa84f]on[/color]
+[color=#ffd966]Use Bandit-Only Troop Trees[/color] - default [color=#e06666]off[/color]
+[color=#ffd966]Daily Training Chance[/color] - 0 to 100, default [color=#93c47d]10[/color]
+[color=#ffd966]Militia XP Boost[/color] - Off / Normal / Hard / Hardest, default [color=#93c47d]Normal[/color]
+[color=#ffd966]Upgrade % of Troops per Training[/color] - 0 to 100, default [color=#93c47d]25[/color]
+[color=#ffd966]Max Troop Tier from Training[/color] - 1 to 6, default [color=#93c47d]4[/color]
+[color=#ffd966]Growth Chance Percent[/color] - 0 to 100, default [color=#93c47d]50[/color]
+[color=#ffd966]Growth Percent[/color] - 0 to 100, default [color=#93c47d]1[/color]
+[color=#6fa8dc]Global Power[/color]
+[color=#ffd966]Global Power[/color] - 1 to 100, default [color=#93c47d]20[/color] (militia strength as % of all other parties)
+[color=#ffd966]Bandit Hero Gold Reward[/color] - Low / Normal / Rich / Richest, default [color=#93c47d]Normal[/color]
+[color=#6fa8dc]Behavior & AI[/color]
+[color=#ffd966]Max Stronger Target %[/color] - 0 to 100, default [color=#93c47d]0[/color]
+[color=#ffd966]Ignore Weaker Parties[/color] - 0 to 100, default [color=#93c47d]50[/color]
+[color=#ffd966]Ignore Villagers/Caravans[/color] - default [color=#e06666]off[/color]
+[color=#ffd966]Honor XP per Executed BM Leader[/color] - 0 to 1000, default [color=#93c47d]0[/color] (0 = off)
+[color=#ffd966]Allow Pillaging[/color] - default [color=#6aa84f]on[/color]
+[color=#ffd966]Pillaging Chance[/color] - 0 to 100, default [color=#93c47d]1[/color] (rolled every hour, keep it low)
+[color=#ffd966]Raid Cap Scale %[/color] - 10 to 500, default [color=#93c47d]100[/color]
+[color=#6fa8dc]Appearance & Customization[/color]
+[color=#ffd966]Bandit Militia[/color] - party name, default [color=#93c47d]Bandit Militia[/color]
+[color=#ffd966]Leaderless Bandit Militia[/color] - party name without a leader, default [color=#93c47d]Leaderless Bandit Militia[/color]
+[color=#ffd966]Random Banners[/color] - default [color=#6aa84f]on[/color]
+[color=#ffd966]Female Leader Chance %[/color] - 0 to 100, default [color=#93c47d]25[/color]
+[color=#ffd966]Check Voice Gender[/color] - default [color=#6aa84f]on[/color]
+[color=#6fa8dc]UI & Notifications[/color]
+[color=#ffd966]Village Raid Notices[/color] - default [color=#6aa84f]on[/color]
+[color=#ffd966]Skip Encounter Conversations[/color] - default [color=#e06666]off[/color]
+[color=#ffd966]Remove prisoner messages[/color] - default [color=#6aa84f]on[/color]
+[color=#ffd966]Militia Map Markers[/color] - default [color=#6aa84f]on[/color]
+[color=#ffd966]Minimum BM Size To Track[/color] - 0 to 500, default [color=#93c47d]50[/color]
+[color=#6fa8dc]Advanced[/color]
+[color=#ffd966]Merge/Split Cooldown (Hours)[/color] - 0 to 168, default [color=#93c47d]24[/color]
+[color=#ffd966]Max Item Value[/color] - 1000 to 100000, default [color=#93c47d]3750[/color]
+[color=#ffd966]Ignore Party Size Speed Penalty[/color] - default [color=#6aa84f]on[/color]
+[color=#6fa8dc]Technical settings[/color]
+[color=#ffd966]Logging for debugging[/color] - default [color=#e06666]off[/color]
+
+[color=#6fa8dc]With Mod Configuration Menu:[/color] change them in game under [color=#ffd966]Options > Mod Options[/color]. Changes apply at once.
+[color=#6fa8dc]Without Mod Configuration Menu:[/color] open [color=#ffd966]Modules[/color]\[color=#f1c232]BanditMilitiasRedux[/color]\[color=#ffd966]ModConfiguration.xml[/color] in any text editor. The file is read every time a campaign is started or loaded. If it is deleted or broken, the mod creates a new one with the default values.
+[color=#6fa8dc]Updating:[/color] "Enable Chat Logging" and "Enable File Logging" were replaced by [color=#ffd966]Logging for debugging[/color]. Your other MCM settings are kept.
+
+[color=#ffff00][size=4]Game versions[/size][/color]
+[color=#93c47d]1.5.7[/color], [color=#93c47d]1.4.8[/color], [color=#93c47d]1.4.7[/color] in the same download. The mod picks the right files for your game by itself.
+
+[color=#ffff00][size=4]Compatibility[/size][/color]
+Can be added [color=#93c47d]anytime[/color]. To remove it, press [color=#f1c232]Ctrl+Alt+N[/color] on the campaign map to clear all mod data, then save, exit and disable the mod.
+[color=#e06666]Adds[/color] data to save game files.
+Uses Harmony patches for bandit AI, map visuals, prisoners and the encyclopedia; everything else uses campaign events.
+If it loads after Calradia Expanded Kingdoms, [color=#ffd966]Random Banners[/color] is turned off automatically.
+Works with: [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/10012]Adjustable Bandits (War Sails)[/url], [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/10304]Jomsborg Pirates For Warsails DLC[/url], [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/2969]Fourberie (Cunning)[/url], [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/3242]Serve as Soldier[/url] (1.4.7 or newer: its bait-run bandit party is left alone).
+[color=#e06666]Possibly not compatible with:[/color] [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/4177]Bandit_Nation[/url], [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/2907]Realm of Thrones[/url], [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/8417]Shokuho[/url], [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/2304]The Original Player Switcher[/url] (Bandit Militia parties are [color=#e06666]not meant to be controlled[/color]).
+
+[color=#ffff00][size=4]Requirements[/size][/color]
+[url=https://www.nexusmods.com/mountandblade2bannerlord/mods/2006]Harmony[/url] - [color=#e06666]required[/color].
+[url=https://www.nexusmods.com/mountandblade2bannerlord/mods/612]Mod Configuration Menu[/url] - [color=#6aa84f]optional[/color], for changing the settings in game.
+
+[color=#ffff00][size=4]Installation[/size][/color]
+Updating? [color=#e06666]Delete the old mod folder first[/color], never overwrite it.
+Advisable to use [color=#ffd966]7zip[/color] to extract archive.
+Put it in [color=#ffd966]Mount & Blade II Bannerlord[/color]\[color=#f1c232]Modules[/color] folder.
+Enable the mod in the launcher. [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/2006]Harmony[/url] (and [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/612]Mod Configuration Menu[/url], if you use it) must be above it. Load it near the end of the load order.
+
+[color=#ffff00][size=4]Found a problem?[/size][/color]
+Generate a crash report link using [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/2018]ButterLib[/url] mod. How to do that the mini guide is here: [url=http://bannerlordmodding.lt/guides/how_to_report_a_crash/]How To Report A Crash[/url]
+Console commands that help: [color=#f1c232]bmr.stats[/color] (militia counts and power), [color=#f1c232]bmr.heroes[/color] (every militia hero), [color=#f1c232]bmr.orphans[/color] (bandit heroes stuck outside militias), [color=#f1c232]bmr.fix_orphans[/color] (puts them back into the leader pool).
+Turn on [color=#ffd966]Logging for debugging[/color] in [color=#ffd966]MCM[/color] settings or [color=#ffd966]ModConfiguration.xml[/color] in mod folder, [color=#f6b26b]repeat the problem[/color], then attach the file from [color=#ffd966]Modules[/color]\[color=#f1c232]BanditMilitiasRedux[/color]\[color=#ffd966]logs[/color] to your [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/2018]ButterLib[/url] crash report.
+
+[color=#a4c2f4]General Credits:[/color]
+[url=https://www.nexusmods.com/mountandblade2bannerlord/users/3261668]johnrambo42[/url] for the original [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/1768]Bandit Militias[/url] mod.
+[url=https://www.nexusmods.com/mountandblade2bannerlord/users/2416904]JungleDruid[/url] for [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/7649]Bandit Militias Updated[/url] and the permission to revise it.
+[url=https://www.nexusmods.com/profile/Cartoonist57]Cartoonist57[/url] for the Simplified and Traditional Chinese translations.
+[url=https://next.nexusmods.com/profile/LesserScholar]Lesser Scholar[/url] who made extensive [url=https://www.youtube.com/watch?v=tOziMRXJ7tM&list=PLzebdAxJeltRwfJ8jzsNolgHkRvLjoCRC]Artisan Workshop Mod Tutorial[/url].
+[url=https://next.nexusmods.com/profile/LitauenLitauen]LitauenLitauen[/url] for his priceless modding documentation at [url=http://bannerlordmodding.lt/]BannerlordModding.lt[/url].
+Mount & Blade Modding community [url=https://discord.gg/TGpNRpXGQq]Discord Channel[/url].
+
+[color=#a4c2f4]Source On GitHub:[/color] [url=https://github.com/tadastalalas/BanditMilitiasRedux]https://github.com/tadastalalas/BanditMilitiasRedux[/url]
+[color=#a4c2f4]Issues, Suggestions & Other Miscellaneous:[/color] [url=https://discord.gg/NwS7yQgxvu]https://discord.gg/NwS7yQgxvu[/url]
+[color=#a4c2f4]Comprehensive Bannerlord Modding Guide:[/color] [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/11354]Vanilla Plus Proper Modding Notes[/url]
+[color=#a4c2f4]Other Mods:[/color] [url=https://www.nexusmods.com/profile/TadasTheLithuanian/mods]TadasTheLithuanian Nexus Profile[/url]
+[color=#a4c2f4]Support Me On:[/color] [url=https://ko-fi.com/tadasthelithuanian]https://ko-fi.com/tadasthelithuanian[/url] [color=#a4c2f4]or[/color] [url=https://paypal.me/tadastalalas]https://paypal.me/tadastalalas[/url]

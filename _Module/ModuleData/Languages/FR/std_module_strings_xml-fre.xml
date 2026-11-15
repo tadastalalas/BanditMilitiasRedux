@@ -3,137 +3,148 @@
 	<tags>
 		<tag language="Français" />
 	</tags>
-        <strings>
-                <string id="BMPrimary" text="Paramètres principaux"/>
-                <string id="BMSizeAdjustments" text="Ajustements de taille"/>
-                <string id="BMAdjustments" text="Ajustements de milice"/>
-                <string id="BMXpOff" text="Désactivé"/>
-                <string id="BMXpNormal" text="Normal"/>
-                <string id="BMXpHard" text="Difficile"/>
-                <string id="BMXpHardest" text="Très difficile"/>
-                <string id="BMGoldLow" text="Faible"/>
-                <string id="BMGoldNormal" text="Normal"/>
-                <string id="BMGoldRich" text="Riche"/>
-                <string id="BMGoldRichest" text="Très riche"/>
-
-                <string id="BMHeroPoolCap" text="Limite du pool de héros bandits (par clan)"/>
-                <string id="BMHeroPoolCapDesc" text="Nombre maximal de héros de milice bandite par clan bandit conservés en vie dans le pool de recyclage. Les héros BM libérés, évadés et emprisonnés sont réutilisés jusqu’à cette limite ; les héros tués/exécutés sont supprimés définitivement et de nouveaux héros sont créés."/>
-                <string id="BMSpawning" text="Apparition &amp; Formation"/>
-                <string id="BMMergeSize" text="Taille minimale pour fusionner"/>
-                <string id="BMMergeSizeDesc" text="Les groupes de bandits plus petits que cette valeur ne fusionneront pas en Milice bandite."/>
-                <string id="BMSplit" text="Chance quotidienne de scission %"/>
-                <string id="BMSplitDesc" text="Probabilité quotidienne qu’une Milice bandite se divise lorsqu’elle est suffisamment grande."/>
-
-                <string id="BMTrain" text="Activer l’entraînement de milice"/>
-                <string id="BMTrainDesc" text="Les héros bandits entraîneront leurs milices."/>
-                <string id="BMBanditOnly" text="Utiliser uniquement les arbres de troupes bandites"/>
-                <string id="BMBanditOnlyDesc" text="Les milices ne s'améliorent qu'en d'autres troupes bandites, jamais en troupes régulières de faction. Compatible avec les mods qui ajoutent ou étendent les arbres de troupes bandites. Si aucune troupe bandite supplémentaire n'est disponible à un niveau, l'entraînement s'arrête simplement là."/>
-                <string id="BMDailyTrain" text="Chance quotidienne d’entraînement"/>
-                <string id="BMDailyTrainDesc" text="Chaque jour, ils peuvent s’entraîner davantage."/>
-                <string id="BMTraining" text="Entraînement &amp; Croissance"/>
-                <string id="BMXpBoost" text="Bonus d’XP de milice"/>
-                <string id="BMXpBoostDesc" text="Très difficile accorde assez d’XP pour améliorer fortement les troupes. Désactivé n’accorde aucun bonus d’XP."/>
-                <string id="BMUpgrade" text="% de troupes améliorées par entraînement"/>
-                <string id="BMUpgradeDesc" text="Au maximum, ce pourcentage de troupes sera amélioré à chaque entraînement. Les pillards sont inclus."/>
-                <string id="BMGrowChance" text="Pourcentage de chance de croissance"/>
-                <string id="BMGrowChanceDesc" text="Chance quotidienne que la milice gagne davantage de troupes (0 pour désactivé)."/>
-                <string id="BMGrowPercent" text="Pourcentage de croissance"/>
-                <string id="BMGrowPercentDesc" text="Augmente chaque type de troupe de ce pourcentage."/>
-                <string id="BMTier" text="Niveau max des troupes via entraînement"/>
-                <string id="BMTierDesc" text="L’entraînement n’améliorera jamais les troupes au-delà de ce niveau."/>
-
-                <string id="BMIgnore" text="Ignorer villageois/caravanes"/>
-                <string id="BMIgnoreDesc" text="Ils ne seront pas attaqués par les MB."/>
-                <string id="BMExecHonorXp" text="XP d'Honneur par chef de MB exécuté"/>
-                <string id="BMExecHonorXpDesc" text="XP du trait Honneur gagnée par le joueur en exécutant un chef de Milice de Bandits. 0 désactive."/>
-                <string id="BMStronger" text="% max de cible plus forte"/>
-                <string id="BMStrongerDesc" text="Les MB n’engageront pas des groupes plus forts qu’elles de plus de ce %. 100 signifie attaquer quelle que soit la force de la cible."/>
-                <string id="BMWeaker" text="Ignorer les groupes plus faibles"/>
-                <string id="BMWeakerDesc" text="10 signifie que tout groupe 10 % plus faible sera ignoré.\n100 attaque sans restriction."/>
-                <string id="BMPillage" text="Autoriser le pillage"/>
-                <string id="BMPillageDesc" text="Autoriser le pillage."/>
-                <string id="BMPillageChance" text="Chance de pillage"/>
-                <string id="BMPillageChanceDesc" text="Chance que l’IA des Milices bandites envisage de piller un village. Le test se déclenche une fois par heure de jeu pour chaque groupe de milice bandite ; une valeur plus faible est donc conseillée."/>
-                <string id="BMRaidCapScale" text="Échelle de limite de raids %"/>
-                <string id="BMRaidCapScaleDesc" text="Ajuste le nombre maximal de raids de village simultanés. La base est calculée automatiquement comme (nombre total de villages ÷ 10). 100 % = par défaut. Plus bas = moins de raids simultanés, plus haut = davantage de raids simultanés."/>
-
-                <string id="BMStringSetting" text="Milice bandite"/>
-                <string id="BMStringSettingDesc" text="Nom à donner à une Milice bandite."/>
-                <string id="BMLeaderlessStringSetting" text="Milice bandite sans chef"/>
-                <string id="BMLeaderlessStringSettingDesc" text="Nom à donner à une Milice bandite sans chef."/>
-                <string id="BMStringSettingDefault" text="Milice bandite"/>
-                <string id="BMLeaderlessStringSettingDefault" text="Milice bandite sans chef"/>
-                <string id="BMPartyName" text="{PARTY_NAME} de {LEADER_NAME}"/>
-                <string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
-
-                <string id="BMMarkers" text="Marqueurs de milice sur la carte"/>
-                <string id="BMMarkersDesc" text="Affiche toutes les Milices bandites sur la carte."/>
-                <string id="BMTrackSize" text="Taille minimale de MB à suivre"/>
-                <string id="BMTrackSizeDesc" text="Les MB plus petites ne seront pas suivies."/>
-                <string id="BMBanners" text="Bannières aléatoires"/>
-                <string id="BMBannersDesc" text="Les Milices bandites auront des bannières uniques, ou les bannières par défaut des clans bandits."/>
-                <string id="BMRaidNotices" text="Notifications de raid de village"/>
-                <string id="BMRaidNoticesDesc" text="Quand vos fiefs sont pillés, vous verrez un message en bannière."/>
-                <string id="BMRemovePrisonerMessages" text="Supprimer les messages de prisonniers"/>
-                <string id="BMRemovePrisonerMessagesDesc" text="Supprime les messages indiquant que des héros de Milice bandite sont capturés ou libérés comme prisonniers."/>
-                <string id="BMCheckVoiceGender" text="Vérifier le genre des voix"/>
-                <string id="BMCheckVoiceGenderDesc" text="Vérifie à nouveau si les répliques de voix bandites correspondent au genre du chef. Certaines répliques officielles utilisent des voix masculines sans préciser le genre ; ainsi, les cheffes bandites parleront avec des voix masculines si cette option est désactivée."/>
-                <string id="BMLoggingLevel" text="Niveau de journalisation"/>
-                <string id="BMLoggingLevelDesc" text="Le fichier journal se trouve dans &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
-                <string id="BMTesting" text="Mode test"/>
-                <string id="BMTestingDesc" text="Téléporte les MB jusqu’à vous."/>
-                <string id="BMMaxPerClan" text="Milices max par clan"/>
-
-                <string id="BMREncBase" text="{LEADER.FIRSTNAME} est un chef brigand menant une bande de coupe-jarrets qui pillent sous le nom de {CLAN_NAME}."/>
-                <string id="BMREncNoClan" text="brigands sans maître"/>
-                <string id="BMREncEpithet1" text="À travers le pays, {?LEADER.GENDER}elle{?}il{\\?} est connu(e) comme {LEADER.FIRSTNAME} {EPITHET}, vainqueur de {WINS} {?MANY}batailles{?}bataille{\\?}."/>
-                <string id="BMREncEpithet2" text="À travers le pays, {?LEADER.GENDER}elle{?}il{\\?} est connu(e) comme {LEADER.FIRSTNAME} {EPITHET}."/>
-                <string id="BMREncDefeats" text="{?LEADER.GENDER}Elle{?}Il{\\?} a été battu(e) au combat {DEFEATS} {?MANY}fois{?}fois{\\?}."/>
-                <string id="BMREncFear" text="Par-dessus tout, {?LEADER.GENDER}elle{?}il{\\?} craint {HUNTER}."/>
-
-                <string id="BMRWho" text="Qui êtes-vous, et pour qui chevauchez-vous ?" />
-                <string id="BMRWhoAnswer" text="On m’appelle {LEADER_NAME}. Nous ne répondons à aucun seigneur ni roi — seulement à la monnaie et à la route ouverte." />
-                <string id="BMRContinue" text="Je vois. Maintenant, revenons aux affaires." />
-                <string id="BMRThreaten" text="Rendez-vous maintenant et je vous laisserai peut-être la vie sauve."/>
-                <string id="BMRThreatenAnswer" text="Ha ! Il faudra d’abord nous prendre la tête. À eux, les gars !"/>
-                <string id="BMRCaptiveIntro" text="Voilà donc la fin. Faites de moi ce que vous voulez."/>
-                <string id="BMRCaptiveKeep" text="Vous êtes mon prisonnier, désormais."/>
-                <string id="BMRCaptiveRelease" text="Disparaissez de ma vue."/>
-                <string id="BMRCaptiveExecute" text="N’espérez aucune pitié. Qu’on lui tranche la tête !"/>
-                <string id="BMRCaptiveExecuteAnswer" text="Alors faites vite. Mes gars se souviendront de votre visage — et ils viendront vous chercher."/>
-                <string id="BMRCaptiveExecuteConfirm" text="Peu m’importe. Préparez-vous à mourir !"/>
-                <string id="BMRCaptiveExecuteCancel" text="Soit. Vous êtes mon prisonnier, désormais."/>
-
-                <string id="BMGoldReward" text="Récompense en or pour héros bandit"/>
-                <string id="BMRBounty" text="Vous avez perçu une prime de {GOLD} denars et {RENOWN} de renommée pour {LEADER}."/>
-                <string id="BMChatLogging" text="Activer les logs du chat"/>
-                <string id="BMChatLoggingDesc" text="Écrit les messages de diagnostic dans le chat en jeu. Désactivé par défaut ; à activer uniquement pour le dépannage."/>
-                <string id="BMFileLogging" text="Activer les logs fichier"/>
-                <string id="BMFileLoggingDesc" text="Écrit les messages de diagnostic dans Modules\BanditMilitiasRedux\Logs\BMR_*.log. Désactivé par défaut ; à activer uniquement pour le dépannage."/>
-                <string id="BMSkipConversations" text="Ignorer les conversations de rencontre"/>
-                <string id="BMSkipConversationsDesc" text="Ignore les conversations lors des rencontres avec des Milices bandites. La corruption sera indisponible si activé."/>
-                <string id="BMMaxValue" text="Valeur max d’objet"/>
-                <string id="BMMaxValueDesc" text="Limite la valeur par pièce de l’équipement donné aux héros.\nPrincipalement utile quand d’autres mods vous donnent du butin de héros."/>
-                <string id="BMMinSize" text="Taille minimale"/>
-                <string id="BMMinSizeDesc" text="Aucune MB plus petite que cette valeur ne se formera."/>
-                <string id="BMLooter" text="Conversions de pillards"/>
-                <string id="BMLooterDesc" text="Combien de pillards sont convertis en meilleures unités lors de l’entraînement."/>
-                <string id="BMPower" text="Puissance globale"/>
-                <string id="BMPowerDesc" text="Plafonne la puissance de combat totale de toutes les Milices bandites combinées en pourcentage de tous les autres groupes du monde. Des valeurs plus élevées permettent davantage de MB et des MB plus fortes, mais peuvent affecter sensiblement l’équilibre du monde."/>
-
-                <string id="BMModName" text="Milices de Bandits Redux"/>
-                <string id="BMAIBehavior" text="Comportement &amp; IA"/>
-                <string id="BMAppearance" text="Apparence &amp; Personnalisation"/>
-                <string id="BMUI" text="Interface &amp; Notifications"/>
-                <string id="BMAdvanced" text="Avancé"/>
-                <string id="BMCooldown" text="Délai de fusion/séparation (heures)"/>
-                <string id="BMCooldownDesc" text="Une Milice de Bandits ne peut pas fusionner ni se séparer à nouveau avant que ce nombre d'heures en jeu ne se soit écoulé."/>
-                <string id="BMIgnoreSizePenalty" text="Ignorer le malus de vitesse lié à la taille du groupe"/>
-                <string id="BMIgnoreSizePenaltyDesc" text="Les Milices de Bandits se déplacent à pleine vitesse, quelle que soit la taille du groupe."/>
-                <string id="BMVillageBeingRaided" text="{VILLAGE} est en train d'être pillé par {PARTY} !"/>
-                <string id="BMVillageRaided" text="{VILLAGE} pillé ! {PARTY} est lourdement chargé de butin près de {TOWN} !"/>
-                <string id="BMPlayerVillageBeingRaided" text="{PARTY} pille votre village {VILLAGE} près de {TOWN} !"/>
-                <string id="BMGenderSlider" text="Chance de cheffe féminine %"/>
-                <string id="BMGenderSliderDesc" text="Chance qu'une cheffe de Milice de Bandits soit une femme. 0 = tous hommes, 100 = toutes femmes."/>
-        </strings>
+	<strings>
+		<string id="BMPrimary" text="Paramètres principaux"/>
+		<string id="BMSizeAdjustments" text="Ajustements de taille"/>
+		<string id="BMAdjustments" text="Ajustements de milice"/>
+		<string id="BMXpOff" text="Désactivé"/>
+		<string id="BMXpNormal" text="Normal"/>
+		<string id="BMXpHard" text="Difficile"/>
+		<string id="BMXpHardest" text="Très difficile"/>
+		<string id="BMGoldLow" text="Faible"/>
+		<string id="BMGoldNormal" text="Normal"/>
+		<string id="BMGoldRich" text="Riche"/>
+		<string id="BMGoldRichest" text="Très riche"/>
+		<string id="BMHeroPoolCap" text="Limite du pool de héros bandits (par clan)"/>
+		<string id="BMHeroPoolCapDesc" text="Nombre maximal de héros de milice bandite par clan bandit conservés en vie dans le pool de recyclage. Les héros BM libérés, évadés et emprisonnés sont réutilisés jusqu’à cette limite ; les héros tués/exécutés sont supprimés définitivement et de nouveaux héros sont créés."/>
+		<string id="BMSpawning" text="Apparition &amp; Formation"/>
+		<string id="BMMergeSize" text="Taille minimale pour fusionner"/>
+		<string id="BMMergeSizeDesc" text="Les groupes de bandits plus petits que cette valeur ne fusionneront pas en Milice bandite."/>
+		<string id="BMSplit" text="Chance quotidienne de scission %"/>
+		<string id="BMSplitDesc" text="Probabilité quotidienne qu’une Milice bandite se divise lorsqu’elle est suffisamment grande."/>
+		<string id="BMTrain" text="Activer l’entraînement de milice"/>
+		<string id="BMTrainDesc" text="Les héros bandits entraîneront leurs milices."/>
+		<string id="BMBanditOnly" text="Utiliser uniquement les arbres de troupes bandites"/>
+		<string id="BMBanditOnlyDesc" text="Les milices ne s'améliorent qu'en d'autres troupes bandites, jamais en troupes régulières de faction. Compatible avec les mods qui ajoutent ou étendent les arbres de troupes bandites. Si aucune troupe bandite supplémentaire n'est disponible à un niveau, l'entraînement s'arrête simplement là."/>
+		<string id="BMDailyTrain" text="Chance quotidienne d’entraînement"/>
+		<string id="BMDailyTrainDesc" text="Chaque jour, ils peuvent s’entraîner davantage."/>
+		<string id="BMTraining" text="Entraînement &amp; Croissance"/>
+		<string id="BMXpBoost" text="Bonus d’XP de milice"/>
+		<string id="BMXpBoostDesc" text="Très difficile accorde assez d’XP pour améliorer fortement les troupes. Désactivé n’accorde aucun bonus d’XP."/>
+		<string id="BMUpgrade" text="% de troupes améliorées par entraînement"/>
+		<string id="BMUpgradeDesc" text="Au maximum, ce pourcentage de troupes sera amélioré à chaque entraînement. Les pillards sont inclus."/>
+		<string id="BMGrowChance" text="Pourcentage de chance de croissance"/>
+		<string id="BMGrowChanceDesc" text="Chance quotidienne que la milice gagne davantage de troupes (0 pour désactivé)."/>
+		<string id="BMGrowPercent" text="Pourcentage de croissance"/>
+		<string id="BMGrowPercentDesc" text="Augmente chaque type de troupe de ce pourcentage."/>
+		<string id="BMTier" text="Niveau max des troupes via entraînement"/>
+		<string id="BMTierDesc" text="L’entraînement n’améliorera jamais les troupes au-delà de ce niveau."/>
+		<string id="BMIgnore" text="Ignorer villageois/caravanes"/>
+		<string id="BMIgnoreDesc" text="Ils ne seront pas attaqués par les MB."/>
+		<string id="BMExecHonorXp" text="XP d'Honneur par chef de MB exécuté"/>
+		<string id="BMExecHonorXpDesc" text="XP du trait Honneur gagnée par le joueur en exécutant un chef de Milice de Bandits. 0 désactive."/>
+		<string id="BMStronger" text="% max de cible plus forte"/>
+		<string id="BMStrongerDesc" text="Les MB n’engageront pas des groupes plus forts qu’elles de plus de ce %. 100 signifie attaquer quelle que soit la force de la cible."/>
+		<string id="BMWeaker" text="Ignorer les groupes plus faibles"/>
+		<string id="BMWeakerDesc" text="10 signifie que tout groupe 10 % plus faible sera ignoré.{newline}100 attaque sans restriction."/>
+		<string id="BMPillage" text="Autoriser le pillage"/>
+		<string id="BMPillageDesc" text="Autoriser le pillage."/>
+		<string id="BMPillageChance" text="Chance de pillage"/>
+		<string id="BMPillageChanceDesc" text="Chance que l’IA des Milices bandites envisage de piller un village. Le test se déclenche une fois par heure de jeu pour chaque groupe de milice bandite ; une valeur plus faible est donc conseillée."/>
+		<string id="BMRaidCapScale" text="Échelle de limite de raids %"/>
+		<string id="BMRaidCapScaleDesc" text="Ajuste le nombre maximal de raids de village simultanés. La base est calculée automatiquement comme (nombre total de villages ÷ 10). 100 % = par défaut. Plus bas = moins de raids simultanés, plus haut = davantage de raids simultanés."/>
+		<string id="BMStringSetting" text="Milice bandite"/>
+		<string id="BMStringSettingDesc" text="Nom à donner à une Milice bandite."/>
+		<string id="BMLeaderlessStringSetting" text="Milice bandite sans chef"/>
+		<string id="BMLeaderlessStringSettingDesc" text="Nom à donner à une Milice bandite sans chef."/>
+		<string id="BMStringSettingDefault" text="Milice bandite"/>
+		<string id="BMLeaderlessStringSettingDefault" text="Milice bandite sans chef"/>
+		<string id="BMPartyName" text="{PARTY_NAME} de {LEADER_NAME}"/>
+		<string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
+		<string id="BMMarkers" text="Marqueurs de milice sur la carte"/>
+		<string id="BMMarkersDesc" text="Affiche toutes les Milices bandites sur la carte."/>
+		<string id="BMTrackSize" text="Taille minimale de MB à suivre"/>
+		<string id="BMTrackSizeDesc" text="Les MB plus petites ne seront pas suivies."/>
+		<string id="BMBanners" text="Bannières aléatoires"/>
+		<string id="BMBannersDesc" text="Les Milices bandites auront des bannières uniques, ou les bannières par défaut des clans bandits."/>
+		<string id="BMRaidNotices" text="Notifications de raid de village"/>
+		<string id="BMRaidNoticesDesc" text="Quand vos fiefs sont pillés, vous verrez un message en bannière."/>
+		<string id="BMRemovePrisonerMessages" text="Supprimer les messages de prisonniers"/>
+		<string id="BMRemovePrisonerMessagesDesc" text="Supprime les messages indiquant que des héros de Milice bandite sont capturés ou libérés comme prisonniers."/>
+		<string id="BMCheckVoiceGender" text="Vérifier le genre des voix"/>
+		<string id="BMCheckVoiceGenderDesc" text="Vérifie à nouveau si les répliques de voix bandites correspondent au genre du chef. Certaines répliques officielles utilisent des voix masculines sans préciser le genre ; ainsi, les cheffes bandites parleront avec des voix masculines si cette option est désactivée."/>
+		<string id="BMLoggingLevel" text="Niveau de journalisation"/>
+		<string id="BMLoggingLevelDesc" text="Le fichier journal se trouve dans &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
+		<string id="BMTesting" text="Mode test"/>
+		<string id="BMTestingDesc" text="Téléporte les MB jusqu’à vous."/>
+		<string id="BMMaxPerClan" text="Milices max par clan"/>
+		<string id="BMREncBase" text="{LEADER.FIRSTNAME} est un chef brigand menant une bande de coupe-jarrets qui pillent sous le nom de {CLAN_NAME}."/>
+		<string id="BMREncNoClan" text="brigands sans maître"/>
+		<string id="BMREncEpithet1" text="À travers le pays, {?LEADER.GENDER}elle{?}il{\?} est connu(e) comme {LEADER.FIRSTNAME} {EPITHET}, vainqueur de {WINS} {?MANY}batailles{?}bataille{\?}."/>
+		<string id="BMREncEpithet2" text="À travers le pays, {?LEADER.GENDER}elle{?}il{\?} est connu(e) comme {LEADER.FIRSTNAME} {EPITHET}."/>
+		<string id="BMREncDefeats" text="{?LEADER.GENDER}Elle{?}Il{\?} a été battu(e) au combat {DEFEATS} {?MANY}fois{?}fois{\?}."/>
+		<string id="BMREncFear" text="Par-dessus tout, {?LEADER.GENDER}elle{?}il{\?} craint {HUNTER}."/>
+		<string id="BMRWho" text="Qui êtes-vous, et pour qui chevauchez-vous ?" />
+		<string id="BMRWhoAnswer" text="On m’appelle {LEADER_NAME}. Nous ne répondons à aucun seigneur ni roi — seulement à la monnaie et à la route ouverte." />
+		<string id="BMRContinue" text="Je vois. Maintenant, revenons aux affaires." />
+		<string id="BMRThreaten" text="Rendez-vous maintenant et je vous laisserai peut-être la vie sauve."/>
+		<string id="BMRThreatenAnswer" text="Ha ! Il faudra d’abord nous prendre la tête. À eux, les gars !"/>
+		<string id="BMRCaptiveIntro" text="Voilà donc la fin. Faites de moi ce que vous voulez."/>
+		<string id="BMRCaptiveKeep" text="Vous êtes mon prisonnier, désormais."/>
+		<string id="BMRCaptiveRelease" text="Disparaissez de ma vue."/>
+		<string id="BMRCaptiveExecute" text="N’espérez aucune pitié. Qu’on lui tranche la tête !"/>
+		<string id="BMRCaptiveExecuteAnswer" text="Alors faites vite. Mes gars se souviendront de votre visage — et ils viendront vous chercher."/>
+		<string id="BMRCaptiveExecuteConfirm" text="Peu m’importe. Préparez-vous à mourir !"/>
+		<string id="BMRCaptiveExecuteCancel" text="Soit. Vous êtes mon prisonnier, désormais."/>
+		<string id="BMGoldReward" text="Récompense en or pour héros bandit"/>
+		<string id="BMRBounty" text="Vous avez perçu une prime de {GOLD} denars et {RENOWN} de renommée pour {LEADER}."/>
+		<string id="BMChatLogging" text="Activer les logs du chat"/>
+		<string id="BMChatLoggingDesc" text="Écrit les messages de diagnostic dans le chat en jeu. Désactivé par défaut ; à activer uniquement pour le dépannage."/>
+		<string id="BMFileLogging" text="Activer les logs fichier"/>
+		<string id="BMFileLoggingDesc" text="Écrit les messages de diagnostic dans Modules\BanditMilitiasRedux\Logs\BMR_*.log. Désactivé par défaut ; à activer uniquement pour le dépannage."/>
+		<string id="BMSkipConversations" text="Ignorer les conversations de rencontre"/>
+		<string id="BMSkipConversationsDesc" text="Ignore les conversations lors des rencontres avec des Milices bandites. La corruption sera indisponible si activé."/>
+		<string id="BMMaxValue" text="Valeur max d’objet"/>
+		<string id="BMMaxValueDesc" text="Limite la valeur par pièce de l’équipement donné aux héros.{newline}Principalement utile quand d’autres mods vous donnent du butin de héros."/>
+		<string id="BMMinSize" text="Taille minimale"/>
+		<string id="BMMinSizeDesc" text="Aucune MB plus petite que cette valeur ne se formera."/>
+		<string id="BMLooter" text="Conversions de pillards"/>
+		<string id="BMLooterDesc" text="Combien de pillards sont convertis en meilleures unités lors de l’entraînement."/>
+		<string id="BMPower" text="Puissance globale"/>
+		<string id="BMPowerDesc" text="Plafonne la puissance de combat totale de toutes les Milices bandites combinées en pourcentage de tous les autres groupes du monde. Des valeurs plus élevées permettent davantage de MB et des MB plus fortes, mais peuvent affecter sensiblement l’équilibre du monde."/>
+		<string id="BMModName" text="Milices de Bandits Redux"/>
+		<string id="BMAIBehavior" text="Comportement &amp; IA"/>
+		<string id="BMAppearance" text="Apparence &amp; Personnalisation"/>
+		<string id="BMUI" text="Interface &amp; Notifications"/>
+		<string id="BMAdvanced" text="Avancé"/>
+		<string id="BMCooldown" text="Délai de fusion/séparation (heures)"/>
+		<string id="BMCooldownDesc" text="Une Milice de Bandits ne peut pas fusionner ni se séparer à nouveau avant que ce nombre d'heures en jeu ne se soit écoulé."/>
+		<string id="BMIgnoreSizePenalty" text="Ignorer le malus de vitesse lié à la taille du groupe"/>
+		<string id="BMIgnoreSizePenaltyDesc" text="Les Milices de Bandits se déplacent à pleine vitesse, quelle que soit la taille du groupe."/>
+		<string id="BMVillageBeingRaided" text="{VILLAGE} est en train d'être pillé par {PARTY} !"/>
+		<string id="BMVillageRaided" text="{VILLAGE} pillé ! {PARTY} est lourdement chargé de butin près de {TOWN} !"/>
+		<string id="BMPlayerVillageBeingRaided" text="{PARTY} pille votre village {VILLAGE} près de {TOWN} !"/>
+		<string id="BMGenderSlider" text="Chance de cheffe féminine %"/>
+		<string id="BMGenderSliderDesc" text="Chance qu'une cheffe de Milice de Bandits soit une femme. 0 = tous hommes, 100 = toutes femmes."/>
+		<string id="BMGoldRewardDesc" text="Quantité d'or que le joueur reçoit pour avoir vaincu un héros de la milice bandite." />
+		<string id="BMREncDefected" text="{LEADER.FIRSTNAME} menait autrefois une bande de coupe-jarrets qui pillait sous le nom de {OLD_CLAN}. Depuis, {?LEADER.GENDER}elle{?}il{\?} a tourné le dos à cette vie et vend désormais son épée à quiconque la paiera." />
+		<string id="BMRPrisonerPretalk" text="Que voulez-vous de plus de moi ?" />
+		<string id="BMRPrisonerExecuteCancel" text="À la réflexion... pas aujourd'hui." />
+		<string id="BMR_udVrtbS" text="Paramètres techniques" />
+		<string id="BMR_WA9I1JU" text="Journalisation pour le débogage" />
+		<string id="BMR_2T70tyP" text="Journalisation pour le débogage (anglais uniquement). [Par défaut : désactivé]" />
+		<string id="BMR_EyG35bd" text="le Téméraire" />
+		<string id="BMR_w4Wuqbo" text="l'Audacieux" />
+		<string id="BMR_IPpCaSQ" text="le Cruel" />
+		<string id="BMR_cbE581S" text="le Redouté" />
+		<string id="BMR_XLdOUHp" text="le Sanglant" />
+		<string id="BMR_pPyyAyk" text="l'Impitoyable" />
+		<string id="BMR_GnYKrqu" text="le Boucher" />
+		<string id="BMR_DRyTg8m" text="le Fléau" />
+		<string id="BMR_WC77kKY" text="la Terreur" />
+		<string id="BMR_t2fWU8c" text="le Cauchemar" />
+		<string id="BMR_A0OadqW" text="(Ville inconnue)" />
+		<string id="BMR_yquQLhT" text="MILICES BANDITES SUPPRIMÉES" />
+		<string id="BMR_TOQCjcE" text="{A} {B}" />
+	</strings>
 </base>

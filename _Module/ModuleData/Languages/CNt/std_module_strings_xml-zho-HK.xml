@@ -1,139 +1,150 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
-        <tags>
-                <tag language="繁體中文" />
-        </tags>
-        <strings>
-                <string id="BMPrimary" text="主要設定"/>
-                <string id="BMSizeAdjustments" text="規模調整"/>
-                <string id="BMAdjustments" text="兵團調整"/>
-                <string id="BMXpOff" text="關閉"/>
-                <string id="BMXpNormal" text="普通"/>
-                <string id="BMXpHard" text="困難"/>
-                <string id="BMXpHardest" text="最困難"/>
-                <string id="BMGoldLow" text="低"/>
-                <string id="BMGoldNormal" text="普通"/>
-                <string id="BMGoldRich" text="富裕"/>
-                <string id="BMGoldRichest" text="最富裕"/>
-
-                <string id="BMHeroPoolCap" text="強盜英雄池上限（每個家族）"/>
-                <string id="BMHeroPoolCapDesc" text="每個強盜家族在回收池中保留的存活強盜兵團英雄數量上限。被釋放、逃脫與被俘的兵團英雄會在此上限內重複使用；被擊殺／處決的英雄將被永久移除，並會建立新的英雄。"/>
-                <string id="BMSpawning" text="生成與編組"/>
-                <string id="BMMergeSize" text="合併所需最小規模"/>
-                <string id="BMMergeSizeDesc" text="小於此規模的強盜隊伍不會合併為強盜兵團。"/>
-                <string id="BMSplit" text="每日分裂機率%"/>
-                <string id="BMSplitDesc" text="強盜兵團規模夠大時，每天分裂的可能性。"/>
-
-                <string id="BMTrain" text="啟用兵團訓練"/>
-                <string id="BMTrainDesc" text="強盜英雄會訓練自己的兵團。"/>
-                <string id="BMBanditOnly" text="僅使用強盜兵種升級樹"/>
-                <string id="BMBanditOnlyDesc" text="兵團只會升級為其他強盜兵種，絕不會升級為一般陣營的兵種。與新增或擴充強盜兵種升級樹的模組相容。若某一階級已沒有可用的強盜兵種，訓練就會在該階級停止。"/>
-                <string id="BMDailyTrain" text="每日訓練機率"/>
-                <string id="BMDailyTrainDesc" text="每天都有機會進一步訓練。"/>
-                <string id="BMTraining" text="訓練與成長"/>
-                <string id="BMXpBoost" text="兵團經驗加成"/>
-                <string id="BMXpBoostDesc" text="「最困難」會給予足以大幅升級兵種的經驗。「關閉」則不給額外經驗。"/>
-                <string id="BMUpgrade" text="每次訓練的兵種升級比例%"/>
-                <string id="BMUpgradeDesc" text="每次訓練最多升級此百分比的兵種。劫掠者也計算在內。"/>
-                <string id="BMGrowChance" text="成長機率%"/>
-                <string id="BMGrowChanceDesc" text="兵團每天獲得更多兵力的機率（0 為關閉）。"/>
-                <string id="BMGrowPercent" text="成長比例%"/>
-                <string id="BMGrowPercentDesc" text="每種兵種的數量按此百分比成長。"/>
-                <string id="BMTier" text="訓練可達最高兵種階級"/>
-                <string id="BMTierDesc" text="訓練不會把兵種升級到超過此階級。"/>
-
-                <string id="BMIgnore" text="忽略村民／商隊"/>
-                <string id="BMIgnoreDesc" text="強盜兵團不會攻擊他們。"/>
-                <string id="BMExecHonorXp" text="處決兵團首領的榮譽經驗"/>
-                <string id="BMExecHonorXpDesc" text="玩家處決強盜兵團首領時獲得的榮譽特質經驗。0 為停用。"/>
-                <string id="BMStronger" text="可攻擊較強目標上限%"/>
-                <string id="BMStrongerDesc" text="強盜兵團不會與強過自己超過此百分比的隊伍交戰。100 表示無論目標多強都會攻擊。"/>
-                <string id="BMWeaker" text="忽略較弱隊伍"/>
-                <string id="BMWeakerDesc" text="10 表示比自己弱 10% 的隊伍都會被忽略。\n100 表示不設限制，一律攻擊。"/>
-                <string id="BMPillage" text="允許劫掠"/>
-                <string id="BMPillageDesc" text="允許劫掠。"/>
-                <string id="BMPillageChance" text="劫掠機率"/>
-                <string id="BMPillageChanceDesc" text="強盜兵團 AI 考慮劫掠村莊的機率。每支強盜兵團每個遊戲內小時都會觸發一次，因此建議設定較小的數值。"/>
-                <string id="BMRaidCapScale" text="劫掠上限比例%"/>
-                <string id="BMRaidCapScaleDesc" text="調整同時進行的村莊劫掠數量上限。基準值自動計算為（村莊總數 ÷ 10）。100% = 預設。數值越低，同時劫掠越少；數值越高，同時劫掠越多。"/>
-
-                <string id="BMStringSetting" text="強盜兵團"/>
-                <string id="BMStringSettingDesc" text="強盜兵團的名稱。"/>
-                <string id="BMLeaderlessStringSetting" text="無首領強盜兵團"/>
-                <string id="BMLeaderlessStringSettingDesc" text="沒有首領的強盜兵團的名稱。"/>
-                <string id="BMStringSettingDefault" text="強盜兵團"/>
-                <string id="BMLeaderlessStringSettingDefault" text="無首領強盜兵團"/>
-                <string id="BMPartyName" text="{LEADER_NAME}的{PARTY_NAME}"/>
-                <string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
-
-                <string id="BMMarkers" text="兵團地圖標記"/>
-                <string id="BMMarkersDesc" text="在地圖上顯示所有強盜兵團。"/>
-                <string id="BMTrackSize" text="追蹤的最小兵團規模"/>
-                <string id="BMTrackSizeDesc" text="更小的兵團不會被追蹤。"/>
-                <string id="BMBanners" text="隨機旗幟"/>
-                <string id="BMBannersDesc" text="強盜兵團會擁有獨特旗幟，或使用預設的強盜家族旗幟。"/>
-                <string id="BMRaidNotices" text="村莊劫掠通知"/>
-                <string id="BMRaidNoticesDesc" text="你的封地被劫掠時，會顯示橫幅訊息。"/>
-                <string id="BMRemovePrisonerMessages" text="移除俘虜訊息"/>
-                <string id="BMRemovePrisonerMessagesDesc" text="移除強盜兵團英雄被俘或被釋放的訊息。"/>
-                <string id="BMCheckVoiceGender" text="檢查語音性別"/>
-                <string id="BMCheckVoiceGenderDesc" text="再次確認強盜語音是否與首領性別相符。部分官方語音使用男聲卻未標示性別，因此若停用此選項，女性強盜首領會用男聲說話。"/>
-                <string id="BMLoggingLevel" text="日誌等級"/>
-                <string id="BMLoggingLevelDesc" text="日誌檔位於 &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
-                <string id="BMTesting" text="測試模式"/>
-                <string id="BMTestingDesc" text="將強盜兵團傳送到你身邊。"/>
-                <string id="BMMaxPerClan" text="每個家族的兵團上限"/>
-
-                <string id="BMREncBase" text="{LEADER.FIRSTNAME}是一名強盜頭目，率領一群亡命之徒，以{CLAN_NAME}之名四處劫掠。"/>
-                <string id="BMREncNoClan" text="無主強盜"/>
-                <string id="BMREncEpithet1" text="在這片土地上，{?LEADER.GENDER}她{?}他{\\?}被稱為{LEADER.FIRSTNAME} {EPITHET}，取得過{WINS}場{?MANY}戰鬥{?}戰鬥{\\?}的勝利。"/>
-                <string id="BMREncEpithet2" text="在這片土地上，{?LEADER.GENDER}她{?}他{\\?}被稱為{LEADER.FIRSTNAME} {EPITHET}。"/>
-                <string id="BMREncDefeats" text="{?LEADER.GENDER}她{?}他{\\?}曾在戰鬥中敗北{DEFEATS}{?MANY}次{?}次{\\?}。"/>
-                <string id="BMREncFear" text="在所有人之中，{?LEADER.GENDER}她{?}他{\\?}最懼怕{HUNTER}。"/>
-
-                <string id="BMRWho" text="你是誰？替誰效命？" />
-                <string id="BMRWhoAnswer" text="他們叫我{LEADER_NAME}。我們不聽命於任何領主或國王——只認金幣與大道。" />
-                <string id="BMRContinue" text="我明白了。言歸正傳吧。" />
-                <string id="BMRThreaten" text="現在投降，我或許會留你一命。"/>
-                <string id="BMRThreatenAnswer" text="哈！先拿下我們的腦袋再說。上啊，弟兄們！"/>
-                <string id="BMRCaptiveIntro" text="就這樣結束了。隨你處置吧。"/>
-                <string id="BMRCaptiveKeep" text="你現在是我的俘虜。"/>
-                <string id="BMRCaptiveRelease" text="滾出我的視線。"/>
-                <string id="BMRCaptiveExecute" text="別指望我手下留情。砍下你的腦袋！"/>
-                <string id="BMRCaptiveExecuteAnswer" text="那就動作快點。我的弟兄們會記住你的臉——他們會來找你算帳的。"/>
-                <string id="BMRCaptiveExecuteConfirm" text="我不在乎。受死吧！"/>
-                <string id="BMRCaptiveExecuteCancel" text="好吧。你現在是我的俘虜。"/>
-
-                <string id="BMGoldReward" text="強盜英雄的第納爾獎勵"/>
-                <string id="BMRBounty" text="你因{LEADER}領得了{GOLD}第納爾的賞金與{RENOWN}點聲望。"/>
-                <string id="BMChatLogging" text="啟用聊天日誌"/>
-                <string id="BMChatLoggingDesc" text="將診斷訊息寫入遊戲內聊天。預設關閉；僅在排查問題時啟用。"/>
-                <string id="BMFileLogging" text="啟用檔案日誌"/>
-                <string id="BMFileLoggingDesc" text="將診斷訊息寫入 Modules\BanditMilitiasRedux\Logs\BMR_*.log。預設關閉；僅在排查問題時啟用。"/>
-                <string id="BMSkipConversations" text="跳過遭遇對話"/>
-                <string id="BMSkipConversationsDesc" text="遭遇強盜兵團時跳過對話。啟用後無法賄賂。"/>
-                <string id="BMMaxValue" text="物品價值上限"/>
-                <string id="BMMaxValueDesc" text="限制配發給英雄的裝備單件價值。\n主要用於其他模組會給予英雄戰利品的情況。"/>
-                <string id="BMMinSize" text="最小規模"/>
-                <string id="BMMinSizeDesc" text="不會形成小於此規模的強盜兵團。"/>
-                <string id="BMLooter" text="劫掠者轉化"/>
-                <string id="BMLooterDesc" text="訓練時有多少劫掠者會被轉化為更好的兵種。"/>
-                <string id="BMPower" text="全域戰力"/>
-                <string id="BMPowerDesc" text="將所有強盜兵團合計的總戰鬥力，限制在世界上其他所有隊伍合計戰鬥力的一定百分比內。數值越高，強盜兵團越多也越強，但可能明顯影響世界平衡。"/>
-
-                <string id="BMModName" text="強盜起義"/>
-                <string id="BMAIBehavior" text="行為與 AI"/>
-                <string id="BMAppearance" text="外觀與自訂"/>
-                <string id="BMUI" text="介面與通知"/>
-                <string id="BMAdvanced" text="進階"/>
-                <string id="BMCooldown" text="合併／分裂冷卻（小時）"/>
-                <string id="BMCooldownDesc" text="強盜兵團在經過這麼多遊戲內小時之前，無法再次合併或分裂。"/>
-                <string id="BMIgnoreSizePenalty" text="忽略隊伍規模速度懲罰"/>
-                <string id="BMIgnoreSizePenaltyDesc" text="無論隊伍規模多大，強盜兵團都以全速移動。"/>
-                <string id="BMVillageBeingRaided" text="{VILLAGE}正遭{PARTY}劫掠！"/>
-                <string id="BMVillageRaided" text="{VILLAGE}遭到劫掠！{PARTY}滿載戰利品，現身於{TOWN}附近！"/>
-                <string id="BMPlayerVillageBeingRaided" text="{PARTY}正在劫掠你位於{TOWN}附近的村莊{VILLAGE}！"/>
-                <string id="BMGenderSlider" text="女性首領機率%"/>
-                <string id="BMGenderSliderDesc" text="強盜兵團首領為女性的機率。0 = 全為男性，100 = 全為女性。"/>
-        </strings>
+	<tags>
+		<tag language="繁體中文" />
+	</tags>
+	<strings>
+		<string id="BMPrimary" text="主要設定"/>
+		<string id="BMSizeAdjustments" text="規模調整"/>
+		<string id="BMAdjustments" text="兵團調整"/>
+		<string id="BMXpOff" text="關閉"/>
+		<string id="BMXpNormal" text="普通"/>
+		<string id="BMXpHard" text="困難"/>
+		<string id="BMXpHardest" text="最困難"/>
+		<string id="BMGoldLow" text="低"/>
+		<string id="BMGoldNormal" text="普通"/>
+		<string id="BMGoldRich" text="富裕"/>
+		<string id="BMGoldRichest" text="最富裕"/>
+		<string id="BMHeroPoolCap" text="強盜英雄池上限（每個家族）"/>
+		<string id="BMHeroPoolCapDesc" text="每個強盜家族在回收池中保留的存活強盜兵團英雄數量上限。被釋放、逃脫與被俘的兵團英雄會在此上限內重複使用；被擊殺／處決的英雄將被永久移除，並會建立新的英雄。"/>
+		<string id="BMSpawning" text="生成與編組"/>
+		<string id="BMMergeSize" text="合併所需最小規模"/>
+		<string id="BMMergeSizeDesc" text="小於此規模的強盜隊伍不會合併為強盜兵團。"/>
+		<string id="BMSplit" text="每日分裂機率%"/>
+		<string id="BMSplitDesc" text="強盜兵團規模夠大時，每天分裂的可能性。"/>
+		<string id="BMTrain" text="啟用兵團訓練"/>
+		<string id="BMTrainDesc" text="強盜英雄會訓練自己的兵團。"/>
+		<string id="BMBanditOnly" text="僅使用強盜兵種升級樹"/>
+		<string id="BMBanditOnlyDesc" text="兵團只會升級為其他強盜兵種，絕不會升級為一般陣營的兵種。與新增或擴充強盜兵種升級樹的模組相容。若某一階級已沒有可用的強盜兵種，訓練就會在該階級停止。"/>
+		<string id="BMDailyTrain" text="每日訓練機率"/>
+		<string id="BMDailyTrainDesc" text="每天都有機會進一步訓練。"/>
+		<string id="BMTraining" text="訓練與成長"/>
+		<string id="BMXpBoost" text="兵團經驗加成"/>
+		<string id="BMXpBoostDesc" text="「最困難」會給予足以大幅升級兵種的經驗。「關閉」則不給額外經驗。"/>
+		<string id="BMUpgrade" text="每次訓練的兵種升級比例%"/>
+		<string id="BMUpgradeDesc" text="每次訓練最多升級此百分比的兵種。劫掠者也計算在內。"/>
+		<string id="BMGrowChance" text="成長機率%"/>
+		<string id="BMGrowChanceDesc" text="兵團每天獲得更多兵力的機率（0 為關閉）。"/>
+		<string id="BMGrowPercent" text="成長比例%"/>
+		<string id="BMGrowPercentDesc" text="每種兵種的數量按此百分比成長。"/>
+		<string id="BMTier" text="訓練可達最高兵種階級"/>
+		<string id="BMTierDesc" text="訓練不會把兵種升級到超過此階級。"/>
+		<string id="BMIgnore" text="忽略村民／商隊"/>
+		<string id="BMIgnoreDesc" text="強盜兵團不會攻擊他們。"/>
+		<string id="BMExecHonorXp" text="處決兵團首領的榮譽經驗"/>
+		<string id="BMExecHonorXpDesc" text="玩家處決強盜兵團首領時獲得的榮譽特質經驗。0 為停用。"/>
+		<string id="BMStronger" text="可攻擊較強目標上限%"/>
+		<string id="BMStrongerDesc" text="強盜兵團不會與強過自己超過此百分比的隊伍交戰。100 表示無論目標多強都會攻擊。"/>
+		<string id="BMWeaker" text="忽略較弱隊伍"/>
+		<string id="BMWeakerDesc" text="10 表示比自己弱 10% 的隊伍都會被忽略。{newline}100 表示不設限制，一律攻擊。"/>
+		<string id="BMPillage" text="允許劫掠"/>
+		<string id="BMPillageDesc" text="允許劫掠。"/>
+		<string id="BMPillageChance" text="劫掠機率"/>
+		<string id="BMPillageChanceDesc" text="強盜兵團 AI 考慮劫掠村莊的機率。每支強盜兵團每個遊戲內小時都會觸發一次，因此建議設定較小的數值。"/>
+		<string id="BMRaidCapScale" text="劫掠上限比例%"/>
+		<string id="BMRaidCapScaleDesc" text="調整同時進行的村莊劫掠數量上限。基準值自動計算為（村莊總數 ÷ 10）。100% = 預設。數值越低，同時劫掠越少；數值越高，同時劫掠越多。"/>
+		<string id="BMStringSetting" text="強盜兵團"/>
+		<string id="BMStringSettingDesc" text="強盜兵團的名稱。"/>
+		<string id="BMLeaderlessStringSetting" text="無首領強盜兵團"/>
+		<string id="BMLeaderlessStringSettingDesc" text="沒有首領的強盜兵團的名稱。"/>
+		<string id="BMStringSettingDefault" text="強盜兵團"/>
+		<string id="BMLeaderlessStringSettingDefault" text="無首領強盜兵團"/>
+		<string id="BMPartyName" text="{LEADER_NAME}的{PARTY_NAME}"/>
+		<string id="BMRLeaderEpithet" text="{FIRST} {EPITHET}"/>
+		<string id="BMMarkers" text="兵團地圖標記"/>
+		<string id="BMMarkersDesc" text="在地圖上顯示所有強盜兵團。"/>
+		<string id="BMTrackSize" text="追蹤的最小兵團規模"/>
+		<string id="BMTrackSizeDesc" text="更小的兵團不會被追蹤。"/>
+		<string id="BMBanners" text="隨機旗幟"/>
+		<string id="BMBannersDesc" text="強盜兵團會擁有獨特旗幟，或使用預設的強盜家族旗幟。"/>
+		<string id="BMRaidNotices" text="村莊劫掠通知"/>
+		<string id="BMRaidNoticesDesc" text="你的封地被劫掠時，會顯示橫幅訊息。"/>
+		<string id="BMRemovePrisonerMessages" text="移除俘虜訊息"/>
+		<string id="BMRemovePrisonerMessagesDesc" text="移除強盜兵團英雄被俘或被釋放的訊息。"/>
+		<string id="BMCheckVoiceGender" text="檢查語音性別"/>
+		<string id="BMCheckVoiceGenderDesc" text="再次確認強盜語音是否與首領性別相符。部分官方語音使用男聲卻未標示性別，因此若停用此選項，女性強盜首領會用男聲說話。"/>
+		<string id="BMLoggingLevel" text="日誌等級"/>
+		<string id="BMLoggingLevelDesc" text="日誌檔位於 &quot;Documents/Mount and Blade II Bannerlord/Configs/ModLogs/BanditMilitia_[Time].log&quot;"/>
+		<string id="BMTesting" text="測試模式"/>
+		<string id="BMTestingDesc" text="將強盜兵團傳送到你身邊。"/>
+		<string id="BMMaxPerClan" text="每個家族的兵團上限"/>
+		<string id="BMREncBase" text="{LEADER.FIRSTNAME}是一名強盜頭目，率領一群亡命之徒，以{CLAN_NAME}之名四處劫掠。"/>
+		<string id="BMREncNoClan" text="無主強盜"/>
+		<string id="BMREncEpithet1" text="在這片土地上，{?LEADER.GENDER}她{?}他{\?}被稱為{LEADER.FIRSTNAME} {EPITHET}，取得過{WINS}場{?MANY}戰鬥{?}戰鬥{\?}的勝利。"/>
+		<string id="BMREncEpithet2" text="在這片土地上，{?LEADER.GENDER}她{?}他{\?}被稱為{LEADER.FIRSTNAME} {EPITHET}。"/>
+		<string id="BMREncDefeats" text="{?LEADER.GENDER}她{?}他{\?}曾在戰鬥中敗北{DEFEATS}{?MANY}次{?}次{\?}。"/>
+		<string id="BMREncFear" text="在所有人之中，{?LEADER.GENDER}她{?}他{\?}最懼怕{HUNTER}。"/>
+		<string id="BMRWho" text="你是誰？替誰效命？" />
+		<string id="BMRWhoAnswer" text="他們叫我{LEADER_NAME}。我們不聽命於任何領主或國王——只認金幣與大道。" />
+		<string id="BMRContinue" text="我明白了。言歸正傳吧。" />
+		<string id="BMRThreaten" text="現在投降，我或許會留你一命。"/>
+		<string id="BMRThreatenAnswer" text="哈！先拿下我們的腦袋再說。上啊，弟兄們！"/>
+		<string id="BMRCaptiveIntro" text="就這樣結束了。隨你處置吧。"/>
+		<string id="BMRCaptiveKeep" text="你現在是我的俘虜。"/>
+		<string id="BMRCaptiveRelease" text="滾出我的視線。"/>
+		<string id="BMRCaptiveExecute" text="別指望我手下留情。砍下你的腦袋！"/>
+		<string id="BMRCaptiveExecuteAnswer" text="那就動作快點。我的弟兄們會記住你的臉——他們會來找你算帳的。"/>
+		<string id="BMRCaptiveExecuteConfirm" text="我不在乎。受死吧！"/>
+		<string id="BMRCaptiveExecuteCancel" text="好吧。你現在是我的俘虜。"/>
+		<string id="BMGoldReward" text="強盜英雄的第納爾獎勵"/>
+		<string id="BMRBounty" text="你因{LEADER}領得了{GOLD}第納爾的賞金與{RENOWN}點聲望。"/>
+		<string id="BMChatLogging" text="啟用聊天日誌"/>
+		<string id="BMChatLoggingDesc" text="將診斷訊息寫入遊戲內聊天。預設關閉；僅在排查問題時啟用。"/>
+		<string id="BMFileLogging" text="啟用檔案日誌"/>
+		<string id="BMFileLoggingDesc" text="將診斷訊息寫入 Modules\BanditMilitiasRedux\Logs\BMR_*.log。預設關閉；僅在排查問題時啟用。"/>
+		<string id="BMSkipConversations" text="跳過遭遇對話"/>
+		<string id="BMSkipConversationsDesc" text="遭遇強盜兵團時跳過對話。啟用後無法賄賂。"/>
+		<string id="BMMaxValue" text="物品價值上限"/>
+		<string id="BMMaxValueDesc" text="限制配發給英雄的裝備單件價值。{newline}主要用於其他模組會給予英雄戰利品的情況。"/>
+		<string id="BMMinSize" text="最小規模"/>
+		<string id="BMMinSizeDesc" text="不會形成小於此規模的強盜兵團。"/>
+		<string id="BMLooter" text="劫掠者轉化"/>
+		<string id="BMLooterDesc" text="訓練時有多少劫掠者會被轉化為更好的兵種。"/>
+		<string id="BMPower" text="全域戰力"/>
+		<string id="BMPowerDesc" text="將所有強盜兵團合計的總戰鬥力，限制在世界上其他所有隊伍合計戰鬥力的一定百分比內。數值越高，強盜兵團越多也越強，但可能明顯影響世界平衡。"/>
+		<string id="BMModName" text="強盜起義"/>
+		<string id="BMAIBehavior" text="行為與 AI"/>
+		<string id="BMAppearance" text="外觀與自訂"/>
+		<string id="BMUI" text="介面與通知"/>
+		<string id="BMAdvanced" text="進階"/>
+		<string id="BMCooldown" text="合併／分裂冷卻（小時）"/>
+		<string id="BMCooldownDesc" text="強盜兵團在經過這麼多遊戲內小時之前，無法再次合併或分裂。"/>
+		<string id="BMIgnoreSizePenalty" text="忽略隊伍規模速度懲罰"/>
+		<string id="BMIgnoreSizePenaltyDesc" text="無論隊伍規模多大，強盜兵團都以全速移動。"/>
+		<string id="BMVillageBeingRaided" text="{VILLAGE}正遭{PARTY}劫掠！"/>
+		<string id="BMVillageRaided" text="{VILLAGE}遭到劫掠！{PARTY}滿載戰利品，現身於{TOWN}附近！"/>
+		<string id="BMPlayerVillageBeingRaided" text="{PARTY}正在劫掠你位於{TOWN}附近的村莊{VILLAGE}！"/>
+		<string id="BMGenderSlider" text="女性首領機率%"/>
+		<string id="BMGenderSliderDesc" text="強盜兵團首領為女性的機率。0 = 全為男性，100 = 全為女性。"/>
+		<string id="BMGoldRewardDesc" text="玩家擊敗強盜兵團英雄時獲得的第納爾數量。" />
+		<string id="BMREncDefected" text="{LEADER.FIRSTNAME}曾率領一群亡命之徒，以{OLD_CLAN}之名四處劫掠。如今{?LEADER.GENDER}她{?}他，轉而把手中的劍賣給出得起價錢的人。" />
+		<string id="BMRPrisonerPretalk" text="你還想從我這裡得到什麼？" />
+		<string id="BMRPrisonerExecuteCancel" text="再想想……還是改天吧。" />
+		<string id="BMR_udVrtbS" text="技術設定" />
+		<string id="BMR_WA9I1JU" text="除錯日誌" />
+		<string id="BMR_2T70tyP" text="除錯日誌（僅限英文）。[ 預設：停用 ]" />
+		<string id="BMR_EyG35bd" text="魯莽者" />
+		<string id="BMR_w4Wuqbo" text="無畏者" />
+		<string id="BMR_IPpCaSQ" text="殘暴者" />
+		<string id="BMR_cbE581S" text="令人生畏者" />
+		<string id="BMR_XLdOUHp" text="嗜血者" />
+		<string id="BMR_pPyyAyk" text="無情者" />
+		<string id="BMR_GnYKrqu" text="屠夫" />
+		<string id="BMR_DRyTg8m" text="天災" />
+		<string id="BMR_WC77kKY" text="恐怖化身" />
+		<string id="BMR_t2fWU8c" text="夢魘" />
+		<string id="BMR_A0OadqW" text="（未知城鎮）" />
+		<string id="BMR_yquQLhT" text="強盜兵團已清除" />
+		<string id="BMR_TOQCjcE" text="{A}{B}" />
+	</strings>
 </base>

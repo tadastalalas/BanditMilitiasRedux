@@ -1,119 +1,107 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
-using BanditMilitiasRedux.Behaviours;
-using BanditMilitiasRedux.Constructors;
-using BanditMilitiasRedux.Helpers;
+using BanditMilitiasRedux.Behaviors;
+using BanditMilitiasRedux.Core;
+using BanditMilitiasRedux.Data;
 using BanditMilitiasRedux.Managers;
 using HarmonyLib;
-using MCM.Common;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
-using TaleWorlds.Engine;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.LinQuick;
 using TaleWorlds.MountAndBlade;
-using static BanditMilitiasRedux.Globals;
+using static BanditMilitiasRedux.Core.Globals;
 
-namespace BanditMilitiasRedux
+namespace BanditMilitiasRedux;
+
+public class SubModule : MBSubModuleBase
 {
-    public class SubModule : MBSubModuleBase
+    private const string OwnAssemblyPrefix = "BanditMilitias";
+    private const string CalradiaExpandedKingdomsAssemblyPrefix = "CalradiaExpandedKingdoms";
+    private const InputKey NukeHotkey = InputKey.N;
+
+    private static readonly Harmony Harmony = new(ModInfo.ModuleId);
+    private static readonly MethodInfo ResetCached = AccessTools.Method("TaleWorlds.CampaignSystem.Party.MobileParty:ResetCached");
+
+    // Ctrl+Alt+N removes every militia, militia hero and militia map event (uninstall helper).
+    protected override void OnApplicationTick(float dt)
     {
-        private static readonly string? Name = typeof(SubModule).Namespace;
-        public static readonly PlatformDirectoryPath ConfigDir = EngineFilePaths.ConfigsPath + $"/ModSettings/Global/{Name}";
-        private static readonly Harmony Harmony = new("BanditMilitiasRedux");
+        base.OnApplicationTick(dt);
 
-        protected override void OnApplicationTick(float dt)
+        if (Campaign.Current is null)
+            return;
+
+        if (Input.IsKeyPressed(NukeHotkey) && Input.IsKeyDown(InputKey.LeftControl) && Input.IsKeyDown(InputKey.LeftAlt))
+            Helper.NukeEverything();
+    }
+
+    protected override void OnBeforeInitialModuleScreenSetAsRoot()
+    {
+        ModSettings.LocalizeMcmDropdowns();
+        AdjustForLoadOrder();
+    }
+
+    // Unique random banners are turned off when this mod loads after Calradia Expanded Kingdoms.
+    private static void AdjustForLoadOrder()
+    {
+        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        Assembly ownAssembly = assemblies.First(a => a.FullName.StartsWith(OwnAssemblyPrefix));
+        Assembly? calradiaExpandedKingdoms = assemblies.FirstOrDefaultQ(x => x.FullName.StartsWith(CalradiaExpandedKingdomsAssemblyPrefix));
+        if (calradiaExpandedKingdoms is null)
+            return;
+        if (assemblies.FindIndex(a => a == ownAssembly) > assemblies.FindIndex(a => a == calradiaExpandedKingdoms))
+            ModSettings.ForceRandomBannersOff();
+    }
+
+    // PatchAll runs here (every game start; Harmony skips patches it already applied).
+    protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
+    {
+        ModSettings.Reload();
+        Harmony.PatchAll(typeof(SubModule).Assembly);
+
+        if (gameStarterObject is CampaignGameStarter gameStarter)
         {
-            base.OnApplicationTick(dt);
-
-            if (Campaign.Current is null)
-                return;
-
-            if (Input.IsKeyPressed(InputKey.N) && Input.IsKeyDown(InputKey.LeftControl) && Input.IsKeyDown(InputKey.LeftAlt))
-                Helper.NukeEverything();
+            gameStarter.AddBehavior(new MilitiaBehavior());
+            gameStarter.AddBehavior(new ReusableHeroesBehavior());
+            gameStarter.AddBehavior(new NotorietyBehavior());
+            gameStarter.AddBehavior(new DialogsBehavior());
+            gameStarter.AddBehavior(new HeroDefectionBehavior());
         }
 
-        private static readonly MethodInfo CreateRandomBannerInternal = AccessTools.Method("TaleWorlds.Core.Banner:CreateRandomBannerInternal");
+        ModSettings.Changed -= OnSettingsChanged;
+        ModSettings.Changed += OnSettingsChanged;
+    }
 
-        internal static void CacheBanners()
+    // MCM only: settings changed mid-game.
+    private static void OnSettingsChanged()
+    {
+        if (Campaign.Current is null)
+            return;
+
+        RaidCap = Helper.CalculateRaidCap();
+
+        foreach (BanditMilitiaPartyComponent? banditMilitiaPartyComponent in PowerCalculationManager.GetActiveBanditMilitiaParties(true).ToArrayQ())
         {
-            var args = new object[2];
-            Banners.Capacity = Math.Max(Banners.Capacity, 5000);
-            for (var i = 0; i < 5000; i++)
-            {
-                args[0] = MBRandom.RandomInt(0, int.MaxValue);
-                args[1] = -1;
-                if (CreateRandomBannerInternal.Invoke(null, args) is Banner banner)
-                    Banners.Add(banner);
-            }
+            banditMilitiaPartyComponent?.ClearCachedName();
+            if (banditMilitiaPartyComponent?.MobileParty is null)
+                continue;
+            ResetCached.Invoke(banditMilitiaPartyComponent.MobileParty, null);
+            MilitiaTrackerManager.Refresh(banditMilitiaPartyComponent.MobileParty);
         }
+    }
 
-        protected override void OnBeforeInitialModuleScreenSetAsRoot()
-        {
-            Settings.XpGift = new Dropdown<string>(DifficultyXpMap.Keys.SelectQ(k => k.ToString()), Settings.XpGift?.SelectedIndex ?? 1);
-            Settings.GoldReward = new Dropdown<string>(GoldMap.Keys.SelectQ(k => k.ToString()), Settings.GoldReward?.SelectedIndex ?? 1);
-            AdjustForLoadOrder();
-        }
+    public override void OnGameEnd(Game game)
+    {
+        base.OnGameEnd(game);
 
-        private static void AdjustForLoadOrder()
-        {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var bm = assemblies.First(a => a.FullName.StartsWith("BanditMilitias"));
-            var cek = assemblies.FirstOrDefaultQ(x => x.FullName.StartsWith("CalradiaExpandedKingdoms"));
-            if (cek is null)
-                return;
-            if (assemblies.FindIndex(a => a == bm) > assemblies.FindIndex(a => a == cek))
-                Settings.RandomBanners = false;
-        }
-
-        protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
-        {
-            Harmony.PatchAll(Assembly.GetExecutingAssembly());
-            
-            if (gameStarterObject is CampaignGameStarter gameStarter)
-            {
-                gameStarter.AddBehavior(new MilitiaBehavior());
-                gameStarter.AddBehavior(new ReusableHeroesBehavior());
-                gameStarter.AddBehavior(new NotorietyBehavior());
-                gameStarter.AddBehavior(new DialogsBehavior());
-                gameStarter.AddBehavior(new HeroDefectionBehavior());
-            }
-            if (MCMSettings.Instance != null)
-                MCMSettings.OnSettingsChanged += OnSettingsChanged;
-        }
-
-        private static readonly MethodInfo ResetCached = AccessTools.Method("TaleWorlds.CampaignSystem.Party.MobileParty:ResetCached");
-
-        private static void OnSettingsChanged()
-        {
-            if (Campaign.Current is null)
-                return;
-            
-            RaidCap = Helper.CalculateRaidCap();
-
-            foreach (BanditMilitiaPartyComponent? banditMilitiaPartyComponent in PowerCalculationManager.GetActiveBanditMilitiaParties(true).ToArrayQ())
-            {
-                banditMilitiaPartyComponent?.ClearCachedName();
-                if (banditMilitiaPartyComponent?.MobileParty is null)
-                    continue;
-                ResetCached.Invoke(banditMilitiaPartyComponent.MobileParty, null);
-                MilitiaTrackerManager.Refresh(banditMilitiaPartyComponent.MobileParty);
-            }
-        }
-
-        public override void OnGameEnd(Game game)
-        {
-            base.OnGameEnd(game);
-
-            AllAliveBanditMilitiaHeroes.Clear();
-            ReusableHeroesBehavior.Reset();
-            ClearGlobals();
-            MilitiaTrackerManager.Reset();
-            BanditMilitiaManager.ResetUpgraderBehavior();
-            MCMSettings.OnSettingsChanged -= OnSettingsChanged;
-            IsGlobalModStateInitialized = false;
-        }
+        AllAliveBanditMilitiaHeroes.Clear();
+        ReusableHeroesBehavior.Reset();
+        ClearGlobals();
+        MilitiaTrackerManager.Reset();
+        BanditMilitiaManager.ResetUpgraderBehavior();
+        ModSettings.Changed -= OnSettingsChanged;
+        IsGlobalModStateInitialized = false;
     }
 }

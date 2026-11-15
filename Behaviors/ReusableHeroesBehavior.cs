@@ -1,0 +1,133 @@
+using System.Collections.Generic;
+using BanditMilitiasRedux.Core;
+using Helpers;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.SaveSystem;
+using static BanditMilitiasRedux.Core.Globals;
+
+namespace BanditMilitiasRedux.Behaviors;
+
+// BMR-FEATURE: Reusable hero pool, released / escaped / displaced militia leaders wait to lead again | gate: setting:HeroPoolCap
+public sealed class ReusableHeroesBehavior : CampaignBehaviorBase
+{
+    // Released SyncData key (kept for save compatibility).
+    private const string WaitingHeroesKey = "_waitingToBeReusedHeroes";
+
+    public static ReusableHeroesBehavior? Instance { get; private set; }
+    public ReusableHeroesBehavior() { Instance = this; }
+
+    [SaveableField(1)] private static Dictionary<Clan, List<Hero>> _waitingToBeReusedHeroes = new();
+
+    public override void RegisterEvents()
+    {
+        CampaignEvents.HeroPrisonerReleased.AddNonSerializedListener(this, OnHeroPrisonerReleasedEvent);
+        CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTakenEvent);
+        CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, OnHeroKilledEvent);
+        CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, _ => ReclaimOrphanedHeroes());
+    }
+
+    // Keys: "_waitingToBeReusedHeroes".
+    public override void SyncData(IDataStore dataStore)
+    {
+        dataStore.SyncData(WaitingHeroesKey, ref _waitingToBeReusedHeroes);
+        if (dataStore.IsLoading)
+            foreach (List<Hero> heroes in _waitingToBeReusedHeroes.Values)
+                heroes.RemoveAll(h => h is not { IsAlive: true, HeroDeveloper: not null });
+    }
+
+    internal static IReadOnlyDictionary<Clan, List<Hero>> GetWaitingHeroesByClan() => _waitingToBeReusedHeroes;
+
+    internal static void Reset() => _waitingToBeReusedHeroes.Clear();
+
+    public Hero? TryGetReusableBanditHero(Clan clan)
+    {
+        if (!_waitingToBeReusedHeroes.TryGetValue(clan, out List<Hero>? heroes))
+            _waitingToBeReusedHeroes[clan] = heroes = [];
+
+        for (int i = 0; i < heroes.Count; i++)
+        {
+            Hero hero = heroes[i];
+            if (hero is not { IsAlive: true, HeroDeveloper: not null })
+            {
+                heroes.RemoveAt(i--);
+                continue;
+            }
+            if (hero.IsPrisoner || hero.PartyBelongedTo is { IsActive: true })
+                continue;
+            heroes.RemoveAt(i);
+            return hero;
+        }
+        return null;
+    }
+
+    private static void OnHeroPrisonerReleasedEvent(Hero? prisoner, PartyBase? party, IFaction capturerFaction, EndCaptivityDetail detail, bool showNotification = true)
+    {
+        if (prisoner == null || !prisoner.IsBanditMilitiaHero())
+            return;
+
+        if (detail == EndCaptivityDetail.Death)
+            return;
+
+        EquipmentHelper.AssignHeroEquipmentFromEquipment(prisoner, EquipmentPool.GetRandomEquipmentSet());
+        AddHeroToTheWaitingDictionary(prisoner);
+    }
+
+    private static void OnHeroKilledEvent(Hero? victim, Hero? killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
+    {
+        if (victim == null || !victim.IsBanditMilitiaHero())
+            return;
+
+        foreach (List<Hero> heroes in _waitingToBeReusedHeroes.Values)
+            heroes.Remove(victim);
+    }
+
+    private static void OnHeroPrisonerTakenEvent(PartyBase capturer, Hero prisoner)
+    {
+        if (prisoner is null || !prisoner.IsBanditMilitiaHero())
+            return;
+
+        RemoveHeroFromTheWaitingDictionary(prisoner);
+    }
+
+    internal static void AddHeroToTheWaitingDictionary(Hero hero)
+    {
+        if (!_waitingToBeReusedHeroes.TryGetValue(hero.Clan, out List<Hero>? heroes))
+            _waitingToBeReusedHeroes[hero.Clan] = heroes = [];
+
+        if (heroes.Contains(hero) || !hero.IsAlive)
+            return;
+
+        hero.StayingInSettlement = null;
+
+        if (hero.HeroState != Hero.CharacterStates.Active)
+            hero.ChangeState(Hero.CharacterStates.Active);
+
+        heroes.Add(hero);
+    }
+
+    internal static void RemoveHeroFromTheWaitingDictionary(Hero hero, Clan? clan = null)
+    {
+        Clan? key = clan ?? hero.Clan;
+        if (key is not null && _waitingToBeReusedHeroes.TryGetValue(key, out List<Hero>? heroes))
+            heroes.Remove(hero);
+    }
+
+    private static void ReclaimOrphanedHeroes()
+    {
+        for (int i = 0; i < AllAliveBanditMilitiaHeroes.Count; i++)
+        {
+            Hero hero = AllAliveBanditMilitiaHeroes[i];
+            if (hero is { IsAlive: true, IsPrisoner: false, PartyBelongedTo: null, Clan: not null } && !IsWaitingForReuse(hero))
+                AddHeroToTheWaitingDictionary(hero);
+        }
+    }
+
+    public bool HasReusableBanditHero(Clan clan) => _waitingToBeReusedHeroes.TryGetValue(clan, out List<Hero>? heroes) && heroes.Count > 0;
+
+    internal static bool IsWaitingForReuse(Hero? hero) =>
+        hero?.Clan is not null
+        && _waitingToBeReusedHeroes.TryGetValue(hero.Clan, out List<Hero>? heroes)
+        && heroes.Contains(hero);
+}

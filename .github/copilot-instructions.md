@@ -2,80 +2,56 @@
 apply: always
 ---
 
-# BanditMilitiasRedux, GitHub Copilot Chat
+# BanditMilitiasRedux: workspace instructions (they override the global file)
 
-## Start Here
+## Start here
 - Read `FEATURES.md` (repo root) first. It maps every feature to its gate (setting) and files, so open only the files you need.
-- Keep `FEATURES.md` up to date in the same change set: when a feature is added, removed or changed, or a listed file moves, is renamed or is deleted.
+- Keep `FEATURES.md` up to date in the same change set.
 
----
+## Identity
+- <Prefix>: BMR (Bmr in type names, `bmr_` in dialog ids). <Root> namespace and ModuleId: BanditMilitiasRedux.
+- Logger: `Diagnostics\BmrLog.cs` (Debug / Warn / Error; `BmrLog.IsDebugEnabled` before building strings on hot paths).
+- Settings: `Core\ModSettings.cs` only (MCM when loaded, else `ModConfiguration.xml`). Tuning numbers: `Core\Balance.cs`.
+  Runtime state and caches: `Core\Globals.cs`. `Core\ModInfo.cs` holds the ModuleId, file and folder names and the module root path.
+- PatchAll runs in `SubModule.OnGameStart` (every game start; Harmony skips patches already applied). Patches are inactive before it.
+- Optional-mod compat: `Compat\SaSCompat.cs` (Serve as Soldier, reflection lookup, no Harmony patch).
 
-## Project Overview
-- Mount & Blade II: Bannerlord mod, targets `net472` and `net6.0`, C# 12.0.
-- Uses **Harmony** for patching and **MCM** for mod configuration.
+## Layout deviations
+- `Managers\`: static game-logic services used by behaviors and patches (BanditMilitiaManager, AvoidanceManager,
+  PowerCalculationManager, MilitiaTrackerManager, BanditHeroCreator, HeroAppearanceService). New militia logic goes here.
+- Shared helpers used everywhere live in `Core\`: `Helper.cs`, `Extensions.cs`, `EquipmentPool.cs`.
+- `Data\BanditMilitiaPartyComponent.cs`: the saved party component, next to its save definer.
 
----
+## Multi-version (1.5.7, 1.4.8, 1.4.7)
+- 1.4.7 / 1.4.8 behavior is the reference. 1.5.7 adaptations live only in `#else` / `#if !LOWER_THAN_1_5` and must behave the same.
+- 1.4.x-only files: `Patches\MapTrackerProviderPatch.cs`, `Patches\DefaultExecutionRelationModelPatch.cs`,
+  the banner class in `Patches\MobilePartyVisualPatch.cs`.
+- 1.5.7-only files: `Patches\MapTrackerManagerPatch.cs`, `Patches\ExecutionCampaignBehaviorPatch.cs`, `Patches\MobilePartyVisualHelperPatch.cs`.
+- Other `#if LOWER_THAN_1_5` blocks: `Core\Helper.cs` (banner cache argument, legacy party list), `Managers\MilitiaTrackerManager.cs`,
+  `Behaviors\DialogsBehavior.cs` (execution scene date).
 
-## Code Style
-- Avoid using `var` for local variables.
-- Prefer expression-bodied members for simple one-liners.
-- Use C# 12 collection expressions `[.. items]` instead of `new List<T>(items)` or `.ToList()`.
-- Use null-conditional and null-coalescing operators (`?.`, `??`) consistently.
-- Prefer `internal` access modifier over `public` unless external exposure is required.
-- Keep methods short and focused on a single responsibility.
-
----
-
-## Design Principles
-
-**Single Responsibility**, each class should have one reason to change. If a class is doing two unrelated things, split it.
-
-**Open/Closed**, prefer extension over modification when adding new behaviour. Don't reach into existing classes to bolt on unrelated logic.
-
-**Liskov Substitution**, subclasses must be fully usable wherever their base class is expected, without breaking behaviour.
-
-**Interface Segregation**, keep interfaces small and focused. Don't force a class to implement methods it doesn't need.
-
-**Dependency Inversion**, high-level logic should not depend on low-level implementation details. Keep classes as independent as possible.
-
-**No unnecessary indirection**, avoid multi-hop delegation chains (A calls B which calls C). Delegation to a single responsible owner is fine; chains beyond that are not. For example, `Globals` properties that proxy to a single owning service are acceptable.
-
-**Global state lives in `Globals.cs`**, all constants, configuration values, and shared state that are accessed externally must be declared or exposed through `Globals.cs`. Internal-only state within a service class may stay local to that class.
-
----
-
-## Mod-Specific Conventions
-- `IsBanditMilitiaParty()`, `IsBanditMilitiaHero()`, `IsBanditMilitiaCharacterObject()` are the canonical checks for whether a Hero or Party belongs to this mod, always use it instead of manual type checks.
+## Mod-specific conventions
+- `IsBanditMilitiaParty()`, `IsBanditMilitiaHero()`, `IsBanditMilitiaCharacterObject()` (`Core\Extensions.cs`) are the canonical
+  checks for whether a Hero or Party belongs to this mod; always use them instead of manual type checks.
 - `GetBanditMilitiaParty()` retrieves the `BanditMilitiaPartyComponent` from a party.
-- All mod behaviors extend `CampaignBehaviorBase`.
-- Singleton instances use the `public static T? Instance { get; private set; }` pattern.
-- Logging uses `Logs.WriteToChat(...)` and `Logs.WriteToFile(tag, message)` (`Helpers\Logs.cs`).
+- Singleton behaviors use the `public static T? Instance { get; private set; }` pattern.
+- Player notifications go through `Core\Texts.cs` + `InformationManager`; diagnostics only through `BmrLog`.
 
----
+## Saves
+- The mod saves data: SyncData keys `Heroes` (MilitiaBehavior), `_waitingToBeReusedHeroes` (ReusableHeroesBehavior),
+  `_battlesWon`, `_firstSeen`, `_defeats`, `_beatenBy` (NotorietyBehavior); `BanditMilitiaPartyComponent` SaveableFields 1–7.
+- `Data\BanditMilitiasSaveableTypeDefiner.cs`: base id 4320639, party component id 4320639. Append only.
 
-## Harmony Patching
-- Patches live in the `/Patches` folder.
-- Prefer `Postfix` patches unless a `Prefix` or `Transpiler` is strictly necessary and justified.
-- Always null-check all parameters inside patches before accessing them.
-- Avoid Reflection on any code we control, use it only on vanilla private members when there is no better alternative.
+## Kept exceptions (released identifiers, never change)
+- MCM Id and FolderName "BanditMilitiasRedux" (equal to the ModuleId).
+- MCM property names and types in `Data\MCMSettings.cs` (players' saved values), including the two `Dropdown<string>` properties.
+- SyncData keys above (they predate the `bmr_<field>` rule).
+- Behavior class names (data-store ids): MilitiaBehavior, ReusableHeroesBehavior, NotorietyBehavior, DialogsBehavior, HeroDefectionBehavior.
+- Text ids `BM…` / `BMR…` without a random suffix (released). New ids use `BMR_` + 7 random characters.
+  `BMPower` is shared by the "Power & Balance" group and the Global Power setting.
+- Dialog line ids `bmr_…` in `Behaviors\DialogsBehavior.cs`.
+- Encyclopedia sentences are joined with `Texts.Concat` (`BMR_TOQCjcE`): "{A} {B}", but "{A}{B}" in CNs, CNt, JP.
 
----
-
-## Performance
-Be mindful of code that runs frequently. The following contexts are performance-sensitive, avoid allocations, LINQ chains, or heavy logic inside them:
-
-`Tick`, `MissionTick`, `QuarterHourlyTick`, `HourlyTick`, `HourlyTickParty`, `HourlyTickSettlement`, `HourlyTickClan`, `AiHourlyTick`, `TickPartialHourlyAi`, `OnQuarterDailyPartyTick`, `DailyTick`, `DailyTickParty`, `DailyTickTown`, `DailyTickSettlement`, `DailyTickHero`, `DailyTickClan`, `WeeklyTick`.
-
-- Check for values being reallocated inside loops that could be allocated once outside.
-- Prefer `for` loops over `foreach` on hot paths where the collection is a `List<T>`.
-- Do not introduce new NuGet packages without discussing it first.
-
----
-
-## Responding to Requests
-- When suggesting code changes, show only the method(s) or chunk(s) that need editing, never regenerate a whole class, but always show me in which class and method the changes need to be made.
-- Always include a precise explanation of what changed and why.
-- Never guess, I can always provide decompiled code using dnSpy.
-- I'm editing code manually, so behave accordingly.
-- Don't explain everything in prolonged texts. Explain in short, precise, concrete explanations. Without telling me stories.
-- Do not assume things that are not clarified 100% be the code or by me.
+## Design principles
+- Single responsibility; no multi-hop delegation chains (Globals proxies to one owning service are fine).
+- Prefer extension over modification; keep classes independent.

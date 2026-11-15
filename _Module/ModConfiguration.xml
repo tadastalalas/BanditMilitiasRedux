@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Used only when Mod Configuration Menu (MCM) is not installed. Read every time a campaign is started or loaded. -->
+<!-- Deleted or broken: the mod writes a new file with the default values. Out-of-range numbers are clamped in game. -->
+<ModConfiguration>
+    <SpawningAndFormation>
+        <!-- 1 to 20 -->
+        <HeroPoolCap>4</HeroPoolCap>
+        <!-- 1 to 100 -->
+        <MergeableSize>15</MergeableSize>
+        <!-- 0 to 100 (%) -->
+        <RandomSplitChance>5</RandomSplitChance>
+    </SpawningAndFormation>
+    <TrainingAndGrowth>
+        <CanTrain>true</CanTrain>
+        <UseBanditOnlyTroopTrees>false</UseBanditOnlyTroopTrees>
+        <!-- 0 to 100 (%) -->
+        <DailyTrainingChance>10</DailyTrainingChance>
+        <!-- Off, Normal, Hard or Hardest -->
+        <XpGift>Normal</XpGift>
+        <!-- 0 to 100 (%) -->
+        <UpgradeUnitsPercent>25</UpgradeUnitsPercent>
+        <!-- 1 to 6 -->
+        <MaxTrainingTier>4</MaxTrainingTier>
+        <!-- 0 to 100 (%) -->
+        <GrowthChance>50</GrowthChance>
+        <!-- 0 to 100 (%) -->
+        <GrowthPercent>1</GrowthPercent>
+    </TrainingAndGrowth>
+    <PowerAndBalance>
+        <!-- 1 to 100 (%) -->
+        <GlobalPowerPercent>20</GlobalPowerPercent>
+        <!-- Low, Normal, Rich or Richest -->
+        <GoldReward>Normal</GoldReward>
+    </PowerAndBalance>
+    <BehaviorAndAi>
+        <!-- 0 to 100 (%) -->
+        <MaxStrongerTargetPercent>0</MaxStrongerTargetPercent>
+        <!-- 0 to 100 (%) -->
+        <MaxWeakerTargetPercent>50</MaxWeakerTargetPercent>
+        <IgnoreVillagersCaravans>false</IgnoreVillagersCaravans>
+        <!-- 0 to 1000 (0 = off) -->
+        <ExecutionHonorXp>0</ExecutionHonorXp>
+        <AllowPillaging>true</AllowPillaging>
+        <!-- 0 to 100 (%), decimals allowed -->
+        <PillagingChance>1</PillagingChance>
+        <!-- 10 to 500 (%) -->
+        <RaidCapPercent>100</RaidCapPercent>
+    </BehaviorAndAi>
+    <AppearanceAndCustomization>
+        <BanditMilitiaString>Bandit Militia</BanditMilitiaString>
+        <LeaderlessBanditMilitiaString>Leaderless Bandit Militia</LeaderlessBanditMilitiaString>
+        <RandomBanners>true</RandomBanners>
+        <!-- 0 to 100 (%) -->
+        <FemaleSpawnChance>25</FemaleSpawnChance>
+        <CheckVoiceGender>true</CheckVoiceGender>
+    </AppearanceAndCustomization>
+    <UiAndNotifications>
+        <ShowRaids>true</ShowRaids>
+        <SkipConversations>false</SkipConversations>
+        <RemovePrisonerMessages>true</RemovePrisonerMessages>
+        <ShowMilitiaMarkers>true</ShowMilitiaMarkers>
+        <!-- 0 to 500 -->
+        <TrackedSizeMinimum>50</TrackedSizeMinimum>
+    </UiAndNotifications>
+    <Advanced>
+        <!-- 0 to 168 (hours) -->
+        <CooldownHours>24</CooldownHours>
+        <!-- 1000 to 100000 (gold) -->
+        <MaxItemValue>3750</MaxItemValue>
+        <IgnoreSizePenalty>true</IgnoreSizePenalty>
+    </Advanced>
+    <TechnicalSettings>
+        <LoggingEnabled>false</LoggingEnabled>
+    </TechnicalSettings>
+</ModConfiguration>
