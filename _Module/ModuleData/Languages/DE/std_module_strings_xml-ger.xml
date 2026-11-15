@@ -146,5 +146,6 @@
 		<string id="BMR_A0OadqW" text="(Unbekannte Stadt)" />
 		<string id="BMR_yquQLhT" text="BANDITENMILIZEN ENTFERNT" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
+		<string id="BMR_H6Jm3wr" text="Dies entfernt alle Banditenmilizen und alle ihre Anführer aus dieser Kampagne. Das kann nicht rückgängig gemacht werden. Nur verwenden, bevor du die Mod deaktivierst." />
 	</strings>
 </base>

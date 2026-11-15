@@ -83,7 +83,7 @@ Want to translate or fix a translation? [color=#93c47d]You have the permission[/
 [color=#93c47d]1.5.7[/color], [color=#93c47d]1.4.8[/color], [color=#93c47d]1.4.7[/color] in the same download. The mod picks the right files for your game by itself.
 
 [color=#ffff00][size=4]Compatibility[/size][/color]
-Can be added [color=#93c47d]anytime[/color]. To remove it, press [color=#f1c232]Ctrl+Alt+N[/color] on the campaign map to clear all mod data, then save, exit and disable the mod.
+Can be added [color=#93c47d]anytime[/color]. To remove it, press [color=#f1c232]Ctrl+Alt+N[/color] on the campaign map and confirm to clear all mod data, then save, exit and disable the mod.
 [color=#e06666]Adds[/color] data to save game files.
 Uses Harmony patches for bandit AI, map visuals, prisoners and the encyclopedia; everything else uses campaign events.
 If it loads after Calradia Expanded Kingdoms, [color=#ffd966]Random Banners[/color] is turned off automatically.

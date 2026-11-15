@@ -44,6 +44,7 @@ internal static class Globals
     internal static Clan? Looters;
     internal static HashSet<int>? LordConversationTokens;
     internal static Hero? SuppressedExecutionVictim;
+    internal static bool IsNukeInquiryOpen;
 
     internal static readonly Dictionary<MobileParty, (Vec2 LastPos, int HourCount, int Rescues)> StuckTracker = [];
     internal static readonly Dictionary<MobileParty, CampaignTime> PatrolRepickTimes = [];
@@ -65,6 +66,7 @@ internal static class Globals
         PartyImageMap = [];
         Recruits = [];
         RaidCap = 0;
+        IsNukeInquiryOpen = false;
         HeroTemplates = [];
         Hideouts = [];
         Villages = [];

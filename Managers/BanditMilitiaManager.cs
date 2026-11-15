@@ -36,7 +36,8 @@ internal static class BanditMilitiaManager
 
     internal static void ResetUpgraderBehavior() => _upgraderCampaignBehavior = null;
 
-    private static readonly HashSet<string> VerbotenParties =
+    // Party ids start with these (vanilla adds a number, a clan name or a quest id after them).
+    private static readonly string[] VerbotenParties =
     [
         "ebdi_deserters_party",
         "caravan_ambush_quest",
@@ -82,13 +83,17 @@ internal static class BanditMilitiaManager
         {
             homeSettlement = Helper.BestSettlementForMerge(mergeInitiatorParty, mergeTargetParty);
             newLeader = BanditHeroCreator.ReuseOrCreateBanditHero(homeSettlement, clanForNewLeaderHero);
-            if (newLeader is null)
+            if (newLeader is null || homeSettlement is null)
                 return;
         }
         else
         {
+            // Resolved before the leader leaves his party: without a home there is no merge.
+            homeSettlement = newLeader.BornSettlement ?? Helper.BestSettlementForMerge(mergeInitiatorParty, mergeTargetParty);
+            if (homeSettlement is null)
+                return;
+
             newLeader.PartyBelongedTo?.MemberRoster.RemoveTroop(newLeader.CharacterObject);
-            homeSettlement ??= newLeader.BornSettlement ?? Helper.BestSettlementForMerge(mergeInitiatorParty, mergeTargetParty);
         }
 
         MobileParty banditMilitiaParty = CreateBanditMilitiaParty(newLeader, homeSettlement, mergedAvoidances);
@@ -97,6 +102,11 @@ internal static class BanditMilitiaManager
         CopyInventoryFromTo(mergeTargetParty, banditMilitiaParty);
 
         TroopRoster[] mergedRoster = MergeRosters(mergeInitiatorParty, mergeTargetParty);
+
+        // The prisoners move to the new militia. Vanilla frees every hero prisoner still listed in a party that is
+        // removed, so the old lists are emptied before the heroes join the new one (same as on a split).
+        mergeInitiatorParty.PrisonRoster.Clear();
+        mergeTargetParty.PrisonRoster.Clear();
 
         InitializeMilitiaParty(banditMilitiaParty, newLeader, mergedRoster, mergeInitiatorParty.Position);
 
@@ -186,7 +196,8 @@ internal static class BanditMilitiaManager
 
         Hero leaderHero = banditMilitiaParty.Leader;
 
-        leaderHero.Gold += Convert.ToInt32(newBanditMilitiaParty.Party.EstimatedStrength * Balance.GoldValues[ModSettings.GoldRewardIndex]);
+        // Set, not added: the reward follows the militia's strength now and must not pile up with every merge and split.
+        leaderHero.Gold = Convert.ToInt32(newBanditMilitiaParty.Party.EstimatedStrength * Balance.GoldValues[ModSettings.GoldRewardIndex]);
 
         if (MBRandom.RandomInt(0, Balance.LeaderMountRollRange) != 0 || Mounts.Count <= 0)
             return;
@@ -427,9 +438,16 @@ internal static class BanditMilitiaManager
     {
         if (MilitiaPowerPercent > ModSettings.GlobalPowerPercent || mobilePartyToSplit.Party.MemberRoster.TotalManCount / Balance.SplitPartsCount < ModSettings.MinPartySize || mobilePartyToSplit.IsTooBusyToGrowOrSplit())
             return;
-        if (SaSCompat.IsReservedBySaS(mobilePartyToSplit))
+        if (SaSCompat.IsReservedBySaS(mobilePartyToSplit) || mobilePartyToSplit.IsHoldingPlayerPrisoner())
             return;
-        if (MBRandom.RandomInt(0, Balance.FullPercent) > ModSettings.RandomSplitChance || mobilePartyToSplit.Party.MemberRoster.TotalManCount < Math.Max(1, CalculatedMaxPartySize * Balance.MinSizeRatioForSplit))
+
+        // "Merge/Split Cooldown" also holds back the next split.
+        BanditMilitiaPartyComponent? partyComponent = mobilePartyToSplit.GetBanditMilitiaParty();
+        if (partyComponent is null || CampaignTime.Now < partyComponent.LastMergedOrSplitDate + CampaignTime.Hours(ModSettings.CooldownHours))
+            return;
+
+        // The roll is 0..99: with ">=" a chance of 0 never splits and 100 always does.
+        if (MBRandom.RandomInt(0, Balance.FullPercent) >= ModSettings.RandomSplitChance || mobilePartyToSplit.Party.MemberRoster.TotalManCount < Math.Max(1, CalculatedMaxPartySize * Balance.MinSizeRatioForSplit))
             return;
 
         Hero? partyLeaderOne = mobilePartyToSplit.LeaderHero;
@@ -912,7 +930,8 @@ internal static class BanditMilitiaManager
             if (nearbyLocatable.HasNavalNavigationCapability)
                 continue;
 
-            if (IsAvailableBanditParty(nearbyLocatable) && !nearbyLocatable.IsTooBusyToMerge() && !SaSCompat.IsReservedBySaS(nearbyLocatable))
+            if (IsAvailableBanditParty(nearbyLocatable) && !nearbyLocatable.IsTooBusyToMerge() && !SaSCompat.IsReservedBySaS(nearbyLocatable)
+                && !nearbyLocatable.IsHoldingPlayerPrisoner())
                 nearbyBandits.Add(nearbyLocatable);
         }
 
@@ -1001,7 +1020,8 @@ internal static class BanditMilitiaManager
         !FactionManager.IsAtWarAgainstFaction(attackerMobileParty.MapFaction, defenderMobileParty.MapFaction) &&
         !attackerMobileParty.IsUsedByAQuest() && !defenderMobileParty.IsUsedByAQuest() &&
         !attackerMobileParty.HasNavalNavigationCapability && !defenderMobileParty.HasNavalNavigationCapability &&
-        !SaSCompat.IsReservedBySaS(attackerMobileParty) && !SaSCompat.IsReservedBySaS(defenderMobileParty);
+        !SaSCompat.IsReservedBySaS(attackerMobileParty) && !SaSCompat.IsReservedBySaS(defenderMobileParty) &&
+        !attackerMobileParty.IsHoldingPlayerPrisoner() && !defenderMobileParty.IsHoldingPlayerPrisoner();
 
     internal static bool IfEngagedByThePlayer(MobileParty attackerParty, MobileParty defenderParty) =>
         MobileParty.MainParty.ShortTermBehavior == AiBehavior.EngageParty
@@ -1012,7 +1032,18 @@ internal static class BanditMilitiaManager
         mobileParty is { IsBandit: true, CurrentSettlement: null, MapEvent: null }
         && mobileParty.Party.MemberRoster.TotalManCount > ModSettings.MergeableSize
         && !mobileParty.IsUsedByAQuest()
-        && !VerbotenParties.Contains(mobileParty.StringId);
+        && !IsVerbotenParty(mobileParty.StringId);
+
+    // Hot path (AI ticks): plain loop, ordinal compare.
+    private static bool IsVerbotenParty(string stringId)
+    {
+        for (int i = 0; i < VerbotenParties.Length; i++)
+        {
+            if (stringId.StartsWith(VerbotenParties[i], StringComparison.Ordinal))
+                return true;
+        }
+        return false;
+    }
 
     private static bool IsGloriousName(TextObject name)
     {

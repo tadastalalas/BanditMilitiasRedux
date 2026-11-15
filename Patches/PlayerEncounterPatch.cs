@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using BanditMilitiasRedux.Core;
+using BanditMilitiasRedux.Diagnostics;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -36,7 +37,8 @@ internal class PlayerEncounterDoFreeOrCapturePrisonerHeroesPatch
 
     internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
-        CodeMatcher codeMatcher = new(instructions);
+        List<CodeInstruction> original = [.. instructions];
+        CodeMatcher codeMatcher = new(original);
 
         CodeMatcher target = codeMatcher
             .MatchStartForward(
@@ -45,7 +47,15 @@ internal class PlayerEncounterDoFreeOrCapturePrisonerHeroesPatch
                 new CodeMatch(OpCodes.Ldsfld),
                 new CodeMatch(OpCodes.Dup),
                 CodeMatch.Branches()
-            ).ThrowIfInvalid("Could not find the target at DoFreeOrCapturePrisonerHeroes");
+            );
+
+        // Pattern not found (other game version): keep vanilla, only this feature is off. Throwing would stop
+        // Harmony.PatchAll and with it every patch of the mod.
+        if (!target.IsValid)
+        {
+            BmrLog.Error("BMR-TRANSPILER: DoFreeOrCapturePrisonerHeroes patch failed, vanilla kept: target not found.");
+            return original;
+        }
 
         CodeInstruction[] insertion =
         [

@@ -146,5 +146,6 @@
 		<string id="BMR_A0OadqW" text="(Ville inconnue)" />
 		<string id="BMR_yquQLhT" text="MILICES BANDITES SUPPRIMÉES" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
+		<string id="BMR_H6Jm3wr" text="Ceci supprime toutes les Milices bandites et tous leurs chefs de cette campagne. Cette action est irréversible. À utiliser uniquement avant de désactiver le mod." />
 	</strings>
 </base>

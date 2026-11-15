@@ -146,5 +146,6 @@
 		<string id="BMR_A0OadqW" text="(Città sconosciuta)" />
 		<string id="BMR_yquQLhT" text="MILIZIE BANDITE RIMOSSE" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
+		<string id="BMR_H6Jm3wr" text="Questo rimuove tutte le Milizie Bandite e tutti i loro capi da questa campagna. Non può essere annullato. Usalo solo prima di disattivare la mod." />
 	</strings>
 </base>

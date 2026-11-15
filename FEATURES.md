@@ -9,13 +9,13 @@ Tuning numbers (not settings) live in `Core\Balance.cs`; runtime state and cache
 
 | Feature | Gate | Files |
 |---|---|---|
-| Harmony `PatchAll` and settings reload (`OnGameStart`), behavior registration, state reset on game end | always | `SubModule.cs` |
+| Harmony patches applied once per game (`OnGameStart`) and removed at its end (`OnGameEnd`), settings reload, behavior registration, state reset on game end | always | `SubModule.cs` (`ApplyPatches`, `RemovePatches`) |
 | Settings: MCM when loaded, otherwise ModConfiguration.xml | always | `Core\ModSettings.cs`, `Data\MCMSettings.cs`, `Data\ModConfiguration.cs`, `_Module\ModConfiguration.xml` |
 | MCM dropdown items shown in the game language | always (MCM) | `SubModule.cs`, `Core\ModSettings.cs`, `Data\MCMSettings.cs` (`LocalizeDropdowns`) |
-| Random banner cache (5000 banners) | setting:RandomBanners | `Core\Helper.cs` (`CacheBanners`), `Core\Globals.cs` |
+| Random banner cache (5000 banners): every militia gets a banner, shown only with the setting on | always (shown: setting:RandomBanners) | `Core\Helper.cs` (`CacheBanners`), `Core\Globals.cs` |
 | Random banners forced off when this mod loads after Calradia Expanded Kingdoms | always | `SubModule.cs` (`AdjustForLoadOrder`), `Core\ModSettings.cs` (`ForceRandomBannersOff`) |
 | Settings change (MCM) → recalc raid cap, reset names, refresh markers | always | `SubModule.cs` (`OnSettingsChanged`) |
-| Ctrl+Alt+N hotkey: remove all militia content (`NukeEverything`) | always | `SubModule.cs`, `Core\Helper.cs` |
+| Ctrl+Alt+N on the campaign map: asks, then removes all militia content (`AskToNukeEverything`, `NukeEverything`) | always | `SubModule.cs`, `Core\Helper.cs`, `Core\Texts.cs` |
 | Tuning numbers and fixed ids | always | `Core\Balance.cs` |
 | Caches (`Hideouts`, `Villages`, `RaidCap`), in-memory AI trackers, `ClearGlobals` | always | `Core\Globals.cs` |
 | One-time mod state init (hideouts, villages, troops, templates, raid cap) on map screen open | always | `Core\Helper.cs` (`InitializeGlobalModState`), `Patches\MapScreenPatch.cs` |
@@ -28,6 +28,8 @@ Tuning numbers (not settings) live in `Core\Balance.cs`; runtime state and cache
 | Feature | Gate | Files |
 |---|---|---|
 | Nearby bandit parties merge into a Bandit Militia | setting:MergeableSize, setting:CooldownHours, setting:GlobalPowerPercent | `Managers\BanditMilitiaManager.cs`, `Behaviors\MilitiaBehavior.cs`, `Patches\EncounterManagerPatch.cs` |
+| No merge or split while the militia holds the player prisoner; no merge search on the way to a raid; no split in a battle | always | `Core\Extensions.cs` (`IsHoldingPlayerPrisoner`, `IsTooBusyToMerge`, `IsTooBusyToGrowOrSplit`), `Behaviors\MilitiaBehavior.cs` (`OnTickPartialHourlyAiEvent`), `Managers\BanditMilitiaManager.cs` |
+| Quest and story bandit parties never merge (party id prefixes) | always | `Managers\BanditMilitiaManager.cs` (`VerbotenParties`, `IsVerbotenParty`) |
 | Merge home settlement: leader's birth place, else a land hideout | always | `Core\Helper.cs` (`BestSettlementForMerge`, `FindClosestHideout`, `IsLandHideout`) |
 | Militia party component (owner, leader, home, banner, avoidance, name) | always | `Data\BanditMilitiaPartyComponent.cs` |
 | Leader: reuse a waiting hero, else create one (cap per clan) | setting:HeroPoolCap, setting:FemaleSpawnChance | `Managers\BanditHeroCreator.cs`, `Behaviors\ReusableHeroesBehavior.cs` |
@@ -40,7 +42,7 @@ Tuning numbers (not settings) live in `Core\Balance.cs`; runtime state and cache
 | Feature | Gate | Files |
 |---|---|---|
 | Daily troop growth | setting:GrowthChance, setting:GrowthPercent, setting:GlobalPowerPercent | `Managers\BanditMilitiaManager.cs` (`TryGrowMilitiaParty`) |
-| Daily training, upgrades, bonus XP | setting:CanTrain, setting:DailyTrainingChance, setting:UpgradeUnitsPercent, setting:MaxTrainingTier, setting:XpGift | `Managers\BanditMilitiaManager.cs` (`TrainBanditMilitiaParty`) |
+| Daily training, upgrades, bonus XP (not during a battle) | setting:CanTrain, setting:DailyTrainingChance, setting:UpgradeUnitsPercent, setting:MaxTrainingTier, setting:XpGift | `Managers\BanditMilitiaManager.cs` (`TrainBanditMilitiaParty`), `Behaviors\MilitiaBehavior.cs` (`OnDailyTickPartyEvent`) |
 | Looters converted to culture recruits or bandit-tier troops | setting:CanTrain, setting:UseBanditOnlyTroopTrees | `Managers\BanditMilitiaManager.cs` |
 | Equipment pool, cavalry count, gold and mounts | setting:MaxItemValue, setting:GoldReward | `Core\EquipmentPool.cs`, `Managers\BanditMilitiaManager.cs` (`ConfigureGoldAndMounts`) |
 | Upgrade targets and upgrade permission | setting:UseBanditOnlyTroopTrees, setting:MaxTrainingTier | `Patches\PartyUpgraderCampaignBehaviorPatch.cs` (transpiler), `Patches\DefaultPartyTroopUpgradeModelPatch.cs` |
@@ -56,7 +58,7 @@ Tuning numbers (not settings) live in `Core\Balance.cs`; runtime state and cache
 | Raid cap (counts militias raiding or marching to raid) | setting:RaidCapPercent | `Managers\BanditMilitiaManager.cs` (`CountRaidingMilitias`), `Core\Helper.cs` (`CalculateRaidCap`) |
 | Raid avoidance: one roll vs highest avoidance toward owner clan | always | `Managers\BanditMilitiaManager.cs` (`IsVillageAvoided`) |
 | Release militias marching to a village that got looted | always | `Behaviors\MilitiaBehavior.cs` (`OnVillageStateChanged`), `Managers\BanditMilitiaManager.cs` (`ReleaseMilitiasRaidingLootedVillage`) |
-| Raid done → unlock AI and hold | always | `Behaviors\MilitiaBehavior.cs` (`OnRaidCompletedEvent`) |
+| Raid done → unlock AI of every militia in the raid and hold | always | `Behaviors\MilitiaBehavior.cs` (`OnRaidCompletedEvent`) |
 | Stuck rescue (12 h within 15 units) → patrol near home; after 2 rescues hold 6 h; logs `BMR-STUCK` | always | `Managers\BanditMilitiaManager.cs` (`TryHandleStuckMilitia`), `Core\Balance.cs` |
 | Partial-hourly AI: stuck check, drop peace engagements, unlock stale AI, merge | always | `Behaviors\MilitiaBehavior.cs` (`OnTickPartialHourlyAiEvent`) |
 | Think on idle every AI tick (hot path) | always | `Patches\MobilePartyAiPatch.cs` (`MobilePartyAiTickInternalPatch`) |
@@ -96,6 +98,7 @@ Tuning numbers (not settings) live in `Core\Balance.cs`; runtime state and cache
 | Feature | Gate | Files |
 |---|---|---|
 | Defeated militia leaders captured by the player, capture conversation | always | `Patches\MapEventPatch.cs` (`MapEventCalculateAndCommitMapEventResultsPatch`), `Patches\BanditInteractionsCampaignBehaviorPatch.cs` |
+| Hero prisoners move with the militia on merge and split | always | `Managers\BanditMilitiaManager.cs` (`TryMergeBanditParties`, `SplitRosters`) |
 | Militia heroes not freed by vanilla prisoner release (transpiler) | always | `Patches\PlayerEncounterPatch.cs` (`PlayerEncounterDoFreeOrCapturePrisonerHeroesPatch`) |
 | No duplicate hero prisoners | always | `Patches\PartyBasePatch.cs` (`PartyBaseAddPrisonerPatch`) |
 | No ransom offers for militia heroes | always | `Patches\RansomOfferCampaignBehaviorPatch.cs` |
@@ -118,7 +121,8 @@ Tuning numbers (not settings) live in `Core\Balance.cs`; runtime state and cache
 | Militia banner on the map icon (1.4.x) | setting:RandomBanners | `Patches\MobilePartyVisualPatch.cs` (`MobilePartyVisualAddCharacterToPartyIconBannerPatch`, 1.4.x only) |
 | Militia banner on the map icon (1.5.7) | setting:RandomBanners | `Patches\MobilePartyVisualHelperPatch.cs` (transpiler, 1.5.7 only) |
 | Militia banner in battle | setting:RandomBanners | `Patches\PartyGroupAgentOriginPatch.cs` |
-| Map markers for large militias | setting:ShowMilitiaMarkers, setting:TrackedSizeMinimum | `Managers\MilitiaTrackerManager.cs`, `Patches\MapTrackerItemVMPatch.cs`, `Patches\MapTrackerProviderPatch.cs` (1.4.x only), `Patches\MapTrackerManagerPatch.cs` (1.5.7 only) |
+| Map markers for large militias | setting:ShowMilitiaMarkers, setting:TrackedSizeMinimum | `Managers\MilitiaTrackerManager.cs`, `Patches\MapTrackerProviderPatch.cs` (1.4.x only), `Patches\MapTrackerManagerPatch.cs` (1.5.7 only) |
+| Militia banner on the map marker | setting:ShowMilitiaMarkers, setting:RandomBanners | `Patches\MapTrackerItemVMPatch.cs` |
 | Raid messages (being raided, raid done, raiding your village) | setting:ShowRaids | `Behaviors\MilitiaBehavior.cs`, `Managers\BanditMilitiaManager.cs` (`Think`) |
 
 ## Vanilla safety / compat patches

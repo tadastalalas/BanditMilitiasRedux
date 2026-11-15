@@ -146,5 +146,6 @@
 		<string id="BMR_A0OadqW" text="(Nieznane miasto)" />
 		<string id="BMR_yquQLhT" text="BANDYCKIE MILICJE USUNIĘTE" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
+		<string id="BMR_H6Jm3wr" text="To usuwa z tej kampanii wszystkie Bandyckie Milicje i wszystkich ich przywódców. Tego nie można cofnąć. Używaj tylko przed wyłączeniem moda." />
 	</strings>
 </base>

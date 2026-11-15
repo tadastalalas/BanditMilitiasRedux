@@ -80,6 +80,10 @@ internal static class Texts
     #region Notifications
     public static readonly TextObject UnknownTown = new(Ids.UnknownTown);
     public static readonly TextObject MilitiasCleared = new(Ids.MilitiasCleared);
+    public static readonly TextObject NukeConfirmation = new(Ids.NukeConfirmation);
+    public static readonly TextObject AreYouSure = new(Ids.AreYouSure);
+    public static readonly TextObject Yes = new(Ids.Yes);
+    public static readonly TextObject No = new(Ids.No);
 
     internal static TextObject VillageBeingRaided(TextObject village, TextObject party) =>
         new TextObject(Ids.VillageBeingRaided).SetTextVariable(VillageVariable, village).SetTextVariable(PartyVariable, party);
@@ -246,6 +250,11 @@ internal static class Texts
         public const string Bounty = "{=BMRBounty}You collected a bounty of {GOLD} denars and {RENOWN} renown for {LEADER}.";
         public const string UnknownTown = "{=BMR_A0OadqW}(Unknown Town)";
         public const string MilitiasCleared = "{=BMR_yquQLhT}BANDIT MILITIAS CLEARED";
+        public const string NukeConfirmation = "{=BMR_H6Jm3wr}This removes every Bandit Militia and all of their leaders from this campaign. It cannot be undone. Use it only before you disable the mod.";
+        // Vanilla ids with the exact vanilla English text: the game supplies the translations, no xml rows.
+        public const string AreYouSure = "{=awjomtnJ}Are you sure?";
+        public const string Yes = "{=aeouhelq}Yes";
+        public const string No = "{=8OkPHu4f}No";
         #endregion
     }
 }

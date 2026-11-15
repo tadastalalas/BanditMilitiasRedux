@@ -146,5 +146,6 @@
 		<string id="BMR_A0OadqW" text="(Unknown Town)" />
 		<string id="BMR_yquQLhT" text="BANDIT MILITIAS CLEARED" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
+		<string id="BMR_H6Jm3wr" text="This removes every Bandit Militia and all of their leaders from this campaign. It cannot be undone. Use it only before you disable the mod." />
 	</strings>
 </base>

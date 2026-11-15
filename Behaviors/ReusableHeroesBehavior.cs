@@ -41,8 +41,12 @@ public sealed class ReusableHeroesBehavior : CampaignBehaviorBase
 
     internal static void Reset() => _waitingToBeReusedHeroes.Clear();
 
-    public Hero? TryGetReusableBanditHero(Clan clan)
+    public Hero? TryGetReusableBanditHero(Clan? clan)
     {
+        // The pool is keyed by clan: no clan, no hero.
+        if (clan is null)
+            return null;
+
         if (!_waitingToBeReusedHeroes.TryGetValue(clan, out List<Hero>? heroes))
             _waitingToBeReusedHeroes[clan] = heroes = [];
 
@@ -93,6 +97,10 @@ public sealed class ReusableHeroesBehavior : CampaignBehaviorBase
 
     internal static void AddHeroToTheWaitingDictionary(Hero hero)
     {
+        // The pool is keyed by clan: a hero without one cannot wait in it.
+        if (hero?.Clan is null)
+            return;
+
         if (!_waitingToBeReusedHeroes.TryGetValue(hero.Clan, out List<Hero>? heroes))
             _waitingToBeReusedHeroes[hero.Clan] = heroes = [];
 
@@ -124,7 +132,7 @@ public sealed class ReusableHeroesBehavior : CampaignBehaviorBase
         }
     }
 
-    public bool HasReusableBanditHero(Clan clan) => _waitingToBeReusedHeroes.TryGetValue(clan, out List<Hero>? heroes) && heroes.Count > 0;
+    public bool HasReusableBanditHero(Clan? clan) => clan is not null && _waitingToBeReusedHeroes.TryGetValue(clan, out List<Hero>? heroes) && heroes.Count > 0;
 
     internal static bool IsWaitingForReuse(Hero? hero) =>
         hero?.Clan is not null

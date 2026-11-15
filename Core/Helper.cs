@@ -45,7 +45,8 @@ internal static class Helper
     private static readonly object RandomBannerOrientation = Enum.ToObject(CreateRandomBannerInternal.GetParameters()[1].ParameterType, -1);
 #endif
 
-    internal static Settlement BestSettlementForMerge(MobileParty mergeInitiatorParty, MobileParty mergeTargetParty)
+    // Null when there is neither a hideout home nor any land hideout on the map: the caller skips the merge.
+    internal static Settlement? BestSettlementForMerge(MobileParty mergeInitiatorParty, MobileParty mergeTargetParty)
     {
         Settlement? mobilePartyHomeSettlement = mergeInitiatorParty.HomeSettlement?.IsHideout ?? false ? mergeInitiatorParty.HomeSettlement : null;
         Settlement? mergeTargetHomeSettlement = mergeTargetParty.HomeSettlement?.IsHideout ?? false ? mergeTargetParty.HomeSettlement : null;
@@ -56,7 +57,7 @@ internal static class Helper
         return bestSettlement ?? FindClosestHideout(mergeInitiatorParty.Position.ToVec2());
     }
 
-    private static Settlement FindClosestHideout(Vec2 position)
+    private static Settlement? FindClosestHideout(Vec2 position)
     {
         Settlement? closestHideout = null;
         float hideoutDistance = float.MaxValue;
@@ -121,7 +122,27 @@ internal static class Helper
         }
     }
 
-    internal static void NukeEverything()
+    // Ctrl+Alt+N: asks first, because the removal cannot be undone.
+    internal static void AskToNukeEverything()
+    {
+        if (IsNukeInquiryOpen)
+            return;
+
+        IsNukeInquiryOpen = true;
+        InformationManager.ShowInquiry(new InquiryData(Texts.AreYouSure.ToString(), Texts.NukeConfirmation.ToString(), true, true,
+            Texts.Yes.ToString(), Texts.No.ToString(), ConfirmNukeEverything, CancelNukeEverything), true);
+    }
+
+    private static void ConfirmNukeEverything()
+    {
+        IsNukeInquiryOpen = false;
+        if (Campaign.Current is not null)
+            NukeEverything();
+    }
+
+    private static void CancelNukeEverything() => IsNukeInquiryOpen = false;
+
+    private static void NukeEverything()
     {
         if (Settlement.CurrentSettlement == null)
             GameMenu.ExitToLast();
@@ -252,12 +273,14 @@ internal static class Helper
         }
     }
 
+    // Militia heroes are born from a bandit troop template; bandit heroes of other mods made any other way are left alone.
     private static bool IsOrphanedBanditMilitiaHero(Hero hero)
         => hero is { IsAlive: true, IsNotable: false, IsSpecial: false, IsPlayerCompanion: false }
            && hero != Hero.MainHero
            && hero.Clan?.IsBanditFaction == true
            && hero.Occupation == Occupation.Bandit
            && hero.CharacterObject is not null
+           && HeroTemplates.Contains(hero.CharacterObject.OriginalCharacter)
            && !hero.CharacterObject.StringId.Contains(RadagosIdPart)
            && !hero.CharacterObject.StringId.Contains(TutorialIdPart)
            && !hero.CharacterObject.StringId.Contains(QuestIdPart);

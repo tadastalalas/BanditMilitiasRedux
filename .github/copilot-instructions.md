@@ -13,7 +13,9 @@ apply: always
 - Logger: `Diagnostics\BmrLog.cs` (Debug / Warn / Error; `BmrLog.IsDebugEnabled` before building strings on hot paths).
 - Settings: `Core\ModSettings.cs` only (MCM when loaded, else `ModConfiguration.xml`). Tuning numbers: `Core\Balance.cs`.
   Runtime state and caches: `Core\Globals.cs`. `Core\ModInfo.cs` holds the ModuleId, file and folder names and the module root path.
-- PatchAll runs in `SubModule.OnGameStart` (every game start; Harmony skips patches already applied). Patches are inactive before it.
+- Patches: `SubModule.ApplyPatches` runs `PatchAll` in `OnGameStart`, once per game; `SubModule.RemovePatches` runs `UnpatchAll(own id)`
+  in `OnGameEnd`. Harmony does not skip patches it already applied (a second `PatchAll` runs every patch twice), so never call
+  `PatchAll` anywhere else. Never patch in `OnSubModuleLoad` (human bullet bug). Patches are inactive before `OnGameStart`.
 - Optional-mod compat: `Compat\SaSCompat.cs` (Serve as Soldier, reflection lookup, no Harmony patch).
 
 ## Layout deviations
@@ -34,6 +36,8 @@ apply: always
 - `IsBanditMilitiaParty()`, `IsBanditMilitiaHero()`, `IsBanditMilitiaCharacterObject()` (`Core\Extensions.cs`) are the canonical
   checks for whether a Hero or Party belongs to this mod; always use them instead of manual type checks.
 - `GetBanditMilitiaParty()` retrieves the `BanditMilitiaPartyComponent` from a party.
+- A party that holds the player prisoner (`IsHoldingPlayerPrisoner()`) or is in a battle is never merged, split or otherwise
+  replaced: removing the captor party frees the player, and vanilla frees hero prisoners still listed in a removed party.
 - Singleton behaviors use the `public static T? Instance { get; private set; }` pattern.
 - Player notifications go through `Core\Texts.cs` + `InformationManager`; diagnostics only through `BmrLog`.
 

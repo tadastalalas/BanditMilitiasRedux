@@ -146,5 +146,6 @@
 		<string id="BMR_A0OadqW" text="(Cidade desconhecida)" />
 		<string id="BMR_yquQLhT" text="MILÍCIAS BANDIDAS REMOVIDAS" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
+		<string id="BMR_H6Jm3wr" text="Isto remove todas as Milícias Bandidas e todos os seus líderes desta campanha. Não pode ser desfeito. Use apenas antes de desativar o mod." />
 	</strings>
 </base>

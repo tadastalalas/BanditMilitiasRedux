@@ -146,5 +146,6 @@
 		<string id="BMR_A0OadqW" text="(알 수 없는 마을)" />
 		<string id="BMR_yquQLhT" text="도적 민병대 제거됨" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
+		<string id="BMR_H6Jm3wr" text="이 캠페인에서 모든 도적 민병대와 그 지도자를 제거합니다. 되돌릴 수 없습니다. 모드를 비활성화하기 전에만 사용하세요." />
 	</strings>
 </base>

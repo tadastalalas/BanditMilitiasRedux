@@ -146,5 +146,6 @@
 		<string id="BMR_A0OadqW" text="(Bilinmeyen Kasaba)" />
 		<string id="BMR_yquQLhT" text="HAYDUT MİLİSLERİ TEMİZLENDİ" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
+		<string id="BMR_H6Jm3wr" text="Bu işlem, bu oyundaki tüm Haydut Milislerini ve liderlerini kaldırır. Geri alınamaz. Yalnızca modu devre dışı bırakmadan önce kullanın." />
 	</strings>
 </base>

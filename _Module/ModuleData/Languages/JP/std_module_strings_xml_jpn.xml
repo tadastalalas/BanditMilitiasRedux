@@ -146,5 +146,6 @@
 		<string id="BMR_A0OadqW" text="（不明な町）" />
 		<string id="BMR_yquQLhT" text="盗賊民兵を一掃しました" />
 		<string id="BMR_TOQCjcE" text="{A}{B}" />
+		<string id="BMR_H6Jm3wr" text="このキャンペーンからすべての盗賊民兵とそのリーダーを削除します。元に戻すことはできません。MODを無効にする前にのみ使用してください。" />
 	</strings>
 </base>

@@ -146,5 +146,6 @@
 		<string id="BMR_A0OadqW" text="（未知城鎮）" />
 		<string id="BMR_yquQLhT" text="強盜兵團已清除" />
 		<string id="BMR_TOQCjcE" text="{A}{B}" />
+		<string id="BMR_H6Jm3wr" text="這將從本次戰役中移除所有強盜兵團及其首領。此操作無法復原。請僅在停用本模組之前使用。" />
 	</strings>
 </base>

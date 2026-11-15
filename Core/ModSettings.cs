@@ -36,7 +36,7 @@ internal static class ModSettings
     internal static bool UseBanditOnlyTroopTrees => _useMcm ? McmUseBanditOnlyTroopTrees() : _xml.TrainingAndGrowth.UseBanditOnlyTroopTrees;
     internal static int DailyTrainingChance => _useMcm ? McmDailyTrainingChance() : _xml.TrainingAndGrowth.DailyTrainingChance;
     // Index into Balance.DifficultyXpValues / TrainingIterationsByXpGift (= MCM dropdown index).
-    internal static int XpGiftIndex => _useMcm ? McmXpGiftIndex() : (int)_xml.TrainingAndGrowth.XpGift;
+    internal static int XpGiftIndex => ValidIndex(_useMcm ? McmXpGiftIndex() : (int)_xml.TrainingAndGrowth.XpGift, Balance.DifficultyXpValues.Length, (int)ModConfiguration.XpGiftDefault);
     internal static int UpgradeUnitsPercent => _useMcm ? McmUpgradeUnitsPercent() : _xml.TrainingAndGrowth.UpgradeUnitsPercent;
     internal static int MaxTrainingTier => _useMcm ? McmMaxTrainingTier() : _xml.TrainingAndGrowth.MaxTrainingTier;
     internal static int GrowthChance => _useMcm ? McmGrowthChance() : _xml.TrainingAndGrowth.GrowthChance;
@@ -46,7 +46,7 @@ internal static class ModSettings
     #region Power & Balance
     internal static int GlobalPowerPercent => _useMcm ? McmGlobalPowerPercent() : _xml.PowerAndBalance.GlobalPowerPercent;
     // Index into Balance.GoldValues (= MCM dropdown index).
-    internal static int GoldRewardIndex => _useMcm ? McmGoldRewardIndex() : (int)_xml.PowerAndBalance.GoldReward;
+    internal static int GoldRewardIndex => ValidIndex(_useMcm ? McmGoldRewardIndex() : (int)_xml.PowerAndBalance.GoldReward, Balance.GoldValues.Length, (int)ModConfiguration.GoldRewardDefault);
     #endregion
 
     #region Behavior & AI
@@ -124,6 +124,9 @@ internal static class ModSettings
     }
 
     private static string XmlTextOrDefault(string? value, string fallback) => string.IsNullOrWhiteSpace(value) ? fallback : value!;
+
+    // A dropdown index outside its table (a broken saved value) falls back to the default.
+    private static int ValidIndex(int index, int count, int fallback) => index >= 0 && index < count ? index : fallback;
 
     private static void RaiseChanged() => Changed?.Invoke();
 

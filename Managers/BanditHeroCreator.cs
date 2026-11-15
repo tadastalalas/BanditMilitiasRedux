@@ -23,8 +23,12 @@ internal static class BanditHeroCreator
     private static readonly AccessTools.FieldRef<CharacterObject, bool> HiddenInEncyclopediaFieldRef = AccessTools.FieldRefAccess<CharacterObject, bool>("<HiddenInEncyclopedia>k__BackingField");
     private static readonly ConstructorInfo HeroDeveloperConstructorRef = AccessTools.Constructor(typeof(HeroDeveloper), [typeof(Hero)]);
 
-    internal static Hero? ReuseOrCreateBanditHero(Settlement settlement, Clan targetClan)
+    internal static Hero? ReuseOrCreateBanditHero(Settlement? settlement, Clan? targetClan)
     {
+        // No home or no clan: no leader, the caller skips the merge.
+        if (settlement is null || targetClan is null)
+            return null;
+
         Hero? reusedBanditHero = ReusableHeroesBehavior.Instance?.TryGetReusableBanditHero(targetClan);
         if (reusedBanditHero is not null)
         {

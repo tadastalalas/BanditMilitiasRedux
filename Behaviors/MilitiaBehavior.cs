@@ -46,7 +46,8 @@ public class MilitiaBehavior : CampaignBehaviorBase
         if (party is null)
             return;
 
-        if (ModSettings.ShowRaids && villageBeingRaided.Owner?.LeaderHero == Hero.MainHero)
+        // The village's owner clan decides (Village.Owner is the settlement party, which has no leader hero).
+        if (ModSettings.ShowRaids && Hero.MainHero?.Clan is not null && villageBeingRaided.Settlement.OwnerClan == Hero.MainHero.Clan)
             InformationManager.DisplayMessage(new InformationMessage(Texts.VillageBeingRaided(villageBeingRaided.Name, party.Name).ToString()));
     }
 
@@ -59,10 +60,15 @@ public class MilitiaBehavior : CampaignBehaviorBase
         if (party is null)
             return;
 
-        if (party.MobileParty?.Ai is not null && !SaSCompat.IsReservedBySaS(party.MobileParty))
+        // Every militia that took part is released, not only the first one.
+        foreach (MapEventParty attacker in eventComponent.MapEvent.PartiesOnSide(BattleSideEnum.Attacker))
         {
-            party.MobileParty.Ai.SetDoNotMakeNewDecisions(false);
-            party.MobileParty.SetMoveModeHold();
+            MobileParty? raider = attacker?.Party?.MobileParty;
+            if (raider?.Ai is null || !raider.IsBanditMilitiaParty() || SaSCompat.IsReservedBySaS(raider))
+                continue;
+
+            raider.Ai.SetDoNotMakeNewDecisions(false);
+            raider.SetMoveModeHold();
         }
 
         if (!ModSettings.ShowRaids)
@@ -112,7 +118,8 @@ public class MilitiaBehavior : CampaignBehaviorBase
 
         BanditMilitiaManager.TryGrowMilitiaParty(mobileParty);
 
-        if (MBRandom.RandomFloat <= ModSettings.DailyTrainingChance * Balance.PercentToFraction)
+        // Not in a battle: training changes the roster.
+        if (mobileParty.MapEvent is null && MBRandom.RandomFloat <= ModSettings.DailyTrainingChance * Balance.PercentToFraction)
             BanditMilitiaManager.TrainBanditMilitiaParty(mobileParty);
 
         BanditMilitiaManager.TrySplitBanditMilitiaParty(mobileParty);
@@ -165,15 +172,20 @@ public class MilitiaBehavior : CampaignBehaviorBase
 
         if (isMilitia)
         {
+            // No merge search during the cooldown, on the way to a raid, while holding the player prisoner
+            // or while the player is closing in.
             BanditMilitiaPartyComponent partyComponent = banditMilitiaParty.GetBanditMilitiaParty()!;
             if (timeNow < partyComponent.LastMergedOrSplitDate + cooldownToMergeOrSplit
+                || banditMilitiaParty.DefaultBehavior == AiBehavior.RaidSettlement
+                || banditMilitiaParty.IsHoldingPlayerPrisoner()
                 || MobileParty.MainParty.ShortTermBehavior == AiBehavior.EngageParty && MobileParty.MainParty.ShortTermTargetParty == banditMilitiaParty)
             {
                 BanditMilitiaManager.Think(banditMilitiaParty);
                 return;
             }
         }
-        else if (MobileParty.MainParty.ShortTermBehavior == AiBehavior.EngageParty && MobileParty.MainParty.ShortTermTargetParty == banditMilitiaParty)
+        else if (banditMilitiaParty.IsHoldingPlayerPrisoner()
+                 || MobileParty.MainParty.ShortTermBehavior == AiBehavior.EngageParty && MobileParty.MainParty.ShortTermTargetParty == banditMilitiaParty)
             return;
 
         BanditMilitiaManager.TryFindAndMergeNearbyBandits(banditMilitiaParty, currentMilitiaPartyPosition, timeNow, cooldownToMergeOrSplit);

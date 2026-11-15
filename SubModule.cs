@@ -4,9 +4,11 @@ using System.Reflection;
 using BanditMilitiasRedux.Behaviors;
 using BanditMilitiasRedux.Core;
 using BanditMilitiasRedux.Data;
+using BanditMilitiasRedux.Diagnostics;
 using BanditMilitiasRedux.Managers;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.Core;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
@@ -25,7 +27,10 @@ public class SubModule : MBSubModuleBase
     private static readonly Harmony Harmony = new(ModInfo.ModuleId);
     private static readonly MethodInfo ResetCached = AccessTools.Method("TaleWorlds.CampaignSystem.Party.MobileParty:ResetCached");
 
-    // Ctrl+Alt+N removes every militia, militia hero and militia map event (uninstall helper).
+    // The game the patches were applied for; null while nothing is patched.
+    private static Game? _patchedGame;
+
+    // Ctrl+Alt+N on the campaign map: asks, then removes every militia, militia hero and militia map event (uninstall helper).
     protected override void OnApplicationTick(float dt)
     {
         base.OnApplicationTick(dt);
@@ -33,8 +38,9 @@ public class SubModule : MBSubModuleBase
         if (Campaign.Current is null)
             return;
 
-        if (Input.IsKeyPressed(NukeHotkey) && Input.IsKeyDown(InputKey.LeftControl) && Input.IsKeyDown(InputKey.LeftAlt))
-            Helper.NukeEverything();
+        if (Input.IsKeyPressed(NukeHotkey) && Input.IsKeyDown(InputKey.LeftControl) && Input.IsKeyDown(InputKey.LeftAlt)
+            && Game.Current?.GameStateManager?.ActiveState is MapState)
+            Helper.AskToNukeEverything();
     }
 
     protected override void OnBeforeInitialModuleScreenSetAsRoot()
@@ -55,12 +61,13 @@ public class SubModule : MBSubModuleBase
             ModSettings.ForceRandomBannersOff();
     }
 
-    // PatchAll runs here (every game start; Harmony skips patches it already applied).
+    // Patches are applied here and removed in OnGameEnd, never in OnSubModuleLoad
+    // (too early for patches near agents: http://bannerlordmodding.lt/guides/human_bullet/).
     protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
     {
         ModSettings.Reload();
-        Harmony.PatchAll(typeof(SubModule).Assembly);
 
+        // Behaviors first: a failing patch must not leave the campaign without them.
         if (gameStarterObject is CampaignGameStarter gameStarter)
         {
             gameStarter.AddBehavior(new MilitiaBehavior());
@@ -72,6 +79,38 @@ public class SubModule : MBSubModuleBase
 
         ModSettings.Changed -= OnSettingsChanged;
         ModSettings.Changed += OnSettingsChanged;
+
+        ApplyPatches(game);
+    }
+
+    // Harmony never skips patches it already applied: a second PatchAll would run every patch twice.
+    // So they are applied once and stay until the game they were applied for ends.
+    private static void ApplyPatches(Game game)
+    {
+        bool alreadyPatched = _patchedGame is not null;
+        _patchedGame = game;
+        if (alreadyPatched)
+            return;
+
+        try
+        {
+            Harmony.PatchAll(typeof(SubModule).Assembly);
+        }
+        catch (HarmonyException ex)
+        {
+            BmrLog.Error("Harmony.PatchAll failed: some patches are missing.", ex);
+            throw;
+        }
+    }
+
+    // Only the game the patches belong to removes them (an older game may end after a newer one started).
+    private static void RemovePatches(Game game)
+    {
+        if (_patchedGame != game)
+            return;
+
+        _patchedGame = null;
+        Harmony.UnpatchAll(Harmony.Id);
     }
 
     // MCM only: settings changed mid-game.
@@ -103,5 +142,6 @@ public class SubModule : MBSubModuleBase
         BanditMilitiaManager.ResetUpgraderBehavior();
         ModSettings.Changed -= OnSettingsChanged;
         IsGlobalModStateInitialized = false;
+        RemovePatches(game);
     }
 }

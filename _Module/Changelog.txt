@@ -1,3 +1,20 @@
+BMR v1.5.7.1 :
+- Fixed bounties being paid twice and militia leaders' wins and defeats being counted twice after loading a second save without restarting the game.
+- Fixed Bandit Militias splitting or training in the middle of a battle.
+- Fixed being set free when the Bandit Militia holding you prisoner merged or split. It no longer merges or splits while you are its prisoner.
+- Fixed captured lords and other hero prisoners being released when bandit parties merged into a Bandit Militia. They now stay prisoners of the new militia.
+- Fixed Bandit Militias giving up a raid whenever another bandit party was close enough to merge with.
+- Fixed bandit parties that belong to quests being able to merge into Bandit Militias.
+- Fixed Daily Split Chance being 1% higher than set: 0% now really never splits.
+- Merge/Split Cooldown (Hours) now also delays splits, as its description says.
+- Fixed militia leaders piling up gold with every merge and split. Their gold follows the militia's strength again.
+- Fixed only one Bandit Militia going back on patrol after several of them raided the same village.
+- Fixed the "is being raided" message never showing for your villages.
+- Fixed map markers showing the random banner while Random Banners is off.
+- Fixed possible crashes when a Bandit Militia formed or split.
+- Ctrl+Alt+N (remove all mod data) now asks for confirmation and works only on the campaign map.
+	It no longer removes bandit heroes added by other mods.
+
 BMR v1.5.7.0 :
 - Added support for game version 1.5.7. Game versions 1.4.8 and 1.4.7 are still supported.
 	Version numbers now follow the game version: v1.5.7.0 is the update after v4.11.0.

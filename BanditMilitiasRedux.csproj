@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk;Bannerlord.BuildResourcesLite.Sdk/1.2.3.41">
 
 	<PropertyGroup>
-		<Version>1.5.7.0</Version>
+		<Version>1.5.7.1</Version>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<ModuleId>$(MSBuildProjectName)</ModuleId>
 		<ModuleName>Bandit Militias Redux</ModuleName>
