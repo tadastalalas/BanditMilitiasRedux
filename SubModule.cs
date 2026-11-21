@@ -24,7 +24,7 @@ public class SubModule : MBSubModuleBase
     private const string CalradiaExpandedKingdomsAssemblyPrefix = "CalradiaExpandedKingdoms";
     private const InputKey NukeHotkey = InputKey.N;
 
-    private static readonly Harmony Harmony = new(ModInfo.ModuleId);
+    private static readonly Harmony Harmony = new(ModInfo.HarmonyId);
     private static readonly MethodInfo ResetCached = AccessTools.Method("TaleWorlds.CampaignSystem.Party.MobileParty:ResetCached");
 
     // The game the patches were applied for; null while nothing is patched.
@@ -104,6 +104,7 @@ public class SubModule : MBSubModuleBase
     }
 
     // Only the game the patches belong to removes them (an older game may end after a newer one started).
+    // UnpatchAll with our own HarmonyId only: the module loader's patches carry the ModuleId and must stay.
     private static void RemovePatches(Game game)
     {
         if (_patchedGame != game)

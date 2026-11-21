@@ -1,3 +1,16 @@
+## BMR v1.5.7.2
+
+- Fixed a crash after loading a save while another one was being played (`MobileParty.get_IsBanditBossParty` NRE from `DefaultMapTrackModel.CanPartyLeaveTrack`).
+  - Cause: the Harmony id was the ModuleId. `Bannerlord.ModuleLoader.BanditMilitiasRedux.dll` (assembly name `BanditMilitiasRedux`) puts its own 22 patches under that same id,
+    so the v1.5.7.1 `Harmony.UnpatchAll(Harmony.Id)` in `SubModule.RemovePatches` removed the loader's patches too.
+    The loader then no longer forwarded `OnGameStart` for the next loaded save: no behaviors, no patches, and the vanilla boss getter threw on every militia
+    (`IsBandit` true, no `BanditPartyComponent`).
+  - Found with a temporary `BMR-PATCH` dump (removed): main menu 22 patches under "BanditMilitiasRedux" before our `PatchAll`, 0 after `OnGameEnd`, no `OnGameStart` for the reload.
+  - `Core\ModInfo.cs`: new `HarmonyId` = `ModuleId + ".Harmony"`. `SubModule`: `new Harmony(ModInfo.HarmonyId)`. Not a saved identifier.
+- Version 1.5.7.1 -> 1.5.7.2 in `BanditMilitiasRedux.csproj`.
+- Save compatibility: none.
+- To test (1.5.7, 1.4.8, 1.4.7): load a save, move on the map, load the same save again without restarting, move on the map: no crash, militias merge and show markers.
+
 ## BMR v1.5.7.1
 
 - Bug hunt after the migration. All fixes are in shared code (no `#if`): the bugs are the same on 1.4.7, 1.4.8 and 1.5.7. Vanilla behavior was read in BannerlordSource1.5.7 only.

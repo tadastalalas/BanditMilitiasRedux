@@ -12,10 +12,12 @@ apply: always
 - <Prefix>: BMR (Bmr in type names, `bmr_` in dialog ids). <Root> namespace and ModuleId: BanditMilitiasRedux.
 - Logger: `Diagnostics\BmrLog.cs` (Debug / Warn / Error; `BmrLog.IsDebugEnabled` before building strings on hot paths).
 - Settings: `Core\ModSettings.cs` only (MCM when loaded, else `ModConfiguration.xml`). Tuning numbers: `Core\Balance.cs`.
-  Runtime state and caches: `Core\Globals.cs`. `Core\ModInfo.cs` holds the ModuleId, file and folder names and the module root path.
+  Runtime state and caches: `Core\Globals.cs`. `Core\ModInfo.cs` holds the ModuleId, Harmony id, file and folder names and the module root path.
 - Patches: `SubModule.ApplyPatches` runs `PatchAll` in `OnGameStart`, once per game; `SubModule.RemovePatches` runs `UnpatchAll(own id)`
   in `OnGameEnd`. Harmony does not skip patches it already applied (a second `PatchAll` runs every patch twice), so never call
   `PatchAll` anywhere else. Never patch in `OnSubModuleLoad` (human bullet bug). Patches are inactive before `OnGameStart`.
+- Harmony id: `ModInfo.HarmonyId` = "BanditMilitiasRedux.Harmony", never the ModuleId (the module loader patches under the ModuleId;
+  `UnpatchAll(ModuleId)` removed them and the next loaded save got no `OnGameStart`, no behaviors, no patches).
 - Optional-mod compat: `Compat\SaSCompat.cs` (Serve as Soldier, reflection lookup, no Harmony patch).
 
 ## Layout deviations

@@ -1,3 +1,6 @@
+BMR v1.5.7.2 :
+- Fixed a crash on the campaign map after loading a save while already playing another one, without restarting the game.
+
 BMR v1.5.7.1 :
 - Fixed bounties being paid twice and militia leaders' wins and defeats being counted twice after loading a second save without restarting the game.
 - Fixed Bandit Militias splitting or training in the middle of a battle.

@@ -6,6 +6,8 @@ namespace BanditMilitiasRedux.Core;
 internal static class ModInfo
 {
     internal const string ModuleId = "BanditMilitiasRedux";
+    // Never equal to ModuleId: Bannerlord.ModuleLoader patches under the ModuleId, and UnpatchAll(HarmonyId) must not remove those patches.
+    internal const string HarmonyId = ModuleId + ".Harmony";
     internal const string ConfigurationFileName = "ModConfiguration.xml";
     internal const string LogFolderName = "logs";
 

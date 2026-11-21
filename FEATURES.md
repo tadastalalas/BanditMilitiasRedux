@@ -9,7 +9,7 @@ Tuning numbers (not settings) live in `Core\Balance.cs`; runtime state and cache
 
 | Feature | Gate | Files |
 |---|---|---|
-| Harmony patches applied once per game (`OnGameStart`) and removed at its end (`OnGameEnd`), settings reload, behavior registration, state reset on game end | always | `SubModule.cs` (`ApplyPatches`, `RemovePatches`) |
+| Harmony patches applied once per game (`OnGameStart`) and removed at its end (`OnGameEnd`) under the own Harmony id `ModInfo.HarmonyId` (never the ModuleId), settings reload, behavior registration, state reset on game end | always | `SubModule.cs` (`ApplyPatches`, `RemovePatches`), `Core\ModInfo.cs` |
 | Settings: MCM when loaded, otherwise ModConfiguration.xml | always | `Core\ModSettings.cs`, `Data\MCMSettings.cs`, `Data\ModConfiguration.cs`, `_Module\ModConfiguration.xml` |
 | MCM dropdown items shown in the game language | always (MCM) | `SubModule.cs`, `Core\ModSettings.cs`, `Data\MCMSettings.cs` (`LocalizeDropdowns`) |
 | Random banner cache (5000 banners): every militia gets a banner, shown only with the setting on | always (shown: setting:RandomBanners) | `Core\Helper.cs` (`CacheBanners`), `Core\Globals.cs` |
