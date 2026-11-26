@@ -93,10 +93,7 @@ internal static class Helper
             return;
         }
 
-        Hero? leaderToReserve = mobileParty.LeaderHero;
-
-        if (leaderToReserve is { IsAlive: true, IsPrisoner: false } && leaderToReserve.PartyBelongedTo == mobileParty)
-            ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(leaderToReserve);
+        ReusableHeroesBehavior.AddPartyHeroesToTheWaitingDictionary(mobileParty);
 
         mobileParty.Ai?.DisableAi();
         DestroyPartyAction.Apply(null, mobileParty);
@@ -375,6 +372,7 @@ internal static class Helper
         Villages = Settlement.All.WhereQ(s => s.IsVillage).ToListQ();
 
         PowerCalculationManager.DoPowerCalculations(true);
+        BmrCounters.Start();
         IsGlobalModStateInitialized = true;
     }
 
@@ -457,4 +455,8 @@ internal static class Helper
         float baseRaidCap = Settlement.FindAll(s => s.IsVillage).CountQ() / Balance.RaidCapVillagesPerRaid;
         return Math.Max(1, Convert.ToInt32(baseRaidCap * (ModSettings.RaidCapPercent / Balance.PercentDivisor)));
     }
+
+    // In-game days since the campaign started (not since this save was loaded).
+    internal static double DaysPlayed() =>
+        Campaign.Current?.Models?.CampaignTimeModel is { } timeModel ? (CampaignTime.Now - timeModel.CampaignStartTime).ToDays : 0;
 }

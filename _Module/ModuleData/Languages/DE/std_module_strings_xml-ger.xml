@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME} ist ein Brigantenhauptmann, der eine Bande Halsabschneider anführt, die unter dem Namen {CLAN_NAME} raubt."/>
 		<string id="BMREncNoClan" text="herrenlose Briganten"/>
 		<string id="BMREncEpithet1" text="Im ganzen Land ist {?LEADER.GENDER}sie{?}er{\?} als {LEADER.FIRSTNAME} {EPITHET} bekannt, Sieger von {WINS} {?MANY}Schlachten{?}Schlacht{\?}."/>
-		<string id="BMREncEpithet2" text="Im ganzen Land ist {?LEADER.GENDER}sie{?}er{\?} als {LEADER.FIRSTNAME} {EPITHET} bekannt."/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}Sie{?}Er{\?} wurde in {DEFEATS} {?MANY}Schlachten{?}Schlacht{\?} besiegt."/>
 		<string id="BMREncFear" text="Mehr als alles andere fürchtet {?LEADER.GENDER}sie{?}er{\?} {HUNTER}."/>
 		<string id="BMRWho" text="Wer bist du, und für wen reitest du?" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="BANDITENMILIZEN ENTFERNT" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
 		<string id="BMR_H6Jm3wr" text="Dies entfernt alle Banditenmilizen und alle ihre Anführer aus dieser Kampagne. Das kann nicht rückgängig gemacht werden. Nur verwenden, bevor du die Mod deaktivierst." />
+		<string id="BMR_k3VqZ8w" text="EP-Multiplikator für Miliz-Helden" />
+		<string id="BMR_Rf6nJ2x" text="Multipliziert alle Fertigkeits-EP, die Helden der Banditenmilizen im Spiel erhalten (1 = Vanilla). Benötigt Miliz-Training aktivieren." />
+		<string id="BMR_p9TsL4c" text="EP des Miliz-Anführers pro Sieg" />
+		<string id="BMR_Y7mWd1h" text="Fertigkeits-EP, die ein Miliz-Anführer für jede gewonnene Schlacht in Führung, Taktik, Reiten oder Athletik und in den Fertigkeiten der genutzten Waffen erhält. Abhängig von der Stärke des Gegners (0,25x bis 3x). Alle 7 Siege gibt es zusätzlich einen Fokuspunkt und alle 14 Siege einen Attributpunkt. Benötigt Miliz-Training aktivieren. 0 schaltet nur die EP ab." />
 	</strings>
 </base>

@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME} è un capo brigante che guida una banda di tagliagole che razzia sotto il nome di {CLAN_NAME}."/>
 		<string id="BMREncNoClan" text="briganti senza padrone"/>
 		<string id="BMREncEpithet1" text="In tutta la terra, {?LEADER.GENDER}lei{?}lui{\?} è conosciut{?LEADER.GENDER}a{?}o{\?} come {LEADER.FIRSTNAME} {EPITHET}, vincitor{?LEADER.GENDER}a{?}e{\?} di {WINS} {?MANY}battaglie{?}battaglia{\?}."/>
-		<string id="BMREncEpithet2" text="In tutta la terra, {?LEADER.GENDER}lei{?}lui{\?} è conosciut{?LEADER.GENDER}a{?}o{\?} come {LEADER.FIRSTNAME} {EPITHET}."/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}Lei{?}Lui{\?} è stat{?LEADER.GENDER}a{?}o{\?} sconfit{?LEADER.GENDER}a{?}o{\?} in battaglia {DEFEATS} {?MANY}volte{?}volta{\?}."/>
 		<string id="BMREncFear" text="Soprattutto, {?LEADER.GENDER}lei{?}lui{\?} teme {HUNTER}."/>
 		<string id="BMRWho" text="Chi sei, e per chi cavalchi?" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="MILIZIE BANDITE RIMOSSE" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
 		<string id="BMR_H6Jm3wr" text="Questo rimuove tutte le Milizie Bandite e tutti i loro capi da questa campagna. Non può essere annullato. Usalo solo prima di disattivare la mod." />
+		<string id="BMR_k3VqZ8w" text="Moltiplicatore PE eroi della milizia" />
+		<string id="BMR_Rf6nJ2x" text="Moltiplica tutta l’esperienza di abilità che gli eroi delle milizie bandite ottengono nel gioco (1 = vanilla). Richiede Abilita addestramento milizia." />
+		<string id="BMR_p9TsL4c" text="PE del capo milizia per vittoria" />
+		<string id="BMR_Y7mWd1h" text="Esperienza di abilità che un capo milizia ottiene per ogni battaglia vinta in Comando, Tattica, Equitazione o Atletica e nelle abilità delle armi in uso. Scalata in base alla forza del nemico (da 0,25x a 3x). Ogni 7 vittorie ottiene anche un punto focus e ogni 14 vittorie un punto attributo. Richiede Abilita addestramento milizia. 0 disattiva solo l’esperienza." />
 	</strings>
 </base>

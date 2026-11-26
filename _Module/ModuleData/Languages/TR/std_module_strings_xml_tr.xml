@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME}, {CLAN_NAME} adı altında yağma yapan bir eşkıya grubuna liderlik eden bir haydut reisidir."/>
 		<string id="BMREncNoClan" text="efendisiz eşkıyalar"/>
 		<string id="BMREncEpithet1" text="Diyarın dört bir yanında {?LEADER.GENDER}onun{?}onun{\?} {LEADER.FIRSTNAME} {EPITHET} olarak, {WINS} {?MANY}savaşın{?}savaşın{\?} galibi diye anıldığı söylenir."/>
-		<string id="BMREncEpithet2" text="Diyarın dört bir yanında {?LEADER.GENDER}onun{?}onun{\?} {LEADER.FIRSTNAME} {EPITHET} olarak anıldığı söylenir."/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}O{?}O{\?}, savaşta {DEFEATS} {?MANY}kez{?}kez{\?} yenilmiştir."/>
 		<string id="BMREncFear" text="Her şeyden çok, {?LEADER.GENDER}o{?}o{\?} {HUNTER}'dan korkar."/>
 		<string id="BMRWho" text="Kimsin sen, kimin için savaşıyorsun?" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="HAYDUT MİLİSLERİ TEMİZLENDİ" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
 		<string id="BMR_H6Jm3wr" text="Bu işlem, bu oyundaki tüm Haydut Milislerini ve liderlerini kaldırır. Geri alınamaz. Yalnızca modu devre dışı bırakmadan önce kullanın." />
+		<string id="BMR_k3VqZ8w" text="Milis Kahramanı TP Çarpanı" />
+		<string id="BMR_Rf6nJ2x" text="Haydut milis kahramanlarının oyunda kazandığı tüm beceri tecrübesini çarpar (1 = orijinal). Milis Eğitimini Etkinleştir gerekir." />
+		<string id="BMR_p9TsL4c" text="Zafer Başına Milis Lideri TP" />
+		<string id="BMR_Y7mWd1h" text="Bir milis liderinin kazandığı her savaşta Liderlik, Taktik, Binicilik veya Atletizm ile kullandığı silahların becerilerinde kazandığı beceri tecrübesi. Düşmanın gücüne göre ayarlanır (0,25x ile 3x arası). Her 7 zaferde ayrıca bir odak puanı, her 14 zaferde bir nitelik puanı verir. Milis Eğitimini Etkinleştir gerekir. 0 yalnızca tecrübeyi kapatır." />
 	</strings>
 </base>

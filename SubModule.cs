@@ -138,6 +138,7 @@ public class SubModule : MBSubModuleBase
 
         AllAliveBanditMilitiaHeroes.Clear();
         ReusableHeroesBehavior.Reset();
+        BmrCounters.Reset();
         ClearGlobals();
         MilitiaTrackerManager.Reset();
         BanditMilitiaManager.ResetUpgraderBehavior();

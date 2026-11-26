@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME}是一名強盜頭目，率領一群亡命之徒，以{CLAN_NAME}之名四處劫掠。"/>
 		<string id="BMREncNoClan" text="無主強盜"/>
 		<string id="BMREncEpithet1" text="在這片土地上，{?LEADER.GENDER}她{?}他{\?}被稱為{LEADER.FIRSTNAME} {EPITHET}，取得過{WINS}場{?MANY}戰鬥{?}戰鬥{\?}的勝利。"/>
-		<string id="BMREncEpithet2" text="在這片土地上，{?LEADER.GENDER}她{?}他{\?}被稱為{LEADER.FIRSTNAME} {EPITHET}。"/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}她{?}他{\?}曾在戰鬥中敗北{DEFEATS}{?MANY}次{?}次{\?}。"/>
 		<string id="BMREncFear" text="在所有人之中，{?LEADER.GENDER}她{?}他{\?}最懼怕{HUNTER}。"/>
 		<string id="BMRWho" text="你是誰？替誰效命？" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="強盜兵團已清除" />
 		<string id="BMR_TOQCjcE" text="{A}{B}" />
 		<string id="BMR_H6Jm3wr" text="這將從本次戰役中移除所有強盜兵團及其首領。此操作無法復原。請僅在停用本模組之前使用。" />
+		<string id="BMR_k3VqZ8w" text="兵團英雄經驗倍率" />
+		<string id="BMR_Rf6nJ2x" text="強盜兵團英雄在遊戲中獲得的所有技能經驗都乘以此倍率（1 = 原版）。需要啟用兵團訓練。" />
+		<string id="BMR_p9TsL4c" text="兵團首領每場勝利經驗" />
+		<string id="BMR_Y7mWd1h" text="兵團首領每贏得一場戰鬥，在統御、戰術、騎術或跑動以及所用武器的技能上獲得的技能經驗。按敵人強度調整（0.25倍至3倍）。每7場勝利還獲得1個專精點，每14場勝利獲得1個屬性點。需要啟用兵團訓練。0只關閉經驗。" />
 	</strings>
 </base>

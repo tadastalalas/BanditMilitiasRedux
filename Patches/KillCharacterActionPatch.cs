@@ -1,5 +1,6 @@
 using System.Reflection;
 using BanditMilitiasRedux.Core;
+using BanditMilitiasRedux.Diagnostics;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -32,6 +33,7 @@ internal class KillCharacterActionPatch
             return;
 
         AllAliveBanditMilitiaHeroes.Remove(victim);
+        BmrCounters.HeroesKilled++;
         CharacterRelationManager.Instance.RemoveHero(victim);
 
         int executionHonorXp = ModSettings.ExecutionHonorXp;

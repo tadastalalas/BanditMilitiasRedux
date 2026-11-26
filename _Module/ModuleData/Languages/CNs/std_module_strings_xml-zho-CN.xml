@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME}是一名强盗头目，率领一群亡命之徒，以{CLAN_NAME}之名四处劫掠。"/>
 		<string id="BMREncNoClan" text="无主强盗"/>
 		<string id="BMREncEpithet1" text="在这片土地上，{?LEADER.GENDER}她{?}他{\?}被称为{LEADER.FIRSTNAME} {EPITHET}，取得过{WINS}场{?MANY}战斗{?}战斗{\?}的胜利。"/>
-		<string id="BMREncEpithet2" text="在这片土地上，{?LEADER.GENDER}她{?}他{\?}被称为{LEADER.FIRSTNAME} {EPITHET}。"/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}她{?}他{\?}曾在战斗中败北{DEFEATS}{?MANY}次{?}次{\?}。"/>
 		<string id="BMREncFear" text="在所有人之中，{?LEADER.GENDER}她{?}他{\?}最惧怕{HUNTER}。"/>
 		<string id="BMRWho" text="你是谁？替谁效命？" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="强盗兵团已清除" />
 		<string id="BMR_TOQCjcE" text="{A}{B}" />
 		<string id="BMR_H6Jm3wr" text="这将从本次战役中移除所有强盗兵团及其首领。此操作无法撤销。请仅在停用本模组之前使用。" />
+		<string id="BMR_k3VqZ8w" text="兵团英雄经验倍率" />
+		<string id="BMR_Rf6nJ2x" text="强盗兵团英雄在游戏中获得的所有技能经验都乘以此倍率（1 = 原版）。需要启用兵团训练。" />
+		<string id="BMR_p9TsL4c" text="兵团首领每场胜利经验" />
+		<string id="BMR_Y7mWd1h" text="兵团首领每赢得一场战斗，在统御、战术、骑术或跑动以及所用武器的技能上获得的技能经验。按敌人强度调整（0.25倍至3倍）。每7场胜利还获得1个专精点，每14场胜利获得1个属性点。需要启用兵团训练。0只关闭经验。" />
 	</strings>
 </base>

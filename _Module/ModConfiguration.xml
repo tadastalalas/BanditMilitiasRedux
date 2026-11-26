@@ -25,6 +25,10 @@
         <GrowthChance>50</GrowthChance>
         <!-- 0 to 100 (%) -->
         <GrowthPercent>1</GrowthPercent>
+        <!-- 1 to 5 (multiplier), decimals allowed -->
+        <HeroXpMultiplier>1.5</HeroXpMultiplier>
+        <!-- 0 to 1000 (0 = off) -->
+        <HeroXpPerWin>200</HeroXpPerWin>
     </TrainingAndGrowth>
     <PowerAndBalance>
         <!-- 1 to 100 (%) -->

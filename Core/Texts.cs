@@ -64,8 +64,6 @@ internal static class Texts
     internal static TextObject EncyclopediaEpithetWithWins(TextObject epithet, int wins, int many) =>
         new TextObject(Ids.EncyclopediaEpithetWithWins).SetTextVariable(EpithetVariable, epithet).SetTextVariable(WinsVariable, wins).SetTextVariable(ManyVariable, many);
 
-    internal static TextObject EncyclopediaEpithet(TextObject epithet) => new TextObject(Ids.EncyclopediaEpithet).SetTextVariable(EpithetVariable, epithet);
-
     internal static TextObject EncyclopediaDefeats(int defeats, int many) =>
         new TextObject(Ids.EncyclopediaDefeats).SetTextVariable(DefeatsVariable, defeats).SetTextVariable(ManyVariable, many);
 
@@ -132,6 +130,10 @@ internal static class Texts
         public const string GrowthChanceHint = "{=BMGrowChanceDesc}Chance per day that the militia will gain more troops (0 for off).";
         public const string GrowthPercent = "{=BMGrowPercent}Growth Percent";
         public const string GrowthPercentHint = "{=BMGrowPercentDesc}Grow each troop type by this percent.";
+        public const string HeroXpMultiplier = "{=BMR_k3VqZ8w}Militia Hero XP Multiplier";
+        public const string HeroXpMultiplierHint = "{=BMR_Rf6nJ2x}Multiplies all skill experience that bandit militia heroes gain in the game (1 = vanilla). Needs Enable Militia Training.";
+        public const string HeroXpPerWin = "{=BMR_p9TsL4c}Militia Leader XP per Win";
+        public const string HeroXpPerWinHint = "{=BMR_Y7mWd1h}Skill experience a militia leader gains for each won battle in Leadership, Tactics, Riding or Athletics and the skills of the weapons in use. Scaled by enemy strength (0.25x to 3x). Every 7 wins also give a focus point and every 14 wins an attribute point. Needs Enable Militia Training. 0 turns off the experience only.";
 
         // The group and its first setting share the released id BMPower.
         public const string GroupPower = "{=BMPower}Global Power";
@@ -221,7 +223,6 @@ internal static class Texts
         public const string EncyclopediaBase = "{=BMREncBase}{LEADER.FIRSTNAME} is a brigand chief leading a band of cutthroats that raids under the name of the {CLAN_NAME}.";
         public const string EncyclopediaNoClan = "{=BMREncNoClan}masterless brigands";
         public const string EncyclopediaEpithetWithWins = "{=BMREncEpithet1}Across the land {?LEADER.GENDER}she{?}he{\\?} is spoken of as {LEADER.FIRSTNAME} {EPITHET}, victor of {WINS} {?MANY}battles{?}battle{\\?}.";
-        public const string EncyclopediaEpithet = "{=BMREncEpithet2}Across the land {?LEADER.GENDER}she{?}he{\\?} is spoken of as {LEADER.FIRSTNAME} {EPITHET}.";
         public const string EncyclopediaDefeats = "{=BMREncDefeats}{?LEADER.GENDER}She{?}He{\\?} has been beaten in battle {DEFEATS} {?MANY}times{?}time{\\?}.";
         public const string EncyclopediaFear = "{=BMREncFear}Above all others, {?LEADER.GENDER}she{?}he{\\?} fears {HUNTER}.";
         public const string EncyclopediaDefected = "{=BMREncDefected}{LEADER.FIRSTNAME} once led a band of cutthroats that raided under the name of the {OLD_CLAN}. {?LEADER.GENDER}She{?}He{\\?} has since turned {?LEADER.GENDER}her{?}his{\\?} back on that life and now sells {?LEADER.GENDER}her{?}his{\\?} sword to whoever will pay for it.";

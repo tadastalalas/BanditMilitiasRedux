@@ -1,3 +1,87 @@
+## BMR v1.5.7.3
+
+- Stuck militia heroes: `bmr.heroes` after 39 days showed 8 heroes alive, free, in no party and not waiting. They count toward the Hero Pool Cap and block new leaders;
+  `ReclaimOrphanedHeroes` put them back only on the next load.
+  - Vanilla: `MobileParty.RemoveParty` -> `MemberRoster.Clear()` detaches every hero still in the roster (`PartyBelongedTo = null`) without any mod handling.
+    `OnMobilePartyDestroyed` fires before that, so the check sits there.
+  - Found (1.5.7 log, 42 days): 23 `BMR-HERO-LEAK`, 24 militias defeated. Always the defeated militia's own leader, never a member (both suspects ruled out).
+    Path: `MapEventCalculateAndCommitMapEventResultsPatch.Postfix` -> `TryTrashMobilePartySafelyReservingBanditLeader` (deferred, battle not finalized) ->
+    `OnMapEventEnded` -> `DrainDeferredTrashParties` -> `DestroyPartyAction`. The leader is still in `MemberRoster` but `LeaderHero` is null, so both leader checks skip him.
+    Likely 1.5.7 `Hero.SetPartyBelongedTo` -> `ChangePartyLeader(null)` (see the merge crash entry); `MobilePartyRemovePartyLeaderPatch` does not see it.
+  - Fix: new `ReusableHeroesBehavior.AddPartyHeroesToTheWaitingDictionary`, called by `Helper.TryTrashMobilePartySafelyReservingBanditLeader` and
+    `MilitiaBehavior.OnMobilePartyDestroyed`. All versions (shared code, no `#if`): every alive, free militia hero still in `MemberRoster` waits, not only `LeaderHero`.
+  - Found with temporary diagnostics (per-hero history, `BMR-HERO-LEAK` / `BMR-HERO-STUCK`, a daily reclaim with LoggingEnabled), removed after the fix.
+    1.5.7 retest, 43 days, 32 militias defeated: 0 leaks, 0 stuck.
+  - `ReclaimOrphanedHeroes` (on load only) stays for saves with heroes stranded before the fix; it returns the count; new `IsStuck`.
+- `bmr.stats` rewritten (`Diagnostics\ConsoleCommands.cs`):
+  - Header: mod version, build target, game version, campaign day and date, settings source, logging.
+    freed / killed, stuck heroes put back on load.
+  - Militias: leaderless, troops, prisoners, largest vs max size, power vs limit, raiding vs cap.
+  - One clan table keyed by the `Clan` object (`[StringId]` for repeated names; before, clans with equal names were merged into one row), plus a Total row.
+  - Counters since load (`Diagnostics\BmrCounters.cs`, not saved, reset in `OnGameEnd`): formed, merged, split, defeated, heroes created / reused / captured /
+    freed / killed, stuck heroes reclaimed on load / recovered daily.
+  - Warnings: totals mismatch, stuck, leaderless, dead heroes in the list, waiting but in a party, waiting but not tracked.
+- New `bmr.settings`: every setting grouped like MCM, `*` = changed from the default, source MCM or ModConfiguration.xml.
+- `bmr.stats` and `bmr.settings` also write their output to the log with the new `BmrLog.Info` (always written).
+- New `ModSettings.UsesMcm`, `Helper.DaysPlayed`; `BanditMilitiaManager.CountRaidingMilitias` is internal.
+- Save compatibility: none. No saved field, SyncData key or definer id added.
+- To test (1.5.7, 1.4.8, 1.4.7):
+  - `bmr.stats` and `bmr.settings` in the console; the same text is in the log.
+  - Play 30+ days on 1.5.7, 1.4.8 and 1.4.7: `bmr.stats` shows Stuck 0; after a reload "stuck heroes put back on load: 0".
+
+- Fixed the `NullReferenceException` in `BanditMilitiaManager.ConfigureGoldAndMounts` on a merge (crash report: `TryMergeBanditParties` -> `InitializeMilitiaParty`).
+  The report says line 197; the failing statement is `leaderHero.Gold =` (line 200), its IL offsets are one statement early. The new militia had no leader.
+  - 1.5.7: `Hero.SetPartyBelongedTo` calls `ChangePartyLeader(null)` on the party a leader leaves. Every roster change of the hero in any party runs it
+    (`OnRemovedFromParty`, `OnAddedToParty`, `OnAddedToPartyAsPrisoner`), with no check of the party he is in now.
+    `PartyComponent.ChangePartyLeader(hero)` changes nothing when the hero is not in `MemberRoster`.
+  - Not reproduced: no vanilla 1.5.7 or mod code takes the leader out of the new party's `MemberRoster` between `MobileParty.CreateParty` and `ChangePartyLeader`
+    (read: `CreateParty`, `InitializeMobilePartyWithRosterInternal`, `TroopRoster`, `PartyBase.OnHeroAdded` / `OnHeroRemoved`, the `MobilePartyCreated`,
+    `OnPartySizeChangedEvent` and `OnPartyLeaderChangedEvent` listeners). Another mod or an unknown state does it; the new log line is there to find it.
+- `Managers\BanditMilitiaManager.cs` (shared code, no `#if`; only vanilla members the mod already used):
+  - New `EnsureLeaderAttached`, called by `InitializeMilitiaParty` after `ChangePartyLeader`. Nothing happens when `LeaderHero == leader && leader.PartyBelongedTo == militia`.
+    Otherwise `BmrLog.Warn` writes `BMR-LEADER-LOST` (always: hero state, his party, his captor, his copies in the militia's member and prison roster, stack trace),
+    his copies are removed from both rosters, he is added to the front of `MemberRoster` and made leader again. A second line is written when that failed.
+  - `ConfigureGoldAndMounts` returns when the militia has no leader.
+  - New `UsableLeader`: a recorded leader counts only when alive, not a prisoner, and `PartyBelongedTo` is null or this party. Otherwise the militia counts as leaderless
+    (merge: a hero is reused or created; split: none). Used by `TryMergeBanditParties` and `TrySplitBanditMilitiaParty` instead of `LeaderHero`.
+  - New `RemoveHeroFromRoster` / `HeroCountInRoster` (all copies; nothing when not listed).
+  - Merge: the new leader, kept or reused, leaves both old parties' `MemberRoster` before `CreateBanditMilitiaParty`. Replaces
+    `newLeader.PartyBelongedTo?.MemberRoster.RemoveTroop` (kept leader only, one copy, only the party he pointed to, `IndexOutOfRangeException` when not listed there).
+    A copy left behind was removed by `RemoveParty` -> `MemberRoster.Clear()` after the merge, which cleared the new militia's leader.
+  - Merge and split: the new leaders are removed from the prisoner rosters handed to the new parties (as a prisoner of his own militia the leader got `PartyBelongedTo = null`).
+  - Split: the reused second leader is not handed out as a member; no split when the pool returns the first leader himself.
+- Not done: no search of all parties for a leftover copy when a hero is reused (cost on the hourly AI tick). Such a copy can still leave a militia leaderless later
+  (no crash; it gets a leader at its next merge).
+- Version 1.5.7.2 -> 1.5.7.3 in `BanditMilitiasRedux.csproj`.
+- Save compatibility: none. No saved field, SyncData key or definer id changed.
+- To test (1.5.7, 1.4.8, 1.4.7):
+  - Bandits + bandits, militia + bandits, militia + militia: the new militia has a leader with gold; the weaker leader waits for reuse (`bmr.heroes`).
+  - Split: both militias have a leader; a captured lord stays a prisoner after a merge and a split.
+  - A normal session writes no `BMR-LEADER-LOST`; "Leaderless parties" in `bmr.stats` does not grow.
+
+- Militia hero progression (all versions, shared code, no `#if`; HeroDeveloper / StrengthRatio members read in dnSpy, everything compile-checked on 1.5.7, 1.4.8, 1.4.7):
+  - New settings in Training & Growth (MCM Order 8 and 9, `ModConfiguration.xml`, `bmr.settings`): `HeroXpMultiplier` (float 1–5, default 1.5, format "0.0"),
+    `HeroXpPerWin` (int 0–1000, default 200). New text ids `BMR_k3VqZ8w`, `BMR_Rf6nJ2x`, `BMR_p9TsL4c`, `BMR_Y7mWd1h` (all 13 files).
+  - New `Patches\HeroDeveloperPatch.cs`: Prefix on `HeroDeveloper.AddSkillXp(SkillObject, float, bool, bool)` multiplies `rawXp` for militia heroes
+    (bandit clan, `CanTrain`, multiplier above 1, `IsBanditMilitiaHero`). `rawXp` also feeds `GainRawXp`, so level XP is scaled too.
+  - New `Managers\HeroProgressionManager.cs`:
+    - `AddUnscaledSkillXp` sets `IsGivingUnscaledXp` so the multiplier skips mod-given XP. `BanditHeroCreator.TrainBanditLeader` uses it (150 Leadership XP unchanged).
+    - `RewardWin` (gate `CanTrain`), called by `MapEventFinishBattlePatch` after `RecordWin`.
+      XP = `HeroXpPerWin` × winner `MapEventSide.StrengthRatio`, clamped to `Balance.HeroWinXpRatioMin` / `Max` (0.25–3).
+      `StrengthRatio` = (enemy + 10) / (own + 10) (siege-adjusted, max 10) and is set only when parties join (`RecalculateRenownAndInfluenceValuesOnPartyInvolved`), so casualties do not change it.
+      Skills: Leadership, Tactics, distinct `RelevantSkill` of `BattleEquipment` Weapon0–3, Riding with a horse, else Athletics. `isAffectedByFocusFactor` true, `shouldNotify` false.
+    - Every `Balance.FocusPointEveryWins` (7) wins: one focus point to the highest-skill weapon skill in use below `MaxFocusPerSkill`, then the next one, then Tactics, then Leadership; else none.
+      Every `Balance.AttributePointEveryWins` (14) wins: one point to a random attribute below `MaxAttribute`; all full = none. Both use the "no unspent points" overloads.
+      New wins only (the win count is checked after `RecordWin`). Focus and attribute points do not depend on `HeroXpPerWin` (0 turns off the XP only).
+  - Epithets from wins only: `NotorietyBehavior.GetTier` = `CountReached(NotorietyWinThresholds, wins)`. Removed `GetTier(int, CampaignTime)`, `Balance.NotorietyDayThresholds`,
+    the no-wins encyclopedia sentence (`Texts.EncyclopediaEpithet`, text id `BMREncEpithet2`, removed from all 13 files). `_firstSeen` is still saved (`bmr.heroes`).
+    Party names are `[CachedData]`, so age-only epithets disappear on load.
+- Save compatibility: none. No saved field, SyncData key or definer id added; `_firstSeen` kept.
+- To test (1.5.7, 1.4.8, 1.4.7):
+  - Logging on: a militia win writes "Win reward: ... XP per skill (strength ratio ...)" for its leader; the 7th / 14th win writes the focus / attribute line.
+  - Encyclopedia of a leader with 7 wins: higher skills and a focus point; leaders with fewer than 3 wins have no epithet.
+  - `bmr.settings` lists `HeroXpMultiplier` and `HeroXpPerWin`; `CanTrain` off: no win reward, no multiplier.
+
 ## BMR v1.5.7.2
 
 - Fixed a crash after loading a save while another one was being played (`MobileParty.get_IsBanditBossParty` NRE from `DefaultMapTrackModel.CanPartyLeaveTrack`).

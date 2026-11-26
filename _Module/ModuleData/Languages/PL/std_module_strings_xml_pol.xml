@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME} to herszt rzezimieszków, dowodzący bandą opryszków, którzy łupią pod nazwą {CLAN_NAME}."/>
 		<string id="BMREncNoClan" text="bezpańscy rzezimieszkowie"/>
 		<string id="BMREncEpithet1" text="W całej krainie {?LEADER.GENDER}ona{?}on{\?} znana{?LEADER.GENDER} jest{?}y jest{\?} jako {LEADER.FIRSTNAME} {EPITHET}, zwycięzca {WINS} {?MANY}bitew{?}bitwy{\?}."/>
-		<string id="BMREncEpithet2" text="W całej krainie {?LEADER.GENDER}ona{?}on{\?} znana{?LEADER.GENDER} jest{?}y jest{\?} jako {LEADER.FIRSTNAME} {EPITHET}."/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}Ona{?}On{\?} przegrał{?LEADER.GENDER}a{?}{\?} w bitwie {DEFEATS} {?MANY}razy{?}raz{\?}."/>
 		<string id="BMREncFear" text="Ponad wszystko {?LEADER.GENDER}ona{?}on{\?} boi się {HUNTER}."/>
 		<string id="BMRWho" text="Kim jesteś i dla kogo jeździsz?" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="BANDYCKIE MILICJE USUNIĘTE" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
 		<string id="BMR_H6Jm3wr" text="To usuwa z tej kampanii wszystkie Bandyckie Milicje i wszystkich ich przywódców. Tego nie można cofnąć. Używaj tylko przed wyłączeniem moda." />
+		<string id="BMR_k3VqZ8w" text="Mnożnik PD bohaterów milicji" />
+		<string id="BMR_Rf6nJ2x" text="Mnoży całe doświadczenie umiejętności, które bohaterowie bandyckich milicji zdobywają w grze (1 = wersja podstawowa). Wymaga opcji Włącz szkolenie milicji." />
+		<string id="BMR_p9TsL4c" text="PD przywódcy milicji za zwycięstwo" />
+		<string id="BMR_Y7mWd1h" text="Doświadczenie umiejętności, które przywódca milicji zdobywa za każdą wygraną bitwę w Dowodzeniu, Taktyce, Jeździe konnej lub Atletyce oraz w umiejętnościach używanej broni. Zależy od siły wroga (od 0,25x do 3x). Co 7 zwycięstw daje też punkt skupienia, a co 14 zwycięstw punkt atrybutu. Wymaga opcji Włącz szkolenie milicji. 0 wyłącza tylko doświadczenie." />
 	</strings>
 </base>

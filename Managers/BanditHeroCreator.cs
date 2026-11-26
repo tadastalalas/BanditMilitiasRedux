@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using BanditMilitiasRedux.Behaviors;
 using BanditMilitiasRedux.Core;
+using BanditMilitiasRedux.Diagnostics;
 using HarmonyLib;
 using Helpers;
 using TaleWorlds.CampaignSystem;
@@ -34,6 +35,7 @@ internal static class BanditHeroCreator
         {
             if (!AllAliveBanditMilitiaHeroes.Contains(reusedBanditHero))
                 AllAliveBanditMilitiaHeroes.Add(reusedBanditHero);
+            BmrCounters.HeroesReused++;
             return reusedBanditHero;
         }
 
@@ -56,6 +58,7 @@ internal static class BanditHeroCreator
         EquipmentHelper.AssignHeroEquipmentFromEquipment(newBanditHero, EquipmentPool.GetRandomEquipmentSet());
         TrainBanditLeader(newBanditHero);
         AllAliveBanditMilitiaHeroes.Add(newBanditHero);
+        BmrCounters.HeroesCreated++;
         return newBanditHero;
     }
 
@@ -134,6 +137,6 @@ internal static class BanditHeroCreator
             return;
 
         newBanditHero.HeroDeveloper.AddPerk(DefaultPerks.Leadership.VeteransRespect);
-        newBanditHero.HeroDeveloper.AddSkillXp(DefaultSkills.Leadership, Balance.LeaderStartingLeadershipXp);
+        HeroProgressionManager.AddUnscaledSkillXp(newBanditHero, DefaultSkills.Leadership, Balance.LeaderStartingLeadershipXp);
     }
 }

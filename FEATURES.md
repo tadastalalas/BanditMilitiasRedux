@@ -33,6 +33,7 @@ Tuning numbers (not settings) live in `Core\Balance.cs`; runtime state and cache
 | Merge home settlement: leader's birth place, else a land hideout | always | `Core\Helper.cs` (`BestSettlementForMerge`, `FindClosestHideout`, `IsLandHideout`) |
 | Militia party component (owner, leader, home, banner, avoidance, name) | always | `Data\BanditMilitiaPartyComponent.cs` |
 | Leader: reuse a waiting hero, else create one (cap per clan) | setting:HeroPoolCap, setting:FemaleSpawnChance | `Managers\BanditHeroCreator.cs`, `Behaviors\ReusableHeroesBehavior.cs` |
+| New militia leader stays attached: a dead, imprisoned or foreign-party leader is replaced; the leader leaves the old parties' lists first and is never his militia's prisoner; a leader lost during setup is put back (`BMR-LEADER-LOST`) | always | `Managers\BanditMilitiaManager.cs` (`UsableLeader`, `RemoveHeroFromRoster`, `EnsureLeaderAttached`) |
 | Militia splits in two | setting:RandomSplitChance, setting:CooldownHours | `Managers\BanditMilitiaManager.cs` (`TrySplitBanditMilitiaParty`) |
 | Power calc: max party size, global power limit, average militia power | setting:GlobalPowerPercent | `Managers\PowerCalculationManager.cs` |
 | Cached list of active militias (refreshed at most hourly) | always | `Managers\PowerCalculationManager.cs` (`GetActiveBanditMilitiaParties`) |
@@ -80,10 +81,12 @@ Tuning numbers (not settings) live in `Core\Balance.cs`; runtime state and cache
 | Feature | Gate | Files |
 |---|---|---|
 | Hero creation: template, name, appearance, equipment, leader training | setting:FemaleSpawnChance, setting:MaxItemValue, setting:CanTrain | `Managers\BanditHeroCreator.cs`, `Managers\HeroAppearanceService.cs`, `Core\EquipmentPool.cs` |
-| Reusable hero pool (released, escaped, displaced leaders) | setting:HeroPoolCap | `Behaviors\ReusableHeroesBehavior.cs` |
+| Reusable hero pool (released, escaped, displaced leaders; every militia hero still listed in a removed militia); stuck heroes put back on load | setting:HeroPoolCap | `Behaviors\ReusableHeroesBehavior.cs` (`AddPartyHeroesToTheWaitingDictionary`), `Behaviors\MilitiaBehavior.cs` (`OnMobilePartyDestroyed`), `Core\Helper.cs` (`TryTrashMobilePartySafelyReservingBanditLeader`) |
 | Leaders reserved for reuse on state change / leader removal | always | `Patches\HeroPatch.cs` (`HeroChangeStatePatch`), `Patches\MobilePartyPatch.cs` (`MobilePartyRemovePartyLeaderPatch`) |
 | Defection: hero leaving a bandit clan stops being tracked, may become wanderer | always | `Behaviors\HeroDefectionBehavior.cs` |
-| Notoriety: wins, defeats, survival days, epithets, encyclopedia text | always | `Behaviors\NotorietyBehavior.cs`, `Patches\MapEventPatch.cs`, `Patches\EncyclopediaHeroPageVMPatch.cs` |
+| Notoriety: wins, defeats, epithets (from wins only), encyclopedia text | always | `Behaviors\NotorietyBehavior.cs`, `Patches\MapEventPatch.cs`, `Patches\EncyclopediaHeroPageVMPatch.cs` |
+| Leader win reward: skill XP (Leadership, Tactics, weapon skills in use, Riding or Athletics) × enemy/own strength (0.25–3), focus point every 7 wins, attribute point every 14 | setting:CanTrain, setting:HeroXpPerWin | `Managers\HeroProgressionManager.cs` (`RewardWin`), `Patches\MapEventPatch.cs` (`MapEventFinishBattlePatch`), `Core\Balance.cs` |
+| Hero XP multiplier: all vanilla skill XP of militia heroes (mod-given XP is not scaled) | setting:CanTrain, setting:HeroXpMultiplier | `Patches\HeroDeveloperPatch.cs`, `Managers\HeroProgressionManager.cs` (`AddUnscaledSkillXp`) |
 | Bounty for defeating a militia leader | always | `Core\Helper.cs` (`GrantDefeatBounty`), `Patches\MapEventPatch.cs` |
 | Death cleanup; execution honor XP; no vanilla Honor penalty | setting:ExecutionHonorXp | `Patches\KillCharacterActionPatch.cs`, `Patches\TraitLevelingHelperPatch.cs` |
 | Executing a militia leader angers no one (1.4.x: relation model) | always | `Patches\DefaultExecutionRelationModelPatch.cs` (1.4.x only) |
@@ -142,8 +145,8 @@ Tuning numbers (not settings) live in `Core\Balance.cs`; runtime state and cache
 
 | Feature | Gate | Files |
 |---|---|---|
-| Console: `bmr.stats`, `bmr.heroes`, `bmr.orphans`, `bmr.fix_orphans` | always | `Diagnostics\ConsoleCommands.cs` |
-| Log file `Modules\BanditMilitiasRedux\logs\` (problems always; debug lines `BMR-STUCK`, `BMR-DESERTERS-SPAWN`, `BMR-MOUNT-NULLCHECK`, `BMR-REATTACH-VIOLATION`, `BMR-SAS-COMPAT` only when enabled) | setting:LoggingEnabled | `Diagnostics\BmrLog.cs`, `Core\ModInfo.cs` |
+| Console: `bmr.stats` (versions, day, hero states, militias, clan table, counters since load, warnings), `bmr.settings`, `bmr.heroes`, `bmr.orphans`, `bmr.fix_orphans`; stats and settings also go to the log | always | `Diagnostics\ConsoleCommands.cs`, `Diagnostics\BmrCounters.cs` |
+| Log file `Modules\BanditMilitiasRedux\logs\` (problems always, e.g. `BMR-LEADER-LOST`; `INFO` = command output, always; debug lines `BMR-STUCK`, `BMR-DESERTERS-SPAWN`, `BMR-MOUNT-NULLCHECK`, `BMR-REATTACH-VIOLATION`, `BMR-SAS-COMPAT` only when enabled) | setting:LoggingEnabled | `Diagnostics\BmrLog.cs`, `Core\ModInfo.cs` |
 
 ## Save data
 
@@ -151,6 +154,6 @@ Tuning numbers (not settings) live in `Core\Balance.cs`; runtime state and cache
 |---|---|---|
 | Alive militia heroes | `Heroes` | `Behaviors\MilitiaBehavior.cs` |
 | Reusable hero pool | `_waitingToBeReusedHeroes` | `Behaviors\ReusableHeroesBehavior.cs` |
-| Notoriety | `_battlesWon`, `_firstSeen`, `_defeats`, `_beatenBy` | `Behaviors\NotorietyBehavior.cs` |
+| Notoriety | `_battlesWon`, `_firstSeen` (shown by `bmr.heroes`, no longer gives epithets), `_defeats`, `_beatenBy` | `Behaviors\NotorietyBehavior.cs` |
 | Party component | SaveableField 1–7 | `Data\BanditMilitiaPartyComponent.cs` |
 | Not saved (in memory): stuck tracker, patrol re-pick and idle retry times | — | `Core\Globals.cs` |

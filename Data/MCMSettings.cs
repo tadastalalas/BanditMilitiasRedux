@@ -13,6 +13,7 @@ internal class MCMSettings : AttributeGlobalSettings<MCMSettings>
     // Released Id: changing it resets every player's saved settings.
     private const string SettingsId = ModInfo.ModuleId;
     private const string SaveFormat = "json2";
+    private const string HeroXpMultiplierFormat = "0.0";
 
     internal delegate void OnSettingsChangedDelegate();
 
@@ -101,6 +102,14 @@ internal class MCMSettings : AttributeGlobalSettings<MCMSettings>
     [SettingPropertyInteger(Texts.Ids.GrowthPercent, ModConfiguration.PercentMin, ModConfiguration.PercentMax, Order = 7, RequireRestart = false, HintText = Texts.Ids.GrowthPercentHint)]
     [SettingPropertyGroup(Texts.Ids.GroupTraining, GroupOrder = 1)]
     public int GrowthPercent { get; private set; } = ModConfiguration.GrowthPercentDefault;
+
+    [SettingPropertyFloatingInteger(Texts.Ids.HeroXpMultiplier, ModConfiguration.HeroXpMultiplierMin, ModConfiguration.HeroXpMultiplierMax, HeroXpMultiplierFormat, Order = 8, RequireRestart = false, HintText = Texts.Ids.HeroXpMultiplierHint)]
+    [SettingPropertyGroup(Texts.Ids.GroupTraining, GroupOrder = 1)]
+    public float HeroXpMultiplier { get; private set; } = ModConfiguration.HeroXpMultiplierDefault;
+
+    [SettingPropertyInteger(Texts.Ids.HeroXpPerWin, ModConfiguration.HeroXpPerWinMin, ModConfiguration.HeroXpPerWinMax, Order = 9, RequireRestart = false, HintText = Texts.Ids.HeroXpPerWinHint)]
+    [SettingPropertyGroup(Texts.Ids.GroupTraining, GroupOrder = 1)]
+    public int HeroXpPerWin { get; private set; } = ModConfiguration.HeroXpPerWinDefault;
     #endregion
 
     #region Power & Balance

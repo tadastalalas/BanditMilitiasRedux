@@ -41,6 +41,10 @@ internal static class ModSettings
     internal static int MaxTrainingTier => _useMcm ? McmMaxTrainingTier() : _xml.TrainingAndGrowth.MaxTrainingTier;
     internal static int GrowthChance => _useMcm ? McmGrowthChance() : _xml.TrainingAndGrowth.GrowthChance;
     internal static int GrowthPercent => _useMcm ? McmGrowthPercent() : _xml.TrainingAndGrowth.GrowthPercent;
+    // Multiplies every skill XP vanilla gives to militia heroes (and the level XP that comes with it).
+    internal static float HeroXpMultiplier => _useMcm ? McmHeroXpMultiplier() : _xml.TrainingAndGrowth.HeroXpMultiplier;
+    // Base skill XP a militia leader gets per won battle, before the enemy-strength factor.
+    internal static int HeroXpPerWin => _useMcm ? McmHeroXpPerWin() : _xml.TrainingAndGrowth.HeroXpPerWin;
     #endregion
 
     #region Power & Balance
@@ -84,6 +88,9 @@ internal static class ModSettings
     #region Technical settings
     internal static bool LoggingEnabled => _useMcm ? McmLoggingEnabled() : _xml.TechnicalSettings.LoggingEnabled;
     #endregion
+
+    // Where the values come from: MCM, else ModConfiguration.xml (shown by bmr.settings).
+    internal static bool UsesMcm => _useMcm;
 
     private static XmlSerializer Serializer => _serializer ??= new XmlSerializer(typeof(ModConfiguration));
 
@@ -197,6 +204,12 @@ internal static class ModSettings
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static int McmGrowthPercent() => MCMSettings.Instance?.GrowthPercent ?? ModConfiguration.GrowthPercentDefault;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static float McmHeroXpMultiplier() => MCMSettings.Instance?.HeroXpMultiplier ?? ModConfiguration.HeroXpMultiplierDefault;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static int McmHeroXpPerWin() => MCMSettings.Instance?.HeroXpPerWin ?? ModConfiguration.HeroXpPerWinDefault;
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static int McmGlobalPowerPercent() => MCMSettings.Instance?.GlobalPowerPercent ?? ModConfiguration.GlobalPowerPercentDefault;

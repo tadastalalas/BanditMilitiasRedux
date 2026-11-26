@@ -1,3 +1,13 @@
+BMR v1.5.7.3 :
+- Militia leaders now grow stronger by winning: each won battle gives skill experience in Leadership, Tactics, Riding or Athletics and their weapon skills (more against stronger enemies), a focus point every 7 wins and an attribute point every 14 wins. New setting: Militia Leader XP per Win.
+- New setting Militia Hero XP Multiplier (default 1.5): militia heroes gain more skill experience from everything they do.
+- Militia leaders now earn epithets only from victories, no longer just from surviving long enough. Leaders who had an epithet only from their age lose it.
+- Fixed a rare crash on the campaign map when bandit parties merged into a Bandit Militia.
+- Fixed Bandit Militias sometimes being left without a leader after a merge or split.
+- Fixed Bandit Militia leaders going missing after their militia was defeated. They kept counting toward the hero limit and stopped new leaders from appearing.
+- Improved the bmr.stats console command: easier to read, with one table of all bandit clans, the campaign day, the mod and game version, and warnings when something looks wrong.
+- Added the bmr.settings console command: lists every mod setting and marks the ones changed from the default.
+
 BMR v1.5.7.2 :
 - Fixed a crash on the campaign map after loading a save while already playing another one, without restarting the game.
 

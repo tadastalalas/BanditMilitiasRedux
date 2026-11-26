@@ -96,8 +96,7 @@ public class MilitiaBehavior : CampaignBehaviorBase
             PatrolRepickTimes.Remove(destroyedMobileParty);
             IdleRetryTimes.Remove(destroyedMobileParty);
             PartyImageMap.Remove(destroyedMobileParty);
-            if (destroyedMobileParty.LeaderHero is { IsAlive: true, IsPrisoner: false } leader && leader.PartyBelongedTo == destroyedMobileParty)
-                ReusableHeroesBehavior.AddHeroToTheWaitingDictionary(leader);
+            ReusableHeroesBehavior.AddPartyHeroesToTheWaitingDictionary(destroyedMobileParty);
         }
 
         if (!destroyedMobileParty.IsBanditMilitiaParty() || destroyer?.LeaderHero is null || !destroyer.LeaderHero.IsAlive)

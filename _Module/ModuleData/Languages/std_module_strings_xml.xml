@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME} is a brigand chief leading a band of cutthroats that raids under the name of the {CLAN_NAME}."/>
 		<string id="BMREncNoClan" text="masterless brigands"/>
 		<string id="BMREncEpithet1" text="Across the land {?LEADER.GENDER}she{?}he{\?} is spoken of as {LEADER.FIRSTNAME} {EPITHET}, victor of {WINS} {?MANY}battles{?}battle{\?}."/>
-		<string id="BMREncEpithet2" text="Across the land {?LEADER.GENDER}she{?}he{\?} is spoken of as {LEADER.FIRSTNAME} {EPITHET}."/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}She{?}He{\?} has been beaten in battle {DEFEATS} {?MANY}times{?}time{\?}."/>
 		<string id="BMREncFear" text="Above all others, {?LEADER.GENDER}she{?}he{\?} fears {HUNTER}."/>
 		<string id="BMRWho" text="Who are you, and who do you ride for?" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="BANDIT MILITIAS CLEARED" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
 		<string id="BMR_H6Jm3wr" text="This removes every Bandit Militia and all of their leaders from this campaign. It cannot be undone. Use it only before you disable the mod." />
+		<string id="BMR_k3VqZ8w" text="Militia Hero XP Multiplier" />
+		<string id="BMR_Rf6nJ2x" text="Multiplies all skill experience that bandit militia heroes gain in the game (1 = vanilla). Needs Enable Militia Training." />
+		<string id="BMR_p9TsL4c" text="Militia Leader XP per Win" />
+		<string id="BMR_Y7mWd1h" text="Skill experience a militia leader gains for each won battle in Leadership, Tactics, Riding or Athletics and the skills of the weapons in use. Scaled by enemy strength (0.25x to 3x). Every 7 wins also give a focus point and every 14 wins an attribute point. Needs Enable Militia Training. 0 turns off the experience only." />
 	</strings>
 </base>

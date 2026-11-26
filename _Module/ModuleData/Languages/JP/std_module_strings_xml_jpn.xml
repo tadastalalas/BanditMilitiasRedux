@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME}は、{CLAN_NAME}の名の下に略奪を行う無法者集団を率いる盗賊の頭目です。"/>
 		<string id="BMREncNoClan" text="主なき盗賊"/>
 		<string id="BMREncEpithet1" text="各地で {?LEADER.GENDER}彼女{?}彼{\?} は {LEADER.FIRSTNAME} {EPITHET} として知られ、{WINS} 回の {?MANY}戦い{?}戦い{\?} に勝利したと言われています。"/>
-		<string id="BMREncEpithet2" text="各地で {?LEADER.GENDER}彼女{?}彼{\?} は {LEADER.FIRSTNAME} {EPITHET} として知られています。"/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}彼女{?}彼{\?} は戦いで {DEFEATS} {?MANY}回{?}回{\?} 敗北しています。"/>
 		<string id="BMREncFear" text="何よりも、{?LEADER.GENDER}彼女{?}彼{\?} が恐れるのは {HUNTER} です。"/>
 		<string id="BMRWho" text="お前は何者だ。誰のために戦っている？" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="盗賊民兵を一掃しました" />
 		<string id="BMR_TOQCjcE" text="{A}{B}" />
 		<string id="BMR_H6Jm3wr" text="このキャンペーンからすべての盗賊民兵とそのリーダーを削除します。元に戻すことはできません。MODを無効にする前にのみ使用してください。" />
+		<string id="BMR_k3VqZ8w" text="民兵ヒーローXP倍率" />
+		<string id="BMR_Rf6nJ2x" text="盗賊民兵のヒーローがゲーム内で得るすべてのスキル経験値に掛ける倍率です（1 = バニラ）。民兵訓練を有効化が必要です。" />
+		<string id="BMR_p9TsL4c" text="民兵リーダーの勝利ごとのXP" />
+		<string id="BMR_Y7mWd1h" text="民兵リーダーが戦闘に勝つたびに、統率、戦術、騎乗または運動、そして使用中の武器のスキルに得るスキル経験値です。敵の強さに応じて変化します（0.25倍～3倍）。7勝ごとにフォーカスポイント1、14勝ごとに能力値ポイント1も得ます。民兵訓練を有効化が必要です。0にすると経験値のみ無効になります。" />
 	</strings>
 </base>

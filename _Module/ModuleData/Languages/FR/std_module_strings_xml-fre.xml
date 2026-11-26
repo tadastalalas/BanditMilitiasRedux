@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME} est un chef brigand menant une bande de coupe-jarrets qui pillent sous le nom de {CLAN_NAME}."/>
 		<string id="BMREncNoClan" text="brigands sans maître"/>
 		<string id="BMREncEpithet1" text="À travers le pays, {?LEADER.GENDER}elle{?}il{\?} est connu(e) comme {LEADER.FIRSTNAME} {EPITHET}, vainqueur de {WINS} {?MANY}batailles{?}bataille{\?}."/>
-		<string id="BMREncEpithet2" text="À travers le pays, {?LEADER.GENDER}elle{?}il{\?} est connu(e) comme {LEADER.FIRSTNAME} {EPITHET}."/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}Elle{?}Il{\?} a été battu(e) au combat {DEFEATS} {?MANY}fois{?}fois{\?}."/>
 		<string id="BMREncFear" text="Par-dessus tout, {?LEADER.GENDER}elle{?}il{\?} craint {HUNTER}."/>
 		<string id="BMRWho" text="Qui êtes-vous, et pour qui chevauchez-vous ?" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="MILICES BANDITES SUPPRIMÉES" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
 		<string id="BMR_H6Jm3wr" text="Ceci supprime toutes les Milices bandites et tous leurs chefs de cette campagne. Cette action est irréversible. À utiliser uniquement avant de désactiver le mod." />
+		<string id="BMR_k3VqZ8w" text="Multiplicateur d’XP des héros de milice" />
+		<string id="BMR_Rf6nJ2x" text="Multiplie toute l’expérience de compétence que les héros des milices bandites gagnent en jeu (1 = vanilla). Nécessite Activer l’entraînement de milice." />
+		<string id="BMR_p9TsL4c" text="XP du chef de milice par victoire" />
+		<string id="BMR_Y7mWd1h" text="Expérience de compétence qu’un chef de milice gagne à chaque bataille gagnée en Commandement, Tactique, Équitation ou Athlétisme et dans les compétences des armes utilisées. Ajustée selon la force de l’ennemi (0,25x à 3x). Toutes les 7 victoires, il gagne aussi un point de concentration et toutes les 14 victoires un point d’attribut. Nécessite Activer l’entraînement de milice. 0 désactive seulement l’expérience." />
 	</strings>
 </base>

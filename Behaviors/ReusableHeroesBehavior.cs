@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using BanditMilitiasRedux.Core;
+using BanditMilitiasRedux.Diagnostics;
 using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -25,7 +26,7 @@ public sealed class ReusableHeroesBehavior : CampaignBehaviorBase
         CampaignEvents.HeroPrisonerReleased.AddNonSerializedListener(this, OnHeroPrisonerReleasedEvent);
         CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTakenEvent);
         CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, OnHeroKilledEvent);
-        CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, _ => ReclaimOrphanedHeroes());
+        CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, _ => OnSessionLaunched());
     }
 
     // Keys: "_waitingToBeReusedHeroes".
@@ -74,6 +75,7 @@ public sealed class ReusableHeroesBehavior : CampaignBehaviorBase
         if (detail == EndCaptivityDetail.Death)
             return;
 
+        BmrCounters.HeroesFreed++;
         EquipmentHelper.AssignHeroEquipmentFromEquipment(prisoner, EquipmentPool.GetRandomEquipmentSet());
         AddHeroToTheWaitingDictionary(prisoner);
     }
@@ -92,6 +94,7 @@ public sealed class ReusableHeroesBehavior : CampaignBehaviorBase
         if (prisoner is null || !prisoner.IsBanditMilitiaHero())
             return;
 
+        BmrCounters.HeroesCaptured++;
         RemoveHeroFromTheWaitingDictionary(prisoner);
     }
 
@@ -114,6 +117,15 @@ public sealed class ReusableHeroesBehavior : CampaignBehaviorBase
 
         heroes.Add(hero);
     }
+    
+    // Militia heroes still listed in a party that is being removed. The leader can still be listed while LeaderHero is null
+    // (1.5.7: Hero.SetPartyBelongedTo calls ChangePartyLeader(null) on roster changes), and vanilla RemoveParty drops every listed hero.
+    internal static void AddPartyHeroesToTheWaitingDictionary(MobileParty party)
+    {
+        for (int i = 0; i < party.MemberRoster.Count; i++)
+            if (party.MemberRoster.GetCharacterAtIndex(i)?.HeroObject is { IsAlive: true, IsPrisoner: false } hero && hero.IsBanditMilitiaHero())
+                AddHeroToTheWaitingDictionary(hero);
+    }
 
     internal static void RemoveHeroFromTheWaitingDictionary(Hero hero, Clan? clan = null)
     {
@@ -122,15 +134,27 @@ public sealed class ReusableHeroesBehavior : CampaignBehaviorBase
             heroes.Remove(hero);
     }
 
-    private static void ReclaimOrphanedHeroes()
+    // Heroes stranded in saves made before the leak fix (alive, free, in no party, not waiting) go back to the waiting list.
+    private static void OnSessionLaunched() => BmrCounters.StuckHeroesReclaimedOnLoad += ReclaimOrphanedHeroes();
+
+    // Returns how many heroes were put back.
+    private static int ReclaimOrphanedHeroes()
     {
+        int count = 0;
         for (int i = 0; i < AllAliveBanditMilitiaHeroes.Count; i++)
         {
             Hero hero = AllAliveBanditMilitiaHeroes[i];
-            if (hero is { IsAlive: true, IsPrisoner: false, PartyBelongedTo: null, Clan: not null } && !IsWaitingForReuse(hero))
-                AddHeroToTheWaitingDictionary(hero);
+            if (!IsStuck(hero))
+                continue;
+            AddHeroToTheWaitingDictionary(hero);
+            count++;
         }
+        return count;
     }
+
+    // Counts toward the clan's hero cap but can never lead again until he is put back on the waiting list.
+    internal static bool IsStuck(Hero? hero) =>
+        hero is { IsAlive: true, IsPrisoner: false, PartyBelongedTo: null, Clan: not null } && !IsWaitingForReuse(hero);
 
     public bool HasReusableBanditHero(Clan? clan) => clan is not null && _waitingToBeReusedHeroes.TryGetValue(clan, out List<Hero>? heroes) && heroes.Count > 0;
 

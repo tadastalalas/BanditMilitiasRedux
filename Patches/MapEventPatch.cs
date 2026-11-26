@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BanditMilitiasRedux.Behaviors;
 using BanditMilitiasRedux.Core;
+using BanditMilitiasRedux.Diagnostics;
 using BanditMilitiasRedux.Managers;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
@@ -9,12 +10,13 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.Core;
 using TaleWorlds.LinQuick;
 using static BanditMilitiasRedux.Core.Helper;
 
 namespace BanditMilitiasRedux.Patches;
 
-// BMR-FEATURE: Notoriety, militia leaders on the winning side record a win | gate: always | Prefix: the winners must be read before vanilla finishes and cleans up the battle
+// BMR-FEATURE: Notoriety and leader progression, militia leaders on the winning side record a win and get the win reward | gate: always (reward: setting:CanTrain) | Prefix: the winners and the battle-start strength ratio must be read before vanilla finishes and cleans up the battle
 [HarmonyPatch(typeof(MapEvent), "FinishBattle")]
 internal class MapEventFinishBattlePatch
 {
@@ -26,11 +28,21 @@ internal class MapEventFinishBattlePatch
         if (!__instance.InvolvedParties.AnyQ(partyBase => partyBase?.IsMobile == true && partyBase.MobileParty?.IsBanditMilitiaParty() == true))
             return;
 
+        NotorietyBehavior? notoriety = NotorietyBehavior.Instance;
+        if (notoriety is null)
+            return;
+
+        MapEventSide winnerSide = __instance.WinningSide == BattleSideEnum.Attacker ? __instance.AttackerSide : __instance.DefenderSide;
+        float strengthRatio = winnerSide.StrengthRatio;
+
         foreach (MapEventParty winnerParty in __instance.PartiesOnSide(__instance.WinningSide))
         {
             MobileParty? mobileParty = winnerParty?.Party?.MobileParty;
-            if (mobileParty?.IsBanditMilitiaParty() == true && mobileParty.LeaderHero is { IsAlive: true } leader)
-                NotorietyBehavior.Instance?.RecordWin(leader);
+            if (mobileParty?.IsBanditMilitiaParty() != true || mobileParty.LeaderHero is not { IsAlive: true } leader)
+                continue;
+
+            notoriety.RecordWin(leader);
+            HeroProgressionManager.RewardWin(leader, strengthRatio, notoriety.GetBattlesWon(leader));
         }
     }
 }
@@ -75,6 +87,7 @@ internal class MapEventCalculateAndCommitMapEventResultsPatch
             if (banditMilitiaParty?.IsActive != true)
                 continue;
 
+            BmrCounters.MilitiasDefeated++;
             __state.TryGetValue(banditMilitiaParty, out Hero? defeatedLeader);
 
             if (defeatedLeader is { IsAlive: true })

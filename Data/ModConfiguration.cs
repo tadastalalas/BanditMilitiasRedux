@@ -26,6 +26,12 @@ public class ModConfiguration
     public const int MaxTrainingTierMax = 6;
     public const int GrowthChanceDefault = 50;
     public const int GrowthPercentDefault = 1;
+    public const float HeroXpMultiplierDefault = 1.5f;
+    public const float HeroXpMultiplierMin = 1f;
+    public const float HeroXpMultiplierMax = 5f;
+    public const int HeroXpPerWinDefault = 200;
+    public const int HeroXpPerWinMin = 0;
+    public const int HeroXpPerWinMax = 1000;
 
     // Power & Balance
     public const int GlobalPowerPercentDefault = 20;
@@ -114,6 +120,8 @@ public class ModConfiguration
         TrainingAndGrowth.MaxTrainingTier = Clamp(TrainingAndGrowth.MaxTrainingTier, MaxTrainingTierMin, MaxTrainingTierMax);
         TrainingAndGrowth.GrowthChance = Clamp(TrainingAndGrowth.GrowthChance, PercentMin, PercentMax);
         TrainingAndGrowth.GrowthPercent = Clamp(TrainingAndGrowth.GrowthPercent, PercentMin, PercentMax);
+        TrainingAndGrowth.HeroXpMultiplier = Clamp(TrainingAndGrowth.HeroXpMultiplier, HeroXpMultiplierMin, HeroXpMultiplierMax, HeroXpMultiplierDefault);
+        TrainingAndGrowth.HeroXpPerWin = Clamp(TrainingAndGrowth.HeroXpPerWin, HeroXpPerWinMin, HeroXpPerWinMax);
 
         PowerAndBalance.GlobalPowerPercent = Clamp(PowerAndBalance.GlobalPowerPercent, GlobalPowerPercentMin, PercentMax);
 
@@ -136,6 +144,8 @@ public class ModConfiguration
 
     private static int Clamp(int value, int min, int max) => Math.Min(Math.Max(value, min), max);
 
+    private static float Clamp(float value, float min, float max, float fallback) => float.IsNaN(value) ? fallback : Math.Min(Math.Max(value, min), max);
+
     public class SpawningAndFormationSection
     {
         public int HeroPoolCap { get; set; } = HeroPoolCapDefault;
@@ -153,6 +163,8 @@ public class ModConfiguration
         public int MaxTrainingTier { get; set; } = MaxTrainingTierDefault;
         public int GrowthChance { get; set; } = GrowthChanceDefault;
         public int GrowthPercent { get; set; } = GrowthPercentDefault;
+        public float HeroXpMultiplier { get; set; } = HeroXpMultiplierDefault;
+        public int HeroXpPerWin { get; set; } = HeroXpPerWinDefault;
     }
 
     public class PowerAndBalanceSection

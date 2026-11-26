@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME} es un cabecilla bandido que lidera una banda de maleantes que saquea bajo el nombre de {CLAN_NAME}."/>
 		<string id="BMREncNoClan" text="bandidos sin amo"/>
 		<string id="BMREncEpithet1" text="En toda la tierra, a {?LEADER.GENDER}ella{?}él{\?} se le conoce como {LEADER.FIRSTNAME} {EPITHET}, vencedor de {WINS} {?MANY}batallas{?}batalla{\?}."/>
-		<string id="BMREncEpithet2" text="En toda la tierra, a {?LEADER.GENDER}ella{?}él{\?} se le conoce como {LEADER.FIRSTNAME} {EPITHET}."/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}Ella{?}Él{\?} ha sido derrotad{?LEADER.GENDER}a{?}o{\?} en batalla {DEFEATS} {?MANY}veces{?}vez{\?}."/>
 		<string id="BMREncFear" text="Por encima de todo, {?LEADER.GENDER}ella{?}él{\?} teme a {HUNTER}."/>
 		<string id="BMRWho" text="¿Quién eres y para quién cabalgas?" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="MILICIAS BANDIDAS ELIMINADAS" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
 		<string id="BMR_H6Jm3wr" text="Esto elimina todas las Milicias Bandidas y a todos sus líderes de esta campaña. No se puede deshacer. Úsalo solo antes de desactivar el mod." />
+		<string id="BMR_k3VqZ8w" text="Multiplicador de PX de héroes de milicia" />
+		<string id="BMR_Rf6nJ2x" text="Multiplica toda la experiencia de habilidad que los héroes de las milicias bandidas obtienen en el juego (1 = original). Requiere Habilitar entrenamiento de milicia." />
+		<string id="BMR_p9TsL4c" text="PX del líder de milicia por victoria" />
+		<string id="BMR_Y7mWd1h" text="Experiencia de habilidad que un líder de milicia obtiene por cada batalla ganada en Liderazgo, Táctica, Equitación o Atletismo y en las habilidades de las armas que usa. Ajustada según la fuerza del enemigo (de 0,25x a 3x). Cada 7 victorias también obtiene un punto de enfoque y cada 14 victorias un punto de atributo. Requiere Habilitar entrenamiento de milicia. 0 desactiva solo la experiencia." />
 	</strings>
 </base>

@@ -26,6 +26,7 @@ internal static class BanditMilitiaManager
 {
     private const string ReattachViolationTag = "BMR-REATTACH-VIOLATION";
     private const string StuckTag = "BMR-STUCK";
+    private const string LeaderLostTag = "BMR-LEADER-LOST";
 
     private static PartyUpgraderCampaignBehavior? _upgraderCampaignBehavior;
 
@@ -64,14 +65,14 @@ internal static class BanditMilitiaManager
 
         if (mergeInitiatorParty.IsBanditMilitiaParty())
         {
-            initiatorPartyLeader = mergeInitiatorParty.LeaderHero;
+            initiatorPartyLeader = UsableLeader(mergeInitiatorParty);
             AvoidanceManager.CalculateAverageAvoidance(mergeInitiatorParty.GetBanditMilitiaParty()!, mergedAvoidances);
             leaderMergeCounter++;
         }
 
         if (mergeTargetParty.IsBanditMilitiaParty())
         {
-            targetPartyLeader = mergeTargetParty.LeaderHero;
+            targetPartyLeader = UsableLeader(mergeTargetParty);
             AvoidanceManager.CalculateAverageAvoidance(mergeTargetParty.GetBanditMilitiaParty()!, mergedAvoidances);
             leaderMergeCounter++;
         }
@@ -92,9 +93,12 @@ internal static class BanditMilitiaManager
             homeSettlement = newLeader.BornSettlement ?? Helper.BestSettlementForMerge(mergeInitiatorParty, mergeTargetParty);
             if (homeSettlement is null)
                 return;
-
-            newLeader.PartyBelongedTo?.MemberRoster.RemoveTroop(newLeader.CharacterObject);
         }
+
+        // The leader leaves both old parties before he joins the new one: a removed party takes every hero it
+        // still lists out of his current party, and the new militia would lose its leader.
+        RemoveHeroFromRoster(mergeInitiatorParty.MemberRoster, newLeader);
+        RemoveHeroFromRoster(mergeTargetParty.MemberRoster, newLeader);
 
         MobileParty banditMilitiaParty = CreateBanditMilitiaParty(newLeader, homeSettlement, mergedAvoidances);
 
@@ -102,6 +106,9 @@ internal static class BanditMilitiaManager
         CopyInventoryFromTo(mergeTargetParty, banditMilitiaParty);
 
         TroopRoster[] mergedRoster = MergeRosters(mergeInitiatorParty, mergeTargetParty);
+        
+        // The leader is never a prisoner of his own militia: that entry would take him out of the party again.
+        RemoveHeroFromRoster(mergedRoster[1], newLeader);
 
         // The prisoners move to the new militia. Vanilla frees every hero prisoner still listed in a party that is
         // removed, so the old lists are emptied before the heroes join the new one (same as on a split).
@@ -109,6 +116,10 @@ internal static class BanditMilitiaManager
         mergeTargetParty.PrisonRoster.Clear();
 
         InitializeMilitiaParty(banditMilitiaParty, newLeader, mergedRoster, mergeInitiatorParty.Position);
+        if (leaderMergeCounter == 0)
+            BmrCounters.MilitiasFormed++;
+        else
+            BmrCounters.MilitiasMerged++;
 
         Helper.TryTrashMobilePartySafelyReservingBanditLeader(mergeInitiatorParty);
         Helper.TryTrashMobilePartySafelyReservingBanditLeader(mergeTargetParty);
@@ -182,10 +193,63 @@ internal static class BanditMilitiaManager
     {
         newBanditMilitiaParty.InitializeMobilePartyAtPosition(mergedRoster[0], mergedRoster[1], position);
         newBanditMilitiaParty.ChangePartyLeader(newLeader);
+        EnsureLeaderAttached(newBanditMilitiaParty, newLeader);
         ReusableHeroesBehavior.RemoveHeroFromTheWaitingDictionary(newLeader);
         ConfigureGoldAndMounts(newBanditMilitiaParty);
         TrainBanditMilitiaParty(newBanditMilitiaParty);
         MilitiaTrackerManager.Refresh(newBanditMilitiaParty);
+    }
+    
+    // A recorded leader can lead the next militia only when he is alive, free and in this party or in none.
+    private static Hero? UsableLeader(MobileParty militia)
+    {
+        Hero? leader = militia.LeaderHero;
+        if (leader is not { IsAlive: true, IsPrisoner: false })
+            return null;
+
+        MobileParty? ownParty = leader.PartyBelongedTo;
+        return ownParty is null || ownParty == militia ? leader : null;
+    }
+
+    // Normal case: nothing to do. Otherwise something took the leader out of the new militia while it was set up:
+    // the log keeps the state he was found in, then he is put back as its only listed copy.
+    private static void EnsureLeaderAttached(MobileParty militia, Hero leader)
+    {
+        if (militia.LeaderHero == leader && leader.PartyBelongedTo == militia)
+            return;
+
+        BmrLog.Warn($"{LeaderLostTag}: {leader.Name} ({leader.StringId}) is not attached to {militia.StringId}. " +
+                    $"leader={militia.LeaderHero?.Name}, state={leader.HeroState}, alive={leader.IsAlive}, " +
+                    $"party={leader.PartyBelongedTo?.StringId}, prisonerOf={leader.PartyBelongedToAsPrisoner?.Name}, " +
+                    $"members={HeroCountInRoster(militia.MemberRoster, leader)}, prisoners={HeroCountInRoster(militia.PrisonRoster, leader)}\n{Environment.StackTrace}");
+
+        RemoveHeroFromRoster(militia.MemberRoster, leader);
+        RemoveHeroFromRoster(militia.PrisonRoster, leader);
+        militia.MemberRoster.AddToCounts(leader.CharacterObject, 1, true);
+        militia.ChangePartyLeader(leader);
+
+        if (militia.LeaderHero != leader)
+            BmrLog.Warn($"{LeaderLostTag}: {militia.StringId} stays without a leader.");
+    }
+
+    private static int HeroCountInRoster(TroopRoster roster, Hero hero)
+    {
+        CharacterObject character = hero.CharacterObject;
+        for (int i = 0; i < roster.Count; i++)
+        {
+            TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+            if (element.Character == character)
+                return element.Number;
+        }
+        return 0;
+    }
+
+    // Takes every listed copy of the hero out of the roster; nothing happens when he is not listed.
+    private static void RemoveHeroFromRoster(TroopRoster roster, Hero hero)
+    {
+        int listed = HeroCountInRoster(roster, hero);
+        if (listed > 0)
+            roster.AddToCounts(hero.CharacterObject, -listed);
     }
 
     private static void ConfigureGoldAndMounts(MobileParty newBanditMilitiaParty)
@@ -194,7 +258,10 @@ internal static class BanditMilitiaManager
         if (banditMilitiaParty is null)
             return;
 
-        Hero leaderHero = banditMilitiaParty.Leader;
+        // A militia without a leader (logged as BMR-LEADER-LOST) gets neither gold nor a mount.
+        Hero? leaderHero = banditMilitiaParty.Leader;
+        if (leaderHero is null)
+            return;
 
         // Set, not added: the reward follows the militia's strength now and must not pile up with every merge and split.
         leaderHero.Gold = Convert.ToInt32(newBanditMilitiaParty.Party.EstimatedStrength * Balance.GoldValues[ModSettings.GoldRewardIndex]);
@@ -450,12 +517,12 @@ internal static class BanditMilitiaManager
         if (MBRandom.RandomInt(0, Balance.FullPercent) >= ModSettings.RandomSplitChance || mobilePartyToSplit.Party.MemberRoster.TotalManCount < Math.Max(1, CalculatedMaxPartySize * Balance.MinSizeRatioForSplit))
             return;
 
-        Hero? partyLeaderOne = mobilePartyToSplit.LeaderHero;
+        Hero? partyLeaderOne = UsableLeader(mobilePartyToSplit);
         if (partyLeaderOne is null)
             return;
 
         Hero? partyLeaderTwo = ReusableHeroesBehavior.Instance?.TryGetReusableBanditHero(mobilePartyToSplit.ActualClan);
-        if (partyLeaderTwo is null)
+        if (partyLeaderTwo is null || partyLeaderTwo == partyLeaderOne)
             return;
 
         if (BmrLog.IsDebugEnabled && ReusableHeroesBehavior.IsWaitingForReuse(partyLeaderOne))
@@ -471,8 +538,14 @@ internal static class BanditMilitiaManager
         ItemRoster itemRosterTwo = new();
 
         List<Hero> otherHeroes = CollectOtherHeroesByPowerDescending(mobilePartyToSplit.MemberRoster, partyLeaderOne);
+        
+        // The second leader joins through his own new party, never as a plain member.
+        otherHeroes.Remove(partyLeaderTwo);
 
         SplitRosters(mobilePartyToSplit, troopRosterOne, troopRosterTwo, prisonerRosterOne, prisonerRosterTwo, itemRosterOne, itemRosterTwo);
+        // A leader is never a prisoner of the new parties (hero prisoners all go to the first one).
+        RemoveHeroFromRoster(prisonerRosterOne, partyLeaderOne);
+        RemoveHeroFromRoster(prisonerRosterOne, partyLeaderTwo);
 
         for (int i = otherHeroes.Count - 1; i >= 0; i--)
         {
@@ -580,6 +653,7 @@ internal static class BanditMilitiaManager
 
         InitializeMilitiaParty(newPartyOne, partyLeaderOne, newRosterOne, mobilePartyToSplit.Position);
         InitializeMilitiaParty(newPartyTwo, partyLeaderTwo, newRosterTwo, mobilePartyToSplit.Position);
+        BmrCounters.MilitiasSplit++;
 
         Helper.TryTrashMobilePartySafelyReservingBanditLeader(mobilePartyToSplit);
     }
@@ -725,7 +799,7 @@ internal static class BanditMilitiaManager
         return chosen;
     }
 
-    private static int CountRaidingMilitias()
+    internal static int CountRaidingMilitias()
     {
         int raidingCount = 0;
         IReadOnlyList<BanditMilitiaPartyComponent?> cachedBanditMilitias = PowerCalculationManager.GetActiveBanditMilitiaParties();

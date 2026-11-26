@@ -25,6 +25,9 @@ internal static class BmrLog
         if (ModSettings.LoggingEnabled) Write("DEBUG", message);
     }
 
+    // Output the player asked for (console commands): always written.
+    internal static void Info(string message) => Write("INFO", message);
+
     // Problems: always written.
     internal static void Warn(string message) => Write("WARN", message);
 

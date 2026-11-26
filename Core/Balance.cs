@@ -79,8 +79,13 @@ internal static class Balance
 
     // Notoriety: tier N is reached at index N-1.
     internal static readonly int[] NotorietyWinThresholds = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30];
-    internal static readonly int[] NotorietyDayThresholds = [21, 42, 63, 84, 105, 126, 147, 168, 189, 210];
     internal const float NotorietyFearMentionThreshold = 25f;
+
+    // Leader progression from won battles (gate: CanTrain).
+    internal const float HeroWinXpRatioMin = 0.25f; // Win XP factor = enemy / own strength at battle start, kept in this range.
+    internal const float HeroWinXpRatioMax = 3f;
+    internal const int FocusPointEveryWins = 7;
+    internal const int AttributePointEveryWins = 14;
 
     // Equipment pool
     internal const int EquipmentSetCount = 10000;

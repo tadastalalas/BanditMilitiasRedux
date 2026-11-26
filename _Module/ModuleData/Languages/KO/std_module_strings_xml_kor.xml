@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME}은(는) {CLAN_NAME}의 이름으로 약탈하는 무법자 무리를 이끄는 도적 두목입니다."/>
 		<string id="BMREncNoClan" text="주인 없는 무법자"/>
 		<string id="BMREncEpithet1" text="온 땅에서 {?LEADER.GENDER}그녀는{?}그는{\?} {LEADER.FIRSTNAME} {EPITHET}로 불리며, {WINS}번의 {?MANY}전투{?}전투{\?}에서 승리한 자로 알려져 있습니다."/>
-		<string id="BMREncEpithet2" text="온 땅에서 {?LEADER.GENDER}그녀는{?}그는{\?} {LEADER.FIRSTNAME} {EPITHET}로 불립니다."/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}그녀는{?}그는{\?} 전투에서 {DEFEATS} {?MANY}번{?}번{\?} 패배했습니다."/>
 		<string id="BMREncFear" text="무엇보다도 {?LEADER.GENDER}그녀는{?}그는{\?} {HUNTER}를 두려워합니다."/>
 		<string id="BMRWho" text="너는 누구고, 누구를 위해 달리지?" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="도적 민병대 제거됨" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
 		<string id="BMR_H6Jm3wr" text="이 캠페인에서 모든 도적 민병대와 그 지도자를 제거합니다. 되돌릴 수 없습니다. 모드를 비활성화하기 전에만 사용하세요." />
+		<string id="BMR_k3VqZ8w" text="민병대 영웅 XP 배율" />
+		<string id="BMR_Rf6nJ2x" text="도적 민병대 영웅이 게임에서 얻는 모든 기술 경험치에 이 배율을 곱합니다(1 = 기본). 민병대 훈련 활성화가 필요합니다." />
+		<string id="BMR_p9TsL4c" text="승리당 민병대 지도자 XP" />
+		<string id="BMR_Y7mWd1h" text="민병대 지도자가 전투에서 승리할 때마다 통솔, 전술, 승마 또는 운동, 그리고 사용 중인 무기의 기술에 얻는 기술 경험치입니다. 적의 강함에 따라 조정됩니다(0.25배~3배). 7승마다 집중 포인트 1개, 14승마다 능력치 포인트 1개도 얻습니다. 민병대 훈련 활성화가 필요합니다. 0은 경험치만 끕니다." />
 	</strings>
 </base>

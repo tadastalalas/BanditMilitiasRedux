@@ -81,7 +81,6 @@
 		<string id="BMREncBase" text="{LEADER.FIRSTNAME} é um chefe brigão liderando um bando de salteadores que saqueia sob o nome de {CLAN_NAME}."/>
 		<string id="BMREncNoClan" text="salteadores sem mestre"/>
 		<string id="BMREncEpithet1" text="Por toda a terra, {?LEADER.GENDER}ela{?}ele{\?} é conhecido como {LEADER.FIRSTNAME} {EPITHET}, vencedor de {WINS} {?MANY}batalhas{?}batalha{\?}."/>
-		<string id="BMREncEpithet2" text="Por toda a terra, {?LEADER.GENDER}ela{?}ele{\?} é conhecido como {LEADER.FIRSTNAME} {EPITHET}."/>
 		<string id="BMREncDefeats" text="{?LEADER.GENDER}Ela{?}Ele{\?} foi derrotad{?LEADER.GENDER}a{?}o{\?} em batalha {DEFEATS} {?MANY}vezes{?}vez{\?}."/>
 		<string id="BMREncFear" text="Acima de todos os outros, {?LEADER.GENDER}ela{?}ele{\?} teme {HUNTER}."/>
 		<string id="BMRWho" text="Quem é você, e por quem cavalga?" />
@@ -147,5 +146,9 @@
 		<string id="BMR_yquQLhT" text="MILÍCIAS BANDIDAS REMOVIDAS" />
 		<string id="BMR_TOQCjcE" text="{A} {B}" />
 		<string id="BMR_H6Jm3wr" text="Isto remove todas as Milícias Bandidas e todos os seus líderes desta campanha. Não pode ser desfeito. Use apenas antes de desativar o mod." />
+		<string id="BMR_k3VqZ8w" text="Multiplicador de XP dos Heróis da Milícia" />
+		<string id="BMR_Rf6nJ2x" text="Multiplica toda a experiência de perícia que os heróis das milícias bandidas ganham no jogo (1 = original). Requer Ativar Treinamento da Milícia." />
+		<string id="BMR_p9TsL4c" text="XP do Líder da Milícia por Vitória" />
+		<string id="BMR_Y7mWd1h" text="Experiência de perícia que um líder de milícia ganha a cada batalha vencida em Liderança, Tática, Montaria ou Atletismo e nas perícias das armas em uso. Ajustada pela força do inimigo (0,25x a 3x). A cada 7 vitórias ganha também um ponto de foco e a cada 14 vitórias um ponto de atributo. Requer Ativar Treinamento da Milícia. 0 desativa apenas a experiência." />
 	</strings>
 </base>

@@ -14,7 +14,7 @@
 
 [color=#ffff00][size=4]Features[/size][/color]
 [color=#ffd966]Bandit parties of the same clan that meet nearby merge into a Bandit Militia led by a bandit hero.[/color]
-[color=#93c47d]Militia leaders are persistent heroes: they gain power, earn epithets like "the Bold" or "the Butcher" from victories and age, and get their own encyclopedia story.[/color]
+[color=#93c47d]Militia leaders are persistent heroes: they gain power, grow stronger with every victory, earn epithets like "the Bold" or "the Butcher" from their victories, and get their own encyclopedia story.[/color]
 [color=#ffd966]Large militias split into two; militias grow and train over time, up to a global power cap you choose.[/color]
 [color=#93c47d]Militias patrol around their home hideout and raid rich villages nearby.[/color] ([color=#6aa84f]on[/color]/[color=#e06666]off[/color])
 [color=#ffd966]Each militia remembers the lords who destroyed militias near it and avoids them. Beating a lord lowers that fear; it also fades every week.[/color]
@@ -45,6 +45,8 @@ Want to translate or fix a translation? [color=#93c47d]You have the permission[/
 [color=#ffd966]Max Troop Tier from Training[/color] - 1 to 6, default [color=#93c47d]4[/color]
 [color=#ffd966]Growth Chance Percent[/color] - 0 to 100, default [color=#93c47d]50[/color]
 [color=#ffd966]Growth Percent[/color] - 0 to 100, default [color=#93c47d]1[/color]
+[color=#ffd966]Militia Hero XP Multiplier[/color] - 1 to 5, default [color=#93c47d]1.5[/color] (all skill XP militia heroes gain in the game)
+[color=#ffd966]Militia Leader XP per Win[/color] - 0 to 1000, default [color=#93c47d]200[/color] (scaled by enemy strength; a focus point every 7 wins, an attribute point every 14)
 [color=#6fa8dc]Global Power[/color]
 [color=#ffd966]Global Power[/color] - 1 to 100, default [color=#93c47d]20[/color] (militia strength as % of all other parties)
 [color=#ffd966]Bandit Hero Gold Reward[/color] - Low / Normal / Rich / Richest, default [color=#93c47d]Normal[/color]
@@ -102,7 +104,7 @@ Enable the mod in the launcher. [url=https://www.nexusmods.com/mountandblade2ban
 
 [color=#ffff00][size=4]Found a problem?[/size][/color]
 Generate a crash report link using [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/2018]ButterLib[/url] mod. How to do that the mini guide is here: [url=http://bannerlordmodding.lt/guides/how_to_report_a_crash/]How To Report A Crash[/url]
-Console commands that help: [color=#f1c232]bmr.stats[/color] (militia counts and power), [color=#f1c232]bmr.heroes[/color] (every militia hero), [color=#f1c232]bmr.orphans[/color] (bandit heroes stuck outside militias), [color=#f1c232]bmr.fix_orphans[/color] (puts them back into the leader pool).
+Console commands that help: [color=#f1c232]bmr.stats[/color] (militia counts and power), [color=#f1c232]bmr.heroes[/color] (every militia hero), [color=#f1c232]bmr.orphans[/color] (bandit heroes stuck outside militias), [color=#f1c232]bmr.fix_orphans[/color] (puts them back into the leader pool), [color=#f1c232]bmr.settings[/color] (every mod setting, changed ones marked).
 Turn on [color=#ffd966]Logging for debugging[/color] in [color=#ffd966]MCM[/color] settings or [color=#ffd966]ModConfiguration.xml[/color] in mod folder, [color=#f6b26b]repeat the problem[/color], then attach the file from [color=#ffd966]Modules[/color]\[color=#f1c232]BanditMilitiasRedux[/color]\[color=#ffd966]logs[/color] to your [url=https://www.nexusmods.com/mountandblade2bannerlord/mods/2018]ButterLib[/url] crash report.
 
 [color=#a4c2f4]General Credits:[/color]

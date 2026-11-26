@@ -9,7 +9,7 @@ using TaleWorlds.SaveSystem;
 
 namespace BanditMilitiasRedux.Behaviors;
 
-// BMR-FEATURE: Notoriety, militia leaders gain epithets from wins and age; encyclopedia text | gate: always
+// BMR-FEATURE: Notoriety, militia leaders gain epithets from wins; encyclopedia text | gate: always
 public sealed class NotorietyBehavior : CampaignBehaviorBase
 {
     // Released SyncData keys (kept for save compatibility).
@@ -106,7 +106,7 @@ public sealed class NotorietyBehavior : CampaignBehaviorBase
     public CampaignTime GetFirstSeen(Hero hero)
         => hero is not null && _firstSeen.TryGetValue(hero, out CampaignTime firstSeen) ? firstSeen : CampaignTime.Now;
 
-    public int GetTier(Hero hero) => GetTier(GetBattlesWon(hero), GetFirstSeen(hero));
+    public int GetTier(Hero hero) => CountReached(Balance.NotorietyWinThresholds, GetBattlesWon(hero));
 
     private void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
     {
@@ -122,14 +122,6 @@ public sealed class NotorietyBehavior : CampaignBehaviorBase
         foreach (Hero hero in Hero.AllAliveHeroes)
             if (hero.IsBanditMilitiaHero())
                 EnsureTracked(hero);
-    }
-
-    internal static int GetTier(int battlesWon, CampaignTime firstSeen)
-    {
-        int winTier = CountReached(Balance.NotorietyWinThresholds, battlesWon);
-        int daysAlive = (int)(CampaignTime.Now - firstSeen).ToDays;
-        int ageTier = CountReached(Balance.NotorietyDayThresholds, daysAlive);
-        return winTier > ageTier ? winTier : ageTier;
     }
 
     private static int CountReached(int[] thresholds, int value)
@@ -183,12 +175,7 @@ public sealed class NotorietyBehavior : CampaignBehaviorBase
         TextObject result = Texts.EncyclopediaBase(hero.Clan?.Name ?? Texts.EncyclopediaNoClan);
 
         if (epithet is not null)
-        {
-            TextObject note = battlesWon > 0
-                ? Texts.EncyclopediaEpithetWithWins(epithet, battlesWon, battlesWon > 1 ? 1 : 0)
-                : Texts.EncyclopediaEpithet(epithet);
-            result = Texts.Concat(result, note);
-        }
+            result = Texts.Concat(result, Texts.EncyclopediaEpithetWithWins(epithet, battlesWon, battlesWon > 1 ? 1 : 0));
 
         int defeats = Instance?.GetDefeats(hero) ?? 0;
         if (defeats > 0)
